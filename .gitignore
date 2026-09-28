@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Локальные настройки Claude Code (не часть темы)
+.claude/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+
+# Локальные логи/кэш, если появятся при разработке
+*.log

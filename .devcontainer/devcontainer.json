@@ -1,0 +1,30 @@
+{
+  "name": "Беседка — WordPress theme dev",
+
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "wordpress",
+
+  "overrideCommand": false,
+
+  "workspaceFolder": "/var/www/html/wp-content/themes/besedka",
+
+  "forwardPorts": [8080],
+
+  "portsAttributes": {
+    "8080": {
+      "label": "WordPress — Беседка",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

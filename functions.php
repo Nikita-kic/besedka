@@ -206,6 +206,104 @@ if ( ! function_exists( 'besedka_get_product_categories' ) ) {
 }
 
 /**
+ * Список городов с пунктами выдачи (slug => array('name', 'address')),
+ * подгружается один раз из inc/cities.php.
+ */
+if ( ! function_exists( 'besedka_get_cities' ) ) {
+	function besedka_get_cities() {
+		static $cities = null;
+		if ( null === $cities ) {
+			$file   = BESEDKA_DIR . '/inc/cities.php';
+			$cities = file_exists( $file ) ? (array) include $file : array();
+		}
+		return $cities;
+	}
+}
+
+/**
+ * Верхняя тёмная полоса над хедером: текущий город (открывает модалку
+ * выбора города) и ссылки "О компании", "Доставка", "Оплата".
+ */
+if ( ! function_exists( 'besedka_render_topbar' ) ) {
+	function besedka_render_topbar() {
+		$cities       = besedka_get_cities();
+		$default_slug = 'moskva';
+		$default_name = isset( $cities[ $default_slug ] ) ? $cities[ $default_slug ]['name'] : __( 'Москва', 'besedka' );
+		?>
+		<div class="topbar">
+			<div class="container">
+				<div class="topbar__inner">
+					<button type="button" class="topbar__city" data-city-trigger>
+						<svg class="topbar__city-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-6-5.686-6-10.5A6 6 0 0 1 18 10.5C18 15.286 12 21 12 21z"/><circle cx="12" cy="10.5" r="2"/></svg>
+						<span data-city-current><?php echo esc_html( $default_name ); ?></span>
+					</button>
+					<nav class="topbar__links" aria-label="<?php esc_attr_e( 'Дополнительное меню', 'besedka' ); ?>">
+						<a class="topbar__link" href="<?php echo esc_url( home_url( '/about/' ) ); ?>"><?php esc_html_e( 'О компании', 'besedka' ); ?></a>
+						<a class="topbar__link" href="<?php echo esc_url( home_url( '/delivery/' ) ); ?>"><?php esc_html_e( 'Доставка', 'besedka' ); ?></a>
+						<a class="topbar__link" href="<?php echo esc_url( home_url( '/payment/' ) ); ?>"><?php esc_html_e( 'Оплата', 'besedka' ); ?></a>
+					</nav>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+}
+
+/**
+ * Модальное окно "Выбор города": поиск + список городов, сгруппированный
+ * по первой букве. Открывается кликом по текущему городу в топбаре.
+ */
+if ( ! function_exists( 'besedka_render_city_modal' ) ) {
+	function besedka_render_city_modal() {
+		$cities = besedka_get_cities();
+		if ( empty( $cities ) ) {
+			return;
+		}
+
+		$groups = array();
+		foreach ( $cities as $slug => $city ) {
+			$letter = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( $city['name'], 0, 1 ) ) : strtoupper( substr( $city['name'], 0, 1 ) );
+			if ( ! isset( $groups[ $letter ] ) ) {
+				$groups[ $letter ] = array();
+			}
+			$groups[ $letter ][ $slug ] = $city['name'];
+		}
+		ksort( $groups, SORT_STRING | SORT_FLAG_CASE );
+		foreach ( $groups as &$group ) {
+			asort( $group, SORT_STRING | SORT_FLAG_CASE );
+		}
+		unset( $group );
+		?>
+		<div class="city-modal" data-city-modal aria-hidden="true">
+			<div class="city-modal__overlay" data-city-modal-close></div>
+			<div class="city-modal__window" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Выбор города', 'besedka' ); ?>">
+				<button type="button" class="city-modal__close" data-city-modal-close aria-label="<?php esc_attr_e( 'Закрыть', 'besedka' ); ?>">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg>
+				</button>
+				<h2 class="city-modal__title"><?php esc_html_e( 'Выбор города', 'besedka' ); ?></h2>
+				<p class="city-modal__current"><?php esc_html_e( 'Ваш город:', 'besedka' ); ?> <span data-city-current></span></p>
+				<input class="city-modal__search" type="text" placeholder="<?php esc_attr_e( 'Введите ваш город', 'besedka' ); ?>" data-city-search>
+				<p class="city-modal__subtitle"><?php esc_html_e( 'Города с пунктами выдачи заказов:', 'besedka' ); ?></p>
+				<div class="city-modal__list" data-city-list>
+					<?php foreach ( $groups as $letter => $group ) : ?>
+						<div class="city-modal__group">
+							<span class="city-modal__letter"><?php echo esc_html( $letter ); ?>:</span>
+							<ul class="city-modal__cities">
+								<?php foreach ( $group as $slug => $name ) : ?>
+									<li><button type="button" class="city-modal__item" data-city-item data-city-slug="<?php echo esc_attr( $slug ); ?>" data-city-name="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( $name ); ?></button></li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<p class="city-modal__empty" data-city-empty hidden><?php esc_html_e( 'Город не найден.', 'besedka' ); ?></p>
+			</div>
+		</div>
+		<?php
+	}
+}
+
+/**
  * Выводит логотип магазина: сначала логотип, загруженный через Кастомайзер
  * (Внешний вид → Настроить → Свойства сайта), затем встроенный в тему файл
  * img/logo/logo.svg, и только если ничего нет — текстовое название сайта.

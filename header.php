@@ -22,6 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <a class="visually-hidden" href="#main-content"><?php esc_html_e( 'Перейти к содержимому', 'besedka' ); ?></a>
 
+<?php besedka_render_topbar(); ?>
+<?php besedka_render_city_modal(); ?>
+
 <header class="site-header">
 
 	<!-- ===== Верхний уровень хедера ===== -->

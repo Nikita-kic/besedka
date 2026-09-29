@@ -1,5 +1,5 @@
 /**
- * Тема «БЕСЕДКА» — вся интерактивность каталога цветочного магазина.
+ * Тема «БЕСЕДКА» — вся интерактивность каталога.
  * Чистый JavaScript (ES6+), без зависимостей. Методология БЭМ в data-атрибутах.
  */
 (function () {
@@ -18,6 +18,7 @@
 	};
 
 	var FAVORITES_KEY = 'besedka_favorites';
+	var CITY_KEY = 'besedka_city';
 
 	document.addEventListener( 'DOMContentLoaded', function () {
 		initMobileMenu();
@@ -29,6 +30,7 @@
 		initModalClose();
 		initCartActions();
 		initCustomOrderForm();
+		initCityModal();
 	} );
 
 	/* ==========================================================================
@@ -529,5 +531,119 @@
 					}
 				} );
 		} );
+	}
+
+	/* ==========================================================================
+	   12. МОДАЛКА "ВЫБОР ГОРОДА"
+	   ========================================================================== */
+	function getSavedCity() {
+		try {
+			var raw = localStorage.getItem( CITY_KEY );
+			return raw ? JSON.parse( raw ) : null;
+		} catch ( e ) {
+			return null;
+		}
+	}
+
+	function setCurrentCityLabel( name ) {
+		qsa( '[data-city-current]' ).forEach( function ( el ) {
+			el.textContent = name;
+		} );
+	}
+
+	function openCityModal() {
+		var modal = qs( '[data-city-modal]' );
+		if ( ! modal ) {
+			return;
+		}
+		modal.classList.add( 'is-open' );
+		modal.setAttribute( 'aria-hidden', 'false' );
+		lockScroll( true );
+		var search = qs( '[data-city-search]', modal );
+		if ( search ) {
+			search.focus();
+		}
+	}
+
+	function closeCityModal() {
+		var modal = qs( '[data-city-modal]' );
+		if ( ! modal ) {
+			return;
+		}
+		modal.classList.remove( 'is-open' );
+		modal.setAttribute( 'aria-hidden', 'true' );
+		lockScroll( false );
+	}
+
+	function initCityModal() {
+		var modal = qs( '[data-city-modal]' );
+
+		// Восстанавливаем ранее выбранный город.
+		var saved = getSavedCity();
+		if ( saved && saved.name ) {
+			setCurrentCityLabel( saved.name );
+		}
+
+		qsa( '[data-city-trigger]' ).forEach( function ( trigger ) {
+			trigger.addEventListener( 'click', openCityModal );
+		} );
+
+		if ( ! modal ) {
+			return;
+		}
+
+		qsa( '[data-city-modal-close]', modal ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', closeCityModal );
+		} );
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( event.key === 'Escape' && modal.classList.contains( 'is-open' ) ) {
+				closeCityModal();
+			}
+		} );
+
+		// Выбор города из списка.
+		qsa( '[data-city-item]', modal ).forEach( function ( item ) {
+			item.addEventListener( 'click', function () {
+				var slug = item.getAttribute( 'data-city-slug' );
+				var name = item.getAttribute( 'data-city-name' );
+				try {
+					localStorage.setItem( CITY_KEY, JSON.stringify( { slug: slug, name: name } ) );
+				} catch ( e ) {}
+				setCurrentCityLabel( name );
+				closeCityModal();
+			} );
+		} );
+
+		// Живой поиск по городам.
+		var search = qs( '[data-city-search]', modal );
+		var groups = qsa( '[data-city-list] .city-modal__group', modal );
+		var emptyMsg = qs( '[data-city-empty]', modal );
+
+		if ( search ) {
+			search.addEventListener( 'input', function () {
+				var query = search.value.trim().toLowerCase();
+				var visibleGroups = 0;
+
+				groups.forEach( function ( group ) {
+					var visibleItems = 0;
+					qsa( '.city-modal__item', group ).forEach( function ( item ) {
+						var match = item.textContent.toLowerCase().indexOf( query ) !== -1;
+						item.parentElement.style.display = match ? '' : 'none';
+						if ( match ) {
+							visibleItems++;
+						}
+					} );
+					group.style.display = visibleItems > 0 ? '' : 'none';
+					if ( visibleItems > 0 ) {
+						visibleGroups++;
+					}
+				} );
+
+				if ( emptyMsg ) {
+					emptyMsg.hidden = visibleGroups > 0;
+				}
+			} );
+		}
 	}
 })();

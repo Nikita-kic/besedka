@@ -704,6 +704,12 @@ body.no-scroll {
   transition: transform 0.4s ease;
 }
 
+/* Светлый баннер ниже на 10%: 3:1 → 10:3, края картинки подрезаются сверху и снизу. */
+.banner--promo .banner__image {
+  height: auto;
+  aspect-ratio: 10 / 3;
+}
+
 .banner__link:hover .banner__image {
   transform: scale(1.02);
 }

@@ -762,7 +762,7 @@ body.no-scroll {
 }
 
 .countdown__label {
-  margin-top: 0.9cqw;
+  margin-top: 0.1cqw;
   font-size: max(8px, 1cqw);
   line-height: 1;
   color: var(--color-text);

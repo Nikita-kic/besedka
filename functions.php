@@ -654,6 +654,64 @@ if ( ! function_exists( 'besedka_ajax_search' ) ) {
 }
 
 /* ==========================================================================
+   6.2 БАННЕРЫ НА ГЛАВНОЙ И ТАЙМЕР АКЦИИ
+   ========================================================================== */
+
+/**
+ * Момент окончания акции (Unix-время). Берётся из Customizer («Баннеры» → «Окончание акции»,
+ * формат ГГГГ-ММ-ДД ЧЧ:ММ). Если не задано — акция длится 7 дней с первого показа баннера.
+ */
+if ( ! function_exists( 'besedka_get_promo_end' ) ) {
+	function besedka_get_promo_end() {
+		$value = trim( (string) get_theme_mod( 'besedka_promo_end', '' ) );
+		if ( '' !== $value ) {
+			try {
+				$date = new DateTime( $value, wp_timezone() );
+				return $date->getTimestamp();
+			} catch ( Exception $e ) {
+				// Некорректная дата — используем запасной вариант ниже.
+			}
+		}
+
+		$fallback = (int) get_option( 'besedka_promo_end_default', 0 );
+		if ( ! $fallback ) {
+			$fallback = time() + 7 * DAY_IN_SECONDS;
+			update_option( 'besedka_promo_end_default', $fallback );
+		}
+		return $fallback;
+	}
+}
+
+if ( ! function_exists( 'besedka_customize_register' ) ) {
+	function besedka_customize_register( $wp_customize ) {
+		$wp_customize->add_section(
+			'besedka_banners',
+			array(
+				'title'    => __( 'Баннеры', 'besedka' ),
+				'priority' => 40,
+			)
+		);
+		$wp_customize->add_setting(
+			'besedka_promo_end',
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			)
+		);
+		$wp_customize->add_control(
+			'besedka_promo_end',
+			array(
+				'section'     => 'besedka_banners',
+				'label'       => __( 'Окончание акции (таймер на баннере)', 'besedka' ),
+				'description' => __( 'Формат: ГГГГ-ММ-ДД ЧЧ:ММ, например 2026-11-01 23:59. Пусто — 7 дней с первого показа.', 'besedka' ),
+				'type'        => 'text',
+			)
+		);
+	}
+	add_action( 'customize_register', 'besedka_customize_register' );
+}
+
+/* ==========================================================================
    7. ПОДРОБНАЯ КАРТОЧКА ТОВАРА (ИСПОЛЬЗУЕТСЯ В single-product.php И В AJAX-МОДАЛКЕ)
    ========================================================================== */
 

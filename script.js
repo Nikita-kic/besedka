@@ -31,6 +31,7 @@
 		initCustomOrderForm();
 		initCityModal();
 		initSearch();
+		initCountdown();
 	} );
 
 	/* ==========================================================================
@@ -696,6 +697,41 @@
 			if ( 'Escape' === event.key ) {
 				hide();
 			}
+		} );
+	}
+
+	/* ==========================================================================
+	   14. ТАЙМЕР АКЦИИ НА БАННЕРЕ
+	   ========================================================================== */
+	function initCountdown() {
+		qsa( '[data-countdown]' ).forEach( function ( box ) {
+			var end = parseInt( box.getAttribute( 'data-countdown' ), 10 ) * 1000;
+			var parts = {
+				days: qs( '[data-countdown-days]', box ),
+				hours: qs( '[data-countdown-hours]', box ),
+				minutes: qs( '[data-countdown-minutes]', box ),
+				seconds: qs( '[data-countdown-seconds]', box )
+			};
+
+			function pad( n ) {
+				return n < 10 ? '0' + n : String( n );
+			}
+
+			function tick() {
+				var left = Math.max( 0, Math.floor( ( end - Date.now() ) / 1000 ) );
+				if ( left <= 0 ) {
+					box.classList.add( 'is-finished' );
+					clearInterval( timer );
+					return;
+				}
+				parts.days.textContent = pad( Math.floor( left / 86400 ) );
+				parts.hours.textContent = pad( Math.floor( ( left % 86400 ) / 3600 ) );
+				parts.minutes.textContent = pad( Math.floor( ( left % 3600 ) / 60 ) );
+				parts.seconds.textContent = pad( left % 60 );
+			}
+
+			var timer = setInterval( tick, 1000 );
+			tick();
 		} );
 	}
 })();

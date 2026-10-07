@@ -27,9 +27,9 @@ if ( ! function_exists( 'besedka_setup' ) ) {
 		// Миниатюры записей и товаров.
 		add_theme_support( 'post-thumbnails' );
 		set_post_thumbnail_size( 600, 600, true );
-		add_image_size( 'besedka-card', 600, 600, true );
-		add_image_size( 'besedka-thumb', 120, 120, true );
-		add_image_size( 'besedka-gallery', 900, 900, true );
+		add_image_size( 'besedka-card', 600, 600, false );
+		add_image_size( 'besedka-thumb', 120, 120, false );
+		add_image_size( 'besedka-gallery', 900, 900, false );
 
 		// HTML5-разметка для стандартных узлов WordPress.
 		add_theme_support(

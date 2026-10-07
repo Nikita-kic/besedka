@@ -201,6 +201,13 @@ echo "== Загружаем товары категории «Спиртовые
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-yeast.php --allow-root
 
+echo "== Пересоздаём миниатюры без обрезки (один раз) =="
+
+if [[ -z "$(wp option get besedka_thumbs_v2 --allow-root 2>/dev/null || true)" ]]; then
+  wp media regenerate --yes --allow-root
+  wp option update besedka_thumbs_v2 1 --allow-root
+fi
+
 echo "== Подключаем фото к товарам =="
 
 # slug (файл в img/categories/<slug>.png) -> название созданного товара

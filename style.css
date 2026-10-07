@@ -856,7 +856,7 @@ body.no-scroll {
 .product-card__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.4s ease;
 }
 
@@ -1118,7 +1118,7 @@ body.no-scroll {
 .modal__main-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .modal__arrow {
@@ -1172,7 +1172,7 @@ body.no-scroll {
 .modal__thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .modal__thumb.is-active {

@@ -409,6 +409,9 @@ if ( ! function_exists( 'besedka_render_filters_panel' ) ) {
 				</button>
 
 				<form class="filters__form" method="get" action="<?php echo esc_url( $action_url ); ?>" data-filters-form>
+					<?php if ( ! empty( $_GET['search'] ) ) : ?>
+						<input type="hidden" name="search" value="<?php echo esc_attr( sanitize_text_field( wp_unslash( $_GET['search'] ) ) ); ?>">
+					<?php endif; ?>
 
 					<div class="filters__group">
 						<label class="filters__label" for="filter-category"><?php esc_html_e( 'Категория товара', 'besedka' ); ?></label>
@@ -573,6 +576,11 @@ if ( ! function_exists( 'besedka_get_filtered_products' ) ) {
 			$args['category'] = array( sanitize_title( wp_unslash( $_GET['category'] ) ) );
 		}
 
+		if ( ! empty( $_GET['search'] ) ) {
+			$found           = besedka_search_product_ids( sanitize_text_field( wp_unslash( $_GET['search'] ) ), 200 );
+			$args['include'] = $found ? $found : array( 0 );
+		}
+
 		if ( ! empty( $_GET['price_min'] ) || ! empty( $_GET['price_max'] ) ) {
 			$min = ! empty( $_GET['price_min'] ) ? floatval( $_GET['price_min'] ) : 0;
 			$max = ! empty( $_GET['price_max'] ) ? floatval( $_GET['price_max'] ) : 999999;
@@ -594,6 +602,81 @@ if ( ! function_exists( 'besedka_get_filtered_products' ) ) {
 
 		return (object) array( 'products' => array(), 'total' => 0 );
 	}
+}
+
+/* ==========================================================================
+   6.1 ПОИСК ТОВАРОВ (ПО НАЗВАНИЮ И БРЕНДУ)
+   ========================================================================== */
+
+/**
+ * ID опубликованных товаров, у которых название или бренд содержат все слова запроса.
+ * Регистр, «е/ё» и пробелы внутри слов не учитываются («highspirits» найдёт «High Spirits»).
+ *
+ * @param string $term  Поисковый запрос.
+ * @param int    $limit Максимум результатов.
+ * @return int[]
+ */
+if ( ! function_exists( 'besedka_search_product_ids' ) ) {
+	function besedka_search_product_ids( $term, $limit = 50 ) {
+		global $wpdb;
+
+		$tokens = preg_split( '/\s+/u', trim( $term ), -1, PREG_SPLIT_NO_EMPTY );
+		if ( empty( $tokens ) ) {
+			return array();
+		}
+
+		$where  = '';
+		$params = array();
+		foreach ( array_slice( $tokens, 0, 6 ) as $token ) {
+			$where   .= " AND REPLACE(CONCAT(p.post_title, ' ', COALESCE(b.meta_value, '')), ' ', '') LIKE %s";
+			$params[] = '%' . $wpdb->esc_like( $token ) . '%';
+		}
+		$params[] = absint( $limit );
+
+		$sql = "SELECT p.ID FROM {$wpdb->posts} p
+			LEFT JOIN {$wpdb->postmeta} b ON b.post_id = p.ID AND b.meta_key = '_besedka_brand'
+			WHERE p.post_type = 'product' AND p.post_status = 'publish'{$where}
+			ORDER BY p.post_title ASC LIMIT %d";
+
+		return array_map( 'intval', $wpdb->get_col( $wpdb->prepare( $sql, $params ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	}
+}
+
+/**
+ * AJAX: подсказки поиска в шапке.
+ */
+if ( ! function_exists( 'besedka_ajax_search' ) ) {
+	function besedka_ajax_search() {
+		$term = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
+		$ids  = mb_strlen( $term ) >= 2 ? besedka_search_product_ids( $term, 50 ) : array();
+		$more = max( 0, count( $ids ) - 6 );
+
+		ob_start();
+		if ( empty( $ids ) ) {
+			echo '<p class="header-search__empty">' . esc_html__( 'Ничего не найдено', 'besedka' ) . '</p>';
+		} else {
+			foreach ( array_slice( $ids, 0, 6 ) as $pid ) {
+				$product = wc_get_product( $pid );
+				if ( ! $product ) {
+					continue;
+				}
+				$img = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
+				?>
+				<a class="header-search__item" href="<?php echo esc_url( get_permalink( $pid ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $pid ); ?>">
+					<img class="header-search__thumb" src="<?php echo esc_url( $img ); ?>" alt="">
+					<span class="header-search__name"><?php echo esc_html( $product->get_name() ); ?></span>
+					<span class="header-search__price"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
+				</a>
+				<?php
+			}
+			if ( $more > 0 ) {
+				echo '<a class="header-search__all" href="' . esc_url( add_query_arg( 'search', rawurlencode( $term ), home_url( '/' ) ) ) . '">' . esc_html( sprintf( __( 'Показать все результаты (%d)', 'besedka' ), count( $ids ) ) ) . '</a>';
+			}
+		}
+		wp_send_json_success( array( 'html' => ob_get_clean() ) );
+	}
+	add_action( 'wp_ajax_besedka_search', 'besedka_ajax_search' );
+	add_action( 'wp_ajax_nopriv_besedka_search', 'besedka_ajax_search' );
 }
 
 /* ==========================================================================

@@ -35,6 +35,7 @@ foreach ( $products as $item ) {
 	}
 	$id = $product->save();
 
+	update_post_meta( $id, '_besedka_brand', $item['brand'] );
 	update_post_meta( $id, '_besedka_composition', $item['composition'] );
 	update_post_meta( $id, '_besedka_usage', $item['usage'] );
 	update_post_meta( $id, '_besedka_ferment', $item['ferment'] );

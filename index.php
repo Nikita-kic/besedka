@@ -30,7 +30,15 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 
 		<!-- Сетка товаров -->
 		<div class="products__header">
-			<h1 class="products__title"><?php esc_html_e( 'Каталог товаров', 'besedka' ); ?></h1>
+			<h1 class="products__title">
+				<?php
+				if ( ! empty( $_GET['search'] ) ) {
+					echo esc_html( sprintf( __( 'Результаты поиска: «%s»', 'besedka' ), sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) );
+				} else {
+					esc_html_e( 'Каталог товаров', 'besedka' );
+				}
+				?>
+			</h1>
 			<span class="products__count"><?php echo esc_html( sprintf( _n( '%d товар', '%d товаров', $total_found, 'besedka' ), $total_found ) ); ?></span>
 		</div>
 
@@ -40,7 +48,7 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 					<?php besedka_render_product_card( $product ); ?>
 				<?php endforeach; ?>
 			<?php else : ?>
-				<p class="products__empty"><?php esc_html_e( 'По заданным фильтрам товары не найдены. Попробуйте изменить параметры поиска.', 'besedka' ); ?></p>
+				<p class="products__empty"><?php esc_html_e( 'Товары не найдены. Попробуйте изменить запрос или параметры фильтров.', 'besedka' ); ?></p>
 			<?php endif; ?>
 		</div>
 

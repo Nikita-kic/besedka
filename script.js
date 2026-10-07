@@ -31,6 +31,7 @@
 		initCartActions();
 		initCustomOrderForm();
 		initCityModal();
+		initSearch();
 	} );
 
 	/* ==========================================================================
@@ -645,5 +646,73 @@
 				}
 			} );
 		}
+	}
+
+	/* ==========================================================================
+	   13. ПОИСК В ШАПКЕ (ПОДСКАЗКИ ПО НАЗВАНИЮ И БРЕНДУ)
+	   ========================================================================== */
+	function initSearch() {
+		var form = qs( '[data-search]' );
+		if ( ! form ) {
+			return;
+		}
+		var input = qs( '[data-search-input]', form );
+		var results = qs( '[data-search-results]', form );
+		var timer = null;
+		var requestId = 0;
+
+		function hide() {
+			results.hidden = true;
+		}
+
+		function run() {
+			var term = input.value.trim();
+			if ( term.length < 2 ) {
+				hide();
+				return;
+			}
+			var current = ++requestId;
+			fetch( cfg.ajaxUrl + '?action=besedka_search&q=' + encodeURIComponent( term ), { credentials: 'same-origin' } )
+				.then( function ( response ) {
+					return response.json();
+				} )
+				.then( function ( json ) {
+					if ( current !== requestId || ! json.success ) {
+						return;
+					}
+					results.innerHTML = json.data.html;
+					results.hidden = false;
+				} )
+				.catch( function () {} );
+		}
+
+		input.addEventListener( 'input', function () {
+			clearTimeout( timer );
+			timer = setTimeout( run, 250 );
+		} );
+
+		input.addEventListener( 'focus', function () {
+			if ( results.innerHTML && input.value.trim().length >= 2 ) {
+				results.hidden = false;
+			}
+		} );
+
+		results.addEventListener( 'click', function ( event ) {
+			if ( event.target.closest( '[data-quickview-trigger]' ) ) {
+				hide();
+			}
+		} );
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( ! form.contains( event.target ) ) {
+				hide();
+			}
+		} );
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key ) {
+				hide();
+			}
+		} );
 	}
 })();

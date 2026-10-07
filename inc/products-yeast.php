@@ -14,6 +14,7 @@ return array(
 	array(
 		'slug'        => 'hs-100-sotka',
 		'name'        => 'Турбо-дрожжи High Spirits 100 SOTKA',
+		'brand'       => 'HighSpirits',
 		'price'       => 700,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-100-sotka.png',
@@ -36,6 +37,7 @@ return array(
 	array(
 		'slug'        => 'hs-200-2x-sotka',
 		'name'        => 'Турбо-дрожжи High Spirits 200 2x SOTKA',
+		'brand'       => 'HighSpirits',
 		'price'       => 1100,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-200-2x-sotka.png',
@@ -58,6 +60,7 @@ return array(
 	array(
 		'slug'        => 'hs-24-extreme',
 		'name'        => 'Турбо-дрожжи High Spirits 24 Extreme',
+		'brand'       => 'HighSpirits',
 		'price'       => 180,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-24-extreme.png',
@@ -80,6 +83,7 @@ return array(
 	array(
 		'slug'        => 'hs-48-classic',
 		'name'        => 'Турбо-дрожжи High Spirits 48 Classic',
+		'brand'       => 'HighSpirits',
 		'price'       => 450,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-48-classic.png',
@@ -102,6 +106,7 @@ return array(
 	array(
 		'slug'        => 'hs-f-fruit',
 		'name'        => 'Турбо-дрожжи High Spirits F Fruit',
+		'brand'       => 'HighSpirits',
 		'price'       => 280,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-f-fruit.png',
@@ -122,6 +127,7 @@ return array(
 	array(
 		'slug'        => 'hs-h3-universal',
 		'name'        => 'Турбо-дрожжи High Spirits H3 Universal',
+		'brand'       => 'HighSpirits',
 		'price'       => 300,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-h3-universal.png',
@@ -144,6 +150,7 @@ return array(
 	array(
 		'slug'        => 'hs-w-whiskey',
 		'name'        => 'Турбо-дрожжи High Spirits W Whiskey',
+		'brand'       => 'HighSpirits',
 		'price'       => 330,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-w-whiskey.png',
@@ -165,6 +172,7 @@ return array(
 	array(
 		'slug'        => 'hs-msk-exclusive',
 		'name'        => 'Турбо-дрожжи High Spirits Мск Exclusive',
+		'brand'       => 'HighSpirits',
 		'price'       => 350,
 		'category'    => 'drozhzhi',
 		'image'       => 'hs-msk-exclusive.png',
@@ -187,6 +195,7 @@ return array(
 	array(
 		'slug'        => 'legkie-zernovye',
 		'name'        => 'Дрожжи спиртовые Лёгкие Зерновые',
+		'brand'       => 'Лёгкие',
 		'price'       => 90,
 		'category'    => 'drozhzhi',
 		'image'       => 'legkie-zernovye.png',
@@ -200,6 +209,7 @@ return array(
 	array(
 		'slug'        => 'legkie-saharnye',
 		'name'        => 'Дрожжи спиртовые Лёгкие Сахарные',
+		'brand'       => 'Лёгкие',
 		'price'       => 90,
 		'category'    => 'drozhzhi',
 		'image'       => 'legkie-saharnye.png',
@@ -213,6 +223,7 @@ return array(
 	array(
 		'slug'        => 'legkie-universalnye',
 		'name'        => 'Дрожжи спиртовые Лёгкие Универсальные',
+		'brand'       => 'Лёгкие',
 		'price'       => 90,
 		'category'    => 'drozhzhi',
 		'image'       => 'legkie-universalnye.png',
@@ -226,6 +237,7 @@ return array(
 	array(
 		'slug'        => 'legkie-fruktovye',
 		'name'        => 'Дрожжи спиртовые Лёгкие Фруктовые',
+		'brand'       => 'Лёгкие',
 		'price'       => 90,
 		'category'    => 'drozhzhi',
 		'image'       => 'legkie-fruktovye.png',
@@ -239,6 +251,7 @@ return array(
 	array(
 		'slug'        => 'bragoff-24-quick',
 		'name'        => 'Турбо-дрожжи BRAGOFF 24 Quick',
+		'brand'       => 'BRAGOFF',
 		'price'       => 220,
 		'category'    => 'drozhzhi',
 		'image'       => 'bragoff-24-quick.png',
@@ -261,6 +274,7 @@ return array(
 	array(
 		'slug'        => 'bragoff-48-universal',
 		'name'        => 'Турбо-дрожжи BRAGOFF 48 Universal',
+		'brand'       => 'BRAGOFF',
 		'price'       => 250,
 		'category'    => 'drozhzhi',
 		'image'       => 'bragoff-48-universal.png',
@@ -283,6 +297,7 @@ return array(
 	array(
 		'slug'        => 'bragoff-72-gold',
 		'name'        => 'Турбо-дрожжи BRAGOFF 72 Gold Standart',
+		'brand'       => 'BRAGOFF',
 		'price'       => 320,
 		'category'    => 'drozhzhi',
 		'image'       => 'bragoff-72-gold.png',
@@ -305,6 +320,7 @@ return array(
 	array(
 		'slug'        => 'bragoff-moskva-original',
 		'name'        => 'Турбо-дрожжи BRAGOFF Москва Original',
+		'brand'       => 'BRAGOFF',
 		'price'       => 420,
 		'category'    => 'drozhzhi',
 		'image'       => 'bragoff-moskva-original.png',

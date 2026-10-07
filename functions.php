@@ -601,6 +601,98 @@ if ( ! function_exists( 'besedka_get_filtered_products' ) ) {
    ========================================================================== */
 
 /**
+ * Блоки описания товара: описание, способ применения, состав, таблица брожения.
+ * Каждый блок выводится только если для него есть данные.
+ *
+ * @param int    $id          ID товара.
+ * @param string $description Описание.
+ * @param string $composition Состав.
+ * @param string $size        Фасовка.
+ */
+if ( ! function_exists( 'besedka_render_product_sections' ) ) {
+	function besedka_render_product_sections( $id, $description, $composition, $size ) {
+		$usage   = get_post_meta( $id, '_besedka_usage', true );
+		$ferment = get_post_meta( $id, '_besedka_ferment', true );
+		$usage   = is_array( $usage ) ? $usage : array();
+		$ferment = is_array( $ferment ) ? $ferment : array();
+		?>
+		<div class="product-info">
+
+			<?php if ( $description ) : ?>
+				<section class="product-info__block">
+					<h3 class="product-info__title"><?php esc_html_e( 'Описание:', 'besedka' ); ?></h3>
+					<div class="product-info__text"><?php echo wp_kses_post( wpautop( $description ) ); ?></div>
+				</section>
+			<?php endif; ?>
+
+			<?php if ( $usage ) : ?>
+				<section class="product-info__block">
+					<h3 class="product-info__title"><?php esc_html_e( 'Способ применения:', 'besedka' ); ?></h3>
+					<?php
+					$in_list = false;
+					foreach ( $usage as $item ) {
+						$type = isset( $item[0] ) ? $item[0] : 'text';
+						$text = isset( $item[1] ) ? $item[1] : '';
+						if ( 'step' === $type && ! $in_list ) {
+							echo '<ul class="product-info__list">';
+							$in_list = true;
+						} elseif ( 'step' !== $type && $in_list ) {
+							echo '</ul>';
+							$in_list = false;
+						}
+						if ( 'step' === $type ) {
+							echo '<li class="product-info__item">' . esc_html( $text ) . '</li>';
+						} elseif ( 'note' === $type ) {
+							echo '<p class="product-info__note">' . esc_html( $text ) . '</p>';
+						} else {
+							echo '<p class="product-info__text">' . esc_html( $text ) . '</p>';
+						}
+					}
+					if ( $in_list ) {
+						echo '</ul>';
+					}
+					?>
+				</section>
+			<?php endif; ?>
+
+			<?php if ( $composition || $size ) : ?>
+				<section class="product-info__block">
+					<h3 class="product-info__title"><?php esc_html_e( 'Состав:', 'besedka' ); ?></h3>
+					<?php if ( $composition ) : ?>
+						<p class="product-info__text"><?php echo esc_html( $composition ); ?></p>
+					<?php endif; ?>
+					<?php if ( $size ) : ?>
+						<p class="product-info__text"><?php esc_html_e( 'Фасовка:', 'besedka' ); ?> <?php echo esc_html( $size ); ?></p>
+					<?php endif; ?>
+				</section>
+			<?php endif; ?>
+
+			<?php if ( $ferment ) : ?>
+				<section class="product-info__block">
+					<h3 class="product-info__title"><?php esc_html_e( 'Таблица брожения', 'besedka' ); ?></h3>
+					<div class="product-info__table-wrap">
+						<table class="product-info__table">
+							<tbody>
+								<?php foreach ( $ferment as $row ) : ?>
+									<tr>
+										<th scope="row"><?php echo esc_html( $row[0] ); ?></th>
+										<?php foreach ( (array) $row[1] as $cell ) : ?>
+											<td><?php echo esc_html( $cell ); ?></td>
+										<?php endforeach; ?>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			<?php endif; ?>
+
+		</div>
+		<?php
+	}
+}
+
+/**
  * Выводит содержимое подробной карточки товара: галерея слева, информация
  * и покупка справа. Общий рендер для страницы товара (single-product.php)
  * и для модального/полноэкранного окна быстрого просмотра (script.js + AJAX).
@@ -628,7 +720,6 @@ if ( ! function_exists( 'besedka_render_product_details' ) ) {
 		$size         = get_post_meta( $id, '_besedka_size', true );
 		$width        = get_post_meta( $id, '_besedka_width', true );
 		$height       = get_post_meta( $id, '_besedka_height', true );
-		$care         = get_post_meta( $id, '_besedka_care', true );
 
 		// Галерея: главное изображение + миниатюры товара.
 		$image_ids = array_filter( array_merge( array( $product->get_image_id() ), $product->get_gallery_image_ids() ) );
@@ -737,24 +828,9 @@ if ( ! function_exists( 'besedka_render_product_details' ) ) {
 				<p class="modal__delivery-cost" data-delivery-cost><?php esc_html_e( 'Стоимость доставки рассчитывается по адресу: от 300 ₽', 'besedka' ); ?></p>
 			</div>
 
-			<div class="modal__tabs" role="tablist">
-				<button type="button" class="modal__tab is-active" data-tab="description" role="tab"><?php esc_html_e( 'Описание', 'besedka' ); ?></button>
-				<button type="button" class="modal__tab" data-tab="composition" role="tab"><?php esc_html_e( 'Состав', 'besedka' ); ?></button>
-				<button type="button" class="modal__tab" data-tab="care" role="tab"><?php esc_html_e( 'Уход', 'besedka' ); ?></button>
-			</div>
+			<?php besedka_render_product_sections( $id, $description, $composition, $size ); ?>
 
-			<div class="modal__tab-panel is-active" data-tab-panel="description">
-				<?php echo wp_kses_post( wpautop( $description ) ); ?>
-			</div>
-			<div class="modal__tab-panel" data-tab-panel="composition">
-				<p><?php echo esc_html( $composition ? $composition : __( 'Информация о составе уточняется у флориста.', 'besedka' ) ); ?></p>
-				<?php if ( $size ) : ?><p><?php esc_html_e( 'Размер:', 'besedka' ); ?> <?php echo esc_html( $size ); ?></p><?php endif; ?>
-			</div>
-			<div class="modal__tab-panel" data-tab-panel="care">
-				<p><?php echo esc_html( $care ? $care : __( 'Обрежьте стебли под углом, меняйте воду каждые два дня, избегайте прямых солнечных лучей.', 'besedka' ) ); ?></p>
-			</div>
-
-			<p class="modal__disclaimer"><?php esc_html_e( 'Внешний вид букета может немного отличаться от изображения в зависимости от наличия цветов у флориста.', 'besedka' ); ?></p>
+			<p class="modal__disclaimer"><?php esc_html_e( 'Внешний вид упаковки может немного отличаться от изображения.', 'besedka' ); ?></p>
 
 			<div class="modal__socials">
 				<span class="modal__socials-label"><?php esc_html_e( 'Поделиться:', 'besedka' ); ?></span>

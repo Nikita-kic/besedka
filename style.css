@@ -1368,34 +1368,102 @@ body.no-scroll {
   color: var(--color-text-muted);
 }
 
-.modal__tabs {
+.product-info {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--color-border);
+  flex-direction: column;
+  gap: 12px;
 }
 
-.modal__tab {
-  padding: 10px 14px;
+.product-info__block {
+  padding: 20px 22px;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-md);
+}
+
+.product-info__title {
+  margin-bottom: 12px;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.product-info__text,
+.product-info__item {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.product-info__text p + p {
+  margin-top: 8px;
+}
+
+.product-info__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product-info__item {
+  position: relative;
+  padding-left: 22px;
+}
+
+.product-info__item::before {
+  content: "";
+  position: absolute;
+  top: 0.55em;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.product-info__note {
+  margin: 12px 0;
+  padding: 12px 18px;
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--color-text-muted);
-  border-bottom: 2px solid transparent;
+  line-height: 1.4;
+  color: var(--color-accent-dark);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
 }
 
-.modal__tab.is-active {
-  color: var(--color-text);
-  border-color: var(--color-accent);
+.product-info__table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
 }
 
-.modal__tab-panel {
-  display: none;
+.product-info__table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: var(--fs-sm);
-  color: var(--color-text);
-  line-height: 1.6;
+  white-space: nowrap;
 }
 
-.modal__tab-panel.is-active {
-  display: block;
+.product-info__table tr:nth-child(odd) {
+  background: var(--color-bg);
+}
+
+.product-info__table th,
+.product-info__table td {
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.product-info__table th {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.product-info__table td {
+  color: var(--color-text-muted);
 }
 
 .modal__disclaimer {

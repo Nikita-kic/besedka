@@ -704,6 +704,12 @@ body.no-scroll {
   transition: transform 0.4s ease;
 }
 
+/* Высоту ряда задаёт светлый баннер; баннер с кубиками заполняет её, подрезая картинку. */
+.banner--cubes .banner__link {
+  position: absolute;
+  inset: 0;
+}
+
 /* Светлый баннер ниже на 10%: 3:1 → 10:3, края картинки подрезаются сверху и снизу. */
 .banner--promo .banner__image {
   height: auto;
@@ -762,6 +768,14 @@ body.no-scroll {
 @media (max-width: 860px) {
   .banners__grid {
     grid-template-columns: 1fr;
+  }
+
+  .banner--cubes .banner__link {
+    position: static;
+  }
+
+  .banner--cubes .banner__image {
+    height: auto;
   }
 
   .banner__timer {

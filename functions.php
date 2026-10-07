@@ -60,8 +60,6 @@ if ( ! function_exists( 'besedka_setup' ) ) {
 		// Меню WordPress.
 		register_nav_menus(
 			array(
-				'top-links'  => __( 'Верхнее меню (О нас / Контакты)', 'besedka' ),
-				'categories' => __( 'Меню категорий каталога', 'besedka' ),
 				'footer-info'    => __( 'Футер: Информация', 'besedka' ),
 				'footer-catalog' => __( 'Футер: Каталог', 'besedka' ),
 			)
@@ -157,30 +155,6 @@ if ( ! function_exists( 'besedka_woocommerce_image_dimensions' ) ) {
 // Количество товаров в ряд для стандартных WooCommerce-хуков (используем свои шаблоны, но оставляем фильтр для совместимости).
 add_filter( 'loop_shop_columns', function () { return 4; } );
 add_filter( 'loop_shop_per_page', function () { return 12; }, 20 );
-
-/* ==========================================================================
-   5. WALKER ДЛЯ МЕНЮ КАТЕГОРИЙ (БЭМ-РАЗМЕТКА ПУНКТОВ)
-   ========================================================================== */
-if ( ! class_exists( 'Besedka_Categories_Walker' ) ) {
-	class Besedka_Categories_Walker extends Walker_Nav_Menu {
-		public function start_lvl( &$output, $depth = 0, $args = null ) {}
-		public function end_lvl( &$output, $depth = 0, $args = null ) {}
-
-		public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ) {
-			$classes = 'nav-categories__item';
-			if ( in_array( 'current-menu-item', $item->classes, true ) ) {
-				$classes .= ' is-active';
-			}
-			$link_classes = 'nav-categories__link' . ( in_array( 'current-menu-item', $item->classes, true ) ? ' is-active' : '' );
-
-			$output .= '<li class="' . esc_attr( $classes ) . '">';
-			$output .= '<a class="' . esc_attr( $link_classes ) . '" href="' . esc_url( $item->url ) . '">' . esc_html( $item->title ) . '</a>';
-			$output .= '</li>';
-		}
-
-		public function end_el( &$output, $item, $depth = 0, $args = null ) {}
-	}
-}
 
 /* ==========================================================================
    6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ШАБЛОНА

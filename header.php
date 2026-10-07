@@ -1,7 +1,6 @@
 <?php
 /**
  * Шапка сайта: верхний уровень (логотип, поиск, избранное, телефон)
- * и нижний уровень (меню категорий каталога).
  *
  * @package Besedka
  */
@@ -31,9 +30,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="site-header__top">
 		<div class="container">
 			<div class="header-top">
-
-				<!-- Кнопка мобильного меню -->
-				<button type="button" class="header-top__burger" data-menu-toggle aria-label="<?php esc_attr_e( 'Открыть меню', 'besedka' ); ?>" aria-expanded="false"></button>
 
 				<!-- Логотип -->
 				<div class="header-top__logo">
@@ -76,44 +72,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 
 			</div>
-		</div>
-	</div>
-
-	<!-- ===== Нижний уровень хедера: категории каталога ===== -->
-	<div class="site-header__bottom" data-mobile-menu>
-		<div class="container">
-			<nav class="nav-categories" aria-label="<?php esc_attr_e( 'Категории каталога', 'besedka' ); ?>">
-				<ul class="nav-categories__list">
-					<?php
-					if ( has_nav_menu( 'categories' ) ) {
-						wp_nav_menu(
-							array(
-								'theme_location' => 'categories',
-								'container'      => false,
-								'items_wrap'     => '%3$s',
-								'walker'         => new Besedka_Categories_Walker(),
-							)
-						);
-					} else {
-						$fallback_items = array(
-							'ugol'        => __( 'Уголь', 'besedka' ),
-							'kubiki'      => __( 'Дубовые кубики', 'besedka' ),
-							'essencii'    => __( 'Эссенции', 'besedka' ),
-							'drozhzhi'    => __( 'Спиртовые дрожжи', 'besedka' ),
-							'komplekt'    => __( 'Комплектующие', 'besedka' ),
-							'bonifikator' => __( 'Бонификаторы', 'besedka' ),
-						);
-						foreach ( $fallback_items as $slug => $label ) :
-							?>
-							<li class="nav-categories__item nav-categories__item--<?php echo esc_attr( $slug ); ?>">
-								<a class="nav-categories__link" href="<?php echo esc_url( home_url( '/product-category/' . $slug . '/' ) ); ?>"><?php echo esc_html( $label ); ?></a>
-							</li>
-							<?php
-						endforeach;
-					}
-					?>
-				</ul>
-			</nav>
 		</div>
 	</div>
 

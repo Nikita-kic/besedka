@@ -21,7 +21,6 @@
 	var CITY_KEY = 'besedka_city';
 
 	document.addEventListener( 'DOMContentLoaded', function () {
-		initMobileMenu();
 		initStickyFilters();
 		initFiltersDrawer();
 		initFiltersReset();
@@ -47,22 +46,6 @@
 
 	function lockScroll( locked ) {
 		document.body.classList.toggle( 'no-scroll', locked );
-	}
-
-	/* ==========================================================================
-	   1. МОБИЛЬНОЕ МЕНЮ (БУРГЕР В ХЕДЕРЕ)
-	   ========================================================================== */
-	function initMobileMenu() {
-		var burger = qs( '[data-menu-toggle]' );
-		var menu = qs( '[data-mobile-menu]' );
-		if ( ! burger || ! menu ) {
-			return;
-		}
-
-		burger.addEventListener( 'click', function () {
-			var isOpen = menu.classList.toggle( 'is-open' );
-			burger.setAttribute( 'aria-expanded', isOpen ? 'true' : 'false' );
-		} );
 	}
 
 	/* ==========================================================================

@@ -62,7 +62,6 @@ Tags: e-commerce, custom-menu, featured-images, responsive-layout, translation-r
   --gap: 24px;
   --transition: 0.25s ease;
   --header-top-h: 88px;
-  --header-bottom-h: 56px;
 }
 
 /* ==========================================================================
@@ -670,59 +669,6 @@ body.no-scroll {
 
 .header-top__call-btn {
   padding: 12px 22px;
-}
-
-.header-top__burger {
-  display: none;
-}
-
-/* --- Нижний уровень: категории --- */
-.site-header__bottom {
-  display: flex;
-  align-items: center;
-  min-height: var(--header-bottom-h);
-}
-
-.nav-categories {
-  display: flex;
-}
-
-.nav-categories__list {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 6px 0;
-}
-
-.nav-categories__item {
-  position: relative;
-}
-
-.nav-categories__link {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: var(--radius-round);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  transition: background var(--transition), color var(--transition);
-}
-
-.nav-categories__link:hover,
-.nav-categories__link.is-active {
-  background: var(--color-accent-soft);
-  color: var(--color-accent-dark);
-}
-
-.nav-categories__item--sale .nav-categories__link,
-.nav-categories__item--discount .nav-categories__link {
-  color: var(--color-sale);
-}
-
-.nav-categories__item--sale .nav-categories__link:hover,
-.nav-categories__item--discount .nav-categories__link:hover {
-  background: var(--color-sale-soft);
 }
 
 /* ==========================================================================
@@ -2165,49 +2111,6 @@ body.no-scroll {
 
   .header-top__actions {
     margin-left: auto;
-  }
-
-  .header-top__burger {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    order: -1;
-  }
-
-  .header-top__burger span,
-  .header-top__burger::before,
-  .header-top__burger::after {
-    content: "";
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--color-text);
-    position: relative;
-  }
-
-  .header-top__burger::before {
-    position: absolute;
-    transform: translateY(-7px);
-  }
-
-  .header-top__burger::after {
-    position: absolute;
-    transform: translateY(7px);
-  }
-
-  .site-header__bottom {
-    display: none;
-  }
-
-  .site-header__bottom.is-open {
-    display: block;
-  }
-
-  .nav-categories__list {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .filters__toggle {

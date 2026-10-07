@@ -340,6 +340,7 @@ if ( ! function_exists( 'besedka_render_category_selector' ) ) {
 		$selected_slug     = ( $current_category instanceof WP_Term ) ? $current_category->slug : '';
 		?>
 		<div class="type-selector">
+			<h2 class="type-selector__title"><?php esc_html_e( 'Популярные категории', 'besedka' ); ?></h2>
 			<div class="type-selector__list">
 				<?php foreach ( $categories as $slug => $category ) :
 					$is_active = ( $selected_slug === $slug );

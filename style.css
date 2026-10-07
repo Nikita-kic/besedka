@@ -730,6 +730,13 @@ body.no-scroll {
   color: var(--color-text);
 }
 
+.countdown__title {
+  margin-bottom: 1cqw;
+  font-size: max(12px, 1.7cqw);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .countdown__row {
   display: flex;
   gap: 1.2cqw;
@@ -782,6 +789,12 @@ body.no-scroll {
     position: static;
     padding: 14px 0;
     background: var(--color-bg-soft);
+  }
+
+  .countdown__title {
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 14px;
   }
 
   .countdown__row {

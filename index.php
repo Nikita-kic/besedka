@@ -29,6 +29,7 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/opening.jpg' ); ?>" alt="<?php esc_attr_e( 'Мы открылись — дарим скидку 10% на все спиртовые дрожжи в интернет-магазине', 'besedka' ); ?>" width="2000" height="667">
 				</a>
 				<div class="banner__timer countdown" data-countdown="<?php echo esc_attr( besedka_get_promo_end() ); ?>">
+					<p class="countdown__title"><?php esc_html_e( 'Успейте воспользоваться скидкой:', 'besedka' ); ?></p>
 					<div class="countdown__row">
 						<div class="countdown__cell"><span class="countdown__value" data-countdown-days>00</span><span class="countdown__label"><?php esc_html_e( 'дней', 'besedka' ); ?></span></div>
 						<div class="countdown__cell"><span class="countdown__value" data-countdown-hours>00</span><span class="countdown__label"><?php esc_html_e( 'часов', 'besedka' ); ?></span></div>

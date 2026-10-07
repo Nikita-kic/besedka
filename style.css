@@ -790,8 +790,8 @@ body.no-scroll {
 }
 
 .type-selector__icon {
-  width: 66px;
-  height: 66px;
+  width: 73px;
+  height: 73px;
   object-fit: contain;
   transition: transform var(--transition), box-shadow var(--transition);
 }

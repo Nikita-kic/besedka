@@ -710,63 +710,43 @@ body.no-scroll {
 
 .banner__timer {
   position: absolute;
-  right: 4cqw;
-  bottom: 5cqw;
+  left: 3.3cqw;
+  bottom: 1.8cqw;
 }
 
 .countdown {
-  padding: 1.6cqw 2.2cqw 1.4cqw;
-  color: #fff;
-  text-align: center;
-  background: var(--color-text);
-  border-radius: 2cqw;
-  box-shadow: var(--shadow-md);
-}
-
-.countdown__title {
-  margin-bottom: 0.8cqw;
-  font-size: max(10px, 1.3cqw);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-text);
 }
 
 .countdown__row {
   display: flex;
-  align-items: flex-start;
-  gap: 1.6cqw;
+  gap: 1.2cqw;
 }
 
 .countdown__cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 5.6cqw;
+  justify-content: center;
+  width: 6.5cqw;
+  height: 6cqw;
+  border: max(2px, 0.35cqw) solid var(--color-text);
+  border-radius: 1.2cqw;
 }
 
 .countdown__value {
-  font-size: max(20px, 4cqw);
+  font-size: max(16px, 3cqw);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
 .countdown__label {
   margin-top: 0.4cqw;
-  font-size: max(10px, 1.5cqw);
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.countdown__sep {
-  align-self: flex-start;
-  width: 0.5cqw;
-  min-width: 3px;
-  height: 2.4cqw;
-  margin-top: 0.9cqw;
-  background:
-    radial-gradient(circle, var(--color-accent) 50%, transparent 52%) top / 100% 50% no-repeat,
-    radial-gradient(circle, var(--color-accent) 50%, transparent 52%) bottom / 100% 50% no-repeat;
+  font-size: max(9px, 1.1cqw);
+  line-height: 1;
+  color: var(--color-text);
+  opacity: 0.7;
 }
 
 .countdown.is-finished {
@@ -776,6 +756,23 @@ body.no-scroll {
 @media (max-width: 860px) {
   .banners__grid {
     grid-template-columns: 1fr;
+  }
+
+  .banner__timer {
+    position: static;
+    padding: 14px 0;
+    background: var(--color-bg-soft);
+  }
+
+  .countdown__row {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .countdown__cell {
+    width: 64px;
+    height: 62px;
+    border-radius: 12px;
   }
 }
 

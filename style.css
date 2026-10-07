@@ -682,6 +682,8 @@ body.no-scroll {
   display: grid;
   grid-template-columns: 5fr 3fr;
   gap: 16px;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .banner {
@@ -756,6 +758,7 @@ body.no-scroll {
 @media (max-width: 860px) {
   .banners__grid {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .banner__timer {

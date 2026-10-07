@@ -731,7 +731,7 @@ body.no-scroll {
 }
 
 .countdown__title {
-  margin-bottom: 0.8cqw;
+  margin-top: 0.8cqw;
   font-size: max(11px, 1.4cqw);
   font-weight: 700;
   line-height: 1.2;
@@ -792,7 +792,7 @@ body.no-scroll {
   }
 
   .countdown__title {
-    margin-bottom: 10px;
+    margin-top: 10px;
     text-align: center;
     font-size: 13px;
   }

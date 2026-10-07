@@ -731,15 +731,15 @@ body.no-scroll {
 }
 
 .countdown__title {
-  margin-bottom: 1cqw;
-  font-size: max(12px, 1.7cqw);
+  margin-bottom: 0.8cqw;
+  font-size: max(11px, 1.4cqw);
   font-weight: 700;
   line-height: 1.2;
 }
 
 .countdown__row {
   display: flex;
-  gap: 1.2cqw;
+  gap: 1.08cqw;
 }
 
 .countdown__cell {
@@ -747,14 +747,14 @@ body.no-scroll {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 6.5cqw;
-  height: 6cqw;
-  border: max(2px, 0.35cqw) solid var(--color-text);
-  border-radius: 1.2cqw;
+  width: 5.85cqw;
+  height: 5.4cqw;
+  border: max(2px, 0.32cqw) solid var(--color-text);
+  border-radius: 1.08cqw;
 }
 
 .countdown__value {
-  font-size: max(16px, 3cqw);
+  font-size: max(15px, 2.7cqw);
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -762,7 +762,7 @@ body.no-scroll {
 
 .countdown__label {
   margin-top: 0.4cqw;
-  font-size: max(9px, 1.1cqw);
+  font-size: max(8px, 1cqw);
   line-height: 1;
   color: var(--color-text);
   opacity: 0.7;
@@ -794,18 +794,18 @@ body.no-scroll {
   .countdown__title {
     margin-bottom: 10px;
     text-align: center;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .countdown__row {
     justify-content: center;
-    gap: 10px;
+    gap: 9px;
   }
 
   .countdown__cell {
-    width: 64px;
-    height: 62px;
-    border-radius: 12px;
+    width: 58px;
+    height: 56px;
+    border-radius: 11px;
   }
 }
 

@@ -1260,10 +1260,10 @@ body.no-scroll {
 }
 
 .product-card__availability-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #8cf27c 0%, #45dd3c 50%, #1c8a2a 100%);
+  background: #45dd3c;
   box-shadow: 0 0 6px 2px rgba(69, 221, 60, 0.5);
 }
 

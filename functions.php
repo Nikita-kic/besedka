@@ -576,6 +576,32 @@ if ( ! function_exists( 'besedka_get_filtered_products' ) ) {
 	}
 }
 
+/**
+ * Товары блока «Популярные товары» на главной: помечены метой _besedka_popular_order
+ * (1, 2, 3 …), выводятся по возрастанию. Пустой массив — меты нет ни у одного товара.
+ *
+ * @return WC_Product[]
+ */
+if ( ! function_exists( 'besedka_get_popular_products' ) ) {
+	function besedka_get_popular_products() {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return array();
+		}
+		$ids = get_posts(
+			array(
+				'post_type'   => 'product',
+				'post_status' => 'publish',
+				'numberposts' => -1,
+				'meta_key'    => '_besedka_popular_order', // phpcs:ignore WordPress.DB.SlowDBQuery
+				'orderby'     => 'meta_value_num',
+				'order'       => 'ASC',
+				'fields'      => 'ids',
+			)
+		);
+		return array_values( array_filter( array_map( 'wc_get_product', $ids ) ) );
+	}
+}
+
 /* ==========================================================================
    6.1 ПОИСК ТОВАРОВ (ПО НАЗВАНИЮ И БРЕНДУ)
    ========================================================================== */

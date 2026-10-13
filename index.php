@@ -14,6 +14,13 @@ get_header();
 $product_list = besedka_get_filtered_products();
 $products     = ! empty( $product_list->products ) ? $product_list->products : array();
 $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( $products );
+
+// Без поиска блок показывает подборку «Популярные товары» (если она задана).
+$popular_fixed = empty( $_GET['search'] ) ? besedka_get_popular_products() : array();
+if ( ! empty( $popular_fixed ) ) {
+	$products    = $popular_fixed;
+	$total_found = count( $products );
+}
 ?>
 
 <?php if ( empty( $_GET['search'] ) ) : ?>

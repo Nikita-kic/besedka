@@ -11,6 +11,16 @@ require_once ABSPATH . 'wp-admin/includes/image.php';
 $theme_dir = get_theme_root() . '/besedka';
 $products  = include $theme_dir . '/inc/products-yeast.php';
 
+// Порядок в блоке «Популярные товары» на главной (slug из inc/products-yeast.php => позиция).
+$popular = array(
+	'bragoff-moskva-original' => 1,
+	'bragoff-48-universal'    => 2,
+	'hs-msk-exclusive'        => 3,
+	'hs-h3-universal'         => 4,
+	'legkie-saharnye'         => 5,
+	'hs-48-classic'           => 6,
+);
+
 foreach ( $products as $item ) {
 	global $wpdb;
 	$id = (int) $wpdb->get_var(
@@ -36,6 +46,11 @@ foreach ( $products as $item ) {
 	$id = $product->save();
 
 	update_post_meta( $id, '_besedka_brand', $item['brand'] );
+	if ( isset( $popular[ $item['slug'] ] ) ) {
+		update_post_meta( $id, '_besedka_popular_order', $popular[ $item['slug'] ] );
+	} else {
+		delete_post_meta( $id, '_besedka_popular_order' );
+	}
 	update_post_meta( $id, '_besedka_composition', $item['composition'] );
 	update_post_meta( $id, '_besedka_usage', $item['usage'] );
 	update_post_meta( $id, '_besedka_ferment', $item['ferment'] );

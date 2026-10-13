@@ -51,8 +51,7 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		<!-- Категории: отдельный блок с иконками над фильтрами -->
 		<?php besedka_render_category_selector(); ?>
 
-		<!-- Панель фильтров: закрепляется при скролле (см. script.js) -->
-		<?php besedka_render_filters_panel( '', $current_category ); ?>
+		<?php /* Панель фильтров скрыта (функция besedka_render_filters_panel() сохранена): besedka_render_filters_panel( '', $current_category ); */ ?>
 
 		<div class="products__header">
 			<h1 class="products__title"><?php echo esc_html( $archive_title ); ?></h1>

@@ -454,8 +454,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 		$is_on_sale  = $product->is_on_sale();
 		$regular     = $product->get_regular_price();
 		$sale        = $product->get_sale_price();
-		$composition = get_post_meta( $id, '_besedka_composition', true );
-		$size        = get_post_meta( $id, '_besedka_size', true );
+		$discount    = ( $is_on_sale && $regular > 0 && $sale ) ? round( ( ( $regular - $sale ) / $regular ) * 100 ) : 0;
 		$is_new      = get_post_meta( $id, '_besedka_is_new', true );
 		$is_hit      = get_post_meta( $id, '_besedka_is_hit', true );
 		$today       = get_post_meta( $id, '_besedka_delivery_today', true );
@@ -473,7 +472,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 						<span class="product-card__badge product-card__badge--new"><?php esc_html_e( 'Новинка', 'besedka' ); ?></span>
 					<?php endif; ?>
 					<?php if ( $is_on_sale ) : ?>
-						<span class="product-card__badge product-card__badge--sale"><?php esc_html_e( 'Скидка', 'besedka' ); ?></span>
+						<span class="product-card__badge product-card__badge--sale"><?php echo $discount ? esc_html( '-' . $discount . '%' ) : esc_html__( 'Скидка', 'besedka' ); ?></span>
 					<?php endif; ?>
 					<?php if ( $today ) : ?>
 						<span class="product-card__badge product-card__badge--today"><?php esc_html_e( 'Доставка сегодня', 'besedka' ); ?></span>
@@ -492,40 +491,30 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 			<div class="product-card__body">
 				<h3 class="product-card__title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a></h3>
 
-				<?php if ( $composition ) : ?>
-					<p class="product-card__composition"><?php echo esc_html( $composition ); ?></p>
-				<?php endif; ?>
+				<div class="product-card__meta">
+					<?php if ( $review_count > 0 ) : ?>
+						<span class="product-card__rating">
+							<svg class="product-card__rating-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+							<span class="product-card__rating-value"><?php echo esc_html( number_format_i18n( (float) $rating, 2 ) ); ?></span>
+							<span class="product-card__rating-count"><?php echo esc_html( $review_count ); ?></span>
+						</span>
+					<?php else : ?>
+						<span class="product-card__rating product-card__rating--empty"><?php esc_html_e( 'Нет отзывов', 'besedka' ); ?></span>
+					<?php endif; ?>
 
-				<?php if ( $size ) : ?>
-					<p class="product-card__size"><?php echo esc_html( $size ); ?></p>
-				<?php endif; ?>
-
-				<div class="product-card__rating">
-					<span class="product-card__rating-stars"><?php echo besedka_render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<span class="product-card__rating-count">(<?php echo esc_html( $review_count ); ?>)</span>
+					<div class="product-card__prices">
+						<?php if ( $is_on_sale && $sale ) : ?>
+							<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $sale ) ); ?></span>
+							<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
+						<?php else : ?>
+							<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
+						<?php endif; ?>
+					</div>
 				</div>
 
 				<p class="product-card__availability <?php echo $in_stock ? '' : 'product-card__availability--out'; ?>">
 					<?php echo $in_stock ? esc_html__( 'В наличии', 'besedka' ) : esc_html__( 'Нет в наличии', 'besedka' ); ?>
 				</p>
-
-				<div class="product-card__prices">
-					<?php if ( $is_on_sale && $sale ) : ?>
-						<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
-						<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $sale ) ); ?></span>
-					<?php else : ?>
-						<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
-					<?php endif; ?>
-				</div>
-			</div>
-
-			<div class="product-card__footer">
-				<button type="button" class="btn btn--primary product-card__btn-order" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>" <?php disabled( $in_stock, false ); ?>>
-					<?php esc_html_e( 'Заказать', 'besedka' ); ?>
-				</button>
-				<button type="button" class="btn btn--outline btn--icon product-card__btn-quickview-mobile" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>" aria-label="<?php esc_attr_e( 'Быстрый просмотр', 'besedka' ); ?>">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-				</button>
 			</div>
 		</article>
 		<?php

@@ -62,8 +62,9 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		<?php /* Панель фильтров скрыта (функция besedka_render_filters_panel() сохранена): besedka_render_filters_panel( home_url( '/' ) ); */ ?>
 
 		<!-- Сетка товаров -->
-		<div class="products__header">
-			<h1 class="products__title">
+		<div class="products__grid">
+			<div class="products__intro">
+				<h1 class="products__title">
 				<?php
 				if ( ! empty( $_GET['search'] ) ) {
 					echo esc_html( sprintf( __( 'Результаты поиска: «%s»', 'besedka' ), sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) );
@@ -72,10 +73,8 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 				}
 				?>
 			</h1>
-			<span class="products__count"><?php echo esc_html( sprintf( _n( '%d товар', '%d товаров', $total_found, 'besedka' ), $total_found ) ); ?></span>
-		</div>
-
-		<div class="products__grid">
+				<span class="products__count"><?php echo esc_html( sprintf( _n( '%d товар', '%d товаров', $total_found, 'besedka' ), $total_found ) ); ?></span>
+			</div>
 			<?php if ( ! empty( $products ) ) : ?>
 				<?php foreach ( $products as $product ) : ?>
 					<?php besedka_render_product_card( $product ); ?>
@@ -105,14 +104,12 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		?>
 		<section class="section">
 			<div class="container">
-				<div class="section__head">
-					<div>
-						<h2 class="section__title"><?php esc_html_e( 'Популярные товары', 'besedka' ); ?></h2>
-						<p class="section__subtitle"><?php esc_html_e( 'Товары, которые чаще всего заказывают наши клиенты', 'besedka' ); ?></p>
-					</div>
-					<a class="section__link-all" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
-				</div>
-				<div class="section__scroll">
+					<div class="section__scroll">
+						<div class="section__intro">
+							<h2 class="section__title"><?php esc_html_e( 'Популярные товары', 'besedka' ); ?></h2>
+							<p class="section__subtitle"><?php esc_html_e( 'Товары, которые чаще всего заказывают наши клиенты', 'besedka' ); ?></p>
+							<a class="section__link-all" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
+						</div>
 					<?php foreach ( $popular as $product ) : ?>
 						<?php besedka_render_product_card( $product ); ?>
 					<?php endforeach; ?>
@@ -137,14 +134,12 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		?>
 		<section class="section section--soft">
 			<div class="container">
-				<div class="section__head">
-					<div>
-						<h2 class="section__title"><?php esc_html_e( 'Товары со скидкой', 'besedka' ); ?></h2>
-						<p class="section__subtitle"><?php esc_html_e( 'Выгодные предложения ограниченное время', 'besedka' ); ?></p>
-					</div>
-					<a class="section__link-all" href="<?php echo esc_url( home_url( '/sale/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
-				</div>
-				<div class="section__scroll">
+					<div class="section__scroll">
+						<div class="section__intro">
+							<h2 class="section__title"><?php esc_html_e( 'Товары со скидкой', 'besedka' ); ?></h2>
+							<p class="section__subtitle"><?php esc_html_e( 'Выгодные предложения ограниченное время', 'besedka' ); ?></p>
+							<a class="section__link-all" href="<?php echo esc_url( home_url( '/sale/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
+						</div>
 					<?php foreach ( $sale_products as $product ) : ?>
 						<?php besedka_render_product_card( $product ); ?>
 					<?php endforeach; ?>
@@ -169,14 +164,12 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		?>
 		<section class="section">
 			<div class="container">
-				<div class="section__head">
-					<div>
-						<h2 class="section__title"><?php esc_html_e( 'Новинки', 'besedka' ); ?></h2>
-						<p class="section__subtitle"><?php esc_html_e( 'Свежие поступления в нашем каталоге', 'besedka' ); ?></p>
-					</div>
-					<a class="section__link-all" href="<?php echo esc_url( home_url( '/new/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
-				</div>
-				<div class="section__scroll">
+					<div class="section__scroll">
+						<div class="section__intro">
+							<h2 class="section__title"><?php esc_html_e( 'Новинки', 'besedka' ); ?></h2>
+							<p class="section__subtitle"><?php esc_html_e( 'Свежие поступления в нашем каталоге', 'besedka' ); ?></p>
+							<a class="section__link-all" href="<?php echo esc_url( home_url( '/new/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
+						</div>
 					<?php foreach ( $new_products as $product ) : ?>
 						<?php besedka_render_product_card( $product ); ?>
 					<?php endforeach; ?>
@@ -193,10 +186,10 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
      ========================================================================== -->
 <section class="section">
 	<div class="container">
-		<div class="section__head">
-			<h2 class="section__title"><?php esc_html_e( 'Почему выбирают нас', 'besedka' ); ?></h2>
-		</div>
-		<div class="advantages__grid">
+			<div class="advantages__grid">
+				<div class="section__intro">
+					<h2 class="section__title"><?php esc_html_e( 'Почему выбирают нас', 'besedka' ); ?></h2>
+				</div>
 			<div class="advantages__item">
 				<span class="advantages__icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"/></svg></span>
 				<h3 class="advantages__title"><?php esc_html_e( 'Собственное производство', 'besedka' ); ?></h3>
@@ -231,10 +224,10 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
      ========================================================================== -->
 <section class="section section--soft">
 	<div class="container">
-		<div class="section__head">
-			<h2 class="section__title"><?php esc_html_e( 'Как оформить заказ', 'besedka' ); ?></h2>
-		</div>
-		<div class="steps__list">
+			<div class="steps__list">
+				<div class="section__intro">
+					<h2 class="section__title"><?php esc_html_e( 'Как оформить заказ', 'besedka' ); ?></h2>
+				</div>
 			<div class="steps__item">
 				<span class="steps__number">1</span>
 				<h3 class="steps__title"><?php esc_html_e( 'Выберите товар', 'besedka' ); ?></h3>

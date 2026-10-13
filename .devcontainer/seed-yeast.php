@@ -55,9 +55,13 @@ foreach ( $products as $item ) {
 	update_post_meta( $id, '_besedka_usage', $item['usage'] );
 	update_post_meta( $id, '_besedka_ferment', $item['ferment'] );
 
-	if ( get_post_meta( $id, '_besedka_seed_image', true ) !== $item['image'] ) {
-		$tmp = wp_tempnam( $item['image'] );
-		copy( $theme_dir . '/img/products/' . $item['image'], $tmp );
+	$image_file = $theme_dir . '/img/products/' . $item['image'];
+	$image_sig  = $item['image'] . '|' . md5_file( $image_file );
+
+	if ( get_post_meta( $id, '_besedka_seed_image', true ) !== $image_sig ) {
+		$old_thumb = (int) get_post_thumbnail_id( $id );
+		$tmp       = wp_tempnam( $item['image'] );
+		copy( $image_file, $tmp );
 		$attachment_id = media_handle_sideload(
 			array(
 				'name'     => $item['image'],
@@ -70,7 +74,10 @@ foreach ( $products as $item ) {
 			WP_CLI::warning( 'Фото не загружено: ' . $item['name'] . ' — ' . $attachment_id->get_error_message() );
 		} else {
 			set_post_thumbnail( $id, $attachment_id );
-			update_post_meta( $id, '_besedka_seed_image', $item['image'] );
+			update_post_meta( $id, '_besedka_seed_image', $image_sig );
+			if ( $old_thumb && $old_thumb !== $attachment_id ) {
+				wp_delete_attachment( $old_thumb, true );
+			}
 		}
 	}
 

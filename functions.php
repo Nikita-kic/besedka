@@ -454,6 +454,8 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 		$is_on_sale  = $product->is_on_sale();
 		$regular     = $product->get_regular_price();
 		$sale        = $product->get_sale_price();
+		$composition = get_post_meta( $id, '_besedka_composition', true );
+		$size        = get_post_meta( $id, '_besedka_size', true );
 		$discount    = ( $is_on_sale && $regular > 0 && $sale ) ? round( ( ( $regular - $sale ) / $regular ) * 100 ) : 0;
 		$is_new      = get_post_meta( $id, '_besedka_is_new', true );
 		$is_hit      = get_post_meta( $id, '_besedka_is_hit', true );
@@ -490,6 +492,14 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 
 			<div class="product-card__body">
 				<h3 class="product-card__title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a></h3>
+
+				<?php if ( $composition ) : ?>
+					<p class="product-card__composition"><?php echo esc_html( $composition ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( $size ) : ?>
+					<p class="product-card__size"><?php echo esc_html( $size ); ?></p>
+				<?php endif; ?>
 
 				<div class="product-card__meta">
 					<?php if ( $review_count > 0 ) : ?>

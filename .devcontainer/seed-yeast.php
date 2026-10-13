@@ -13,12 +13,12 @@ $products  = include $theme_dir . '/inc/products-yeast.php';
 
 // Порядок в блоке «Популярные товары» на главной (slug из inc/products-yeast.php => позиция).
 $popular = array(
-	'bragoff-moskva-original' => 1,
-	'bragoff-48-universal'    => 2,
-	'hs-msk-exclusive'        => 3,
-	'hs-h3-universal'         => 4,
-	'legkie-saharnye'         => 5,
-	'hs-48-classic'           => 6,
+	'hs-48-classic'           => 1,
+	'bragoff-moskva-original' => 2,
+	'bragoff-48-universal'    => 3,
+	'hs-msk-exclusive'        => 4,
+	'hs-h3-universal'         => 5,
+	'legkie-saharnye'         => 6,
 );
 
 foreach ( $products as $item ) {

@@ -1194,7 +1194,6 @@ body.no-scroll {
 .product-card__rating {
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
   gap: 4px;
   font-size: var(--fs-sm);
   white-space: nowrap;
@@ -1256,19 +1255,26 @@ body.no-scroll {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  font-weight: 500;
-  color: var(--color-success);
+  font-weight: 600;
+  color: #6fdc1c;
+  text-shadow: 0 0 10px rgba(111, 220, 28, 0.55);
 }
 
 .product-card__availability-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: currentColor;
+  box-shadow: 0 0 6px 2px rgba(111, 220, 28, 0.55);
 }
 
 .product-card__availability--out {
   color: var(--color-sale);
+  text-shadow: none;
+}
+
+.product-card__availability--out .product-card__availability-dot {
+  box-shadow: none;
 }
 
 .product-card__footer {

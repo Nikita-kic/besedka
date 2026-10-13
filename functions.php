@@ -491,6 +491,16 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 			<div class="product-card__body">
 				<h3 class="product-card__title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a></h3>
 
+				<?php if ( $review_count > 0 ) : ?>
+					<span class="product-card__rating">
+						<svg class="product-card__rating-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+						<span class="product-card__rating-value"><?php echo esc_html( number_format_i18n( (float) $rating, 2 ) ); ?></span>
+						<span class="product-card__rating-count"><?php echo esc_html( $review_count ); ?></span>
+					</span>
+				<?php else : ?>
+					<span class="product-card__rating product-card__rating--empty"><?php esc_html_e( 'Нет отзывов', 'besedka' ); ?></span>
+				<?php endif; ?>
+
 				<div class="product-card__meta">
 					<div class="product-card__prices">
 						<?php if ( $is_on_sale && $sale ) : ?>

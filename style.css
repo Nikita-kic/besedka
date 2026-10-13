@@ -1066,7 +1066,7 @@ body.no-scroll {
   display: block;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #f0f0f0;
+  background: #f6f6f6;
 }
 
 .product-card__image {

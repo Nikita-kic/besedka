@@ -930,7 +930,7 @@ body.no-scroll {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  width: 150px;
+  width: 128px;
   padding-top: 12px;
   text-align: center;
 }
@@ -940,7 +940,7 @@ body.no-scroll {
   position: relative;
   display: block;
   width: 100%;
-  height: 80px;
+  height: 72px;
   background: var(--color-accent-soft);
   border-radius: var(--radius-lg);
   transition: background var(--transition), box-shadow var(--transition);

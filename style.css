@@ -1257,6 +1257,14 @@ body.no-scroll {
   color: var(--color-sale);
 }
 
+.product-card__footer {
+  padding: 0 18px 18px;
+}
+
+.product-card__btn-order {
+  width: 100%;
+}
+
 /* Заголовок раздела стоит в первой ячейке ряда — на месте карточки. */
 .products__intro {
   grid-row: span var(--intro-rows, 1);
@@ -2444,6 +2452,10 @@ body.no-scroll {
 
   .product-card__body {
     padding: 12px;
+  }
+
+  .product-card__footer {
+    padding: 0 12px 12px;
   }
 
   .product-card__meta {

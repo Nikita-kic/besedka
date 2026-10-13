@@ -516,6 +516,12 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 					<?php echo $in_stock ? esc_html__( 'В наличии', 'besedka' ) : esc_html__( 'Нет в наличии', 'besedka' ); ?>
 				</p>
 			</div>
+
+			<div class="product-card__footer">
+				<button type="button" class="btn btn--primary product-card__btn-order" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>" <?php disabled( $in_stock, false ); ?>>
+					<?php esc_html_e( 'Заказать', 'besedka' ); ?>
+				</button>
+			</div>
 		</article>
 		<?php
 	}

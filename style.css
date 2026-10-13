@@ -1273,6 +1273,11 @@ body.no-scroll {
   line-height: 1.15;
 }
 
+.products__intro .products__title--nowrap {
+  font-size: var(--fs-xl);
+  white-space: nowrap;
+}
+
 .section__intro .section__link-all {
   align-self: flex-start;
 }

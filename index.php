@@ -64,12 +64,12 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 		<!-- Сетка товаров -->
 		<div class="products__grid">
 			<div class="products__intro">
-				<h1 class="products__title">
+				<h1 class="products__title<?php echo empty( $_GET['search'] ) ? ' products__title--nowrap' : ''; ?>">
 				<?php
 				if ( ! empty( $_GET['search'] ) ) {
 					echo esc_html( sprintf( __( 'Результаты поиска: «%s»', 'besedka' ), sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) );
 				} else {
-					esc_html_e( 'Каталог товаров', 'besedka' );
+					esc_html_e( 'Популярные товары', 'besedka' );
 				}
 				?>
 			</h1>

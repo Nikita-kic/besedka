@@ -1258,6 +1258,11 @@ body.no-scroll {
 }
 
 /* Заголовок раздела стоит в первой ячейке ряда — на месте карточки. */
+.products__intro {
+  grid-row: span var(--intro-rows, 1);
+  align-self: start;
+}
+
 .products__intro,
 .section__intro {
   display: flex;
@@ -2244,6 +2249,10 @@ body.no-scroll {
   .advantages__grid .section__intro,
   .steps__list .section__intro {
     grid-column: 1 / -1;
+  }
+
+  .products__intro {
+    grid-row: auto;
   }
 
   .products__grid {

@@ -63,7 +63,7 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 
 		<!-- Сетка товаров -->
 		<div class="products__grid">
-			<div class="products__intro">
+			<div class="products__intro" style="--intro-rows: <?php echo esc_attr( max( 1, (int) ceil( count( $products ) / 3 ) ) ); ?>">
 				<h1 class="products__title<?php echo empty( $_GET['search'] ) ? ' products__title--nowrap' : ''; ?>">
 				<?php
 				if ( ! empty( $_GET['search'] ) ) {

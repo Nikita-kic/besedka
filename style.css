@@ -2719,17 +2719,17 @@ body.no-scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 68px;
-  height: 68px;
-  margin-bottom: 24px;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 16px;
   border-radius: 50%;
   background: var(--color-accent-soft);
   color: var(--color-accent-dark);
 }
 
 .why__icon svg {
-  width: 28px;
-  height: 28px;
+  width: 14px;
+  height: 14px;
 }
 
 .why__card-title {

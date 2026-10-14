@@ -909,11 +909,11 @@ body.no-scroll {
    5.1 БЛОК "КАТЕГОРИИ" (.type-selector) — отдельно, над панелью фильтров
    ========================================================================== */
 .type-selector {
-  margin-bottom: 20px;
+  margin-bottom: 44px;
 }
 
 .type-selector__title {
-  margin-bottom: 16px;
+  margin-bottom: 28px;
   font-size: var(--fs-xl);
   font-weight: 800;
 }

@@ -2671,7 +2671,7 @@ body.no-scroll {
 
 .why__subtitle {
   max-width: 430px;
-  font-size: var(--fs-base);
+  font-size: 15px;
   color: var(--color-text-muted);
 }
 
@@ -2740,8 +2740,7 @@ body.no-scroll {
 }
 
 .why__card-text {
-  font-size: var(--fs-base);
-  line-height: 1.6;
+  font-size: 15px;
   color: var(--color-text-muted);
 }
 

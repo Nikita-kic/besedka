@@ -984,8 +984,6 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 						</ul>
 					</div>
 
-					<?php
-					?>
 					<div class="sets__carousel" data-sets-carousel>
 						<div class="sets__track" data-sets-track>
 							<?php foreach ( $sets as $set ) : ?>

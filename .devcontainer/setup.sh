@@ -235,9 +235,21 @@ for slug in "${!PRODUCT_PHOTOS[@]}"; do
   fi
 done
 
+echo "== Устанавливаем ACF (поля рецептов) =="
+
+if ! wp plugin is-installed advanced-custom-fields --allow-root; then
+  wp plugin install advanced-custom-fields --allow-root
+fi
+wp plugin activate advanced-custom-fields --allow-root
+
 echo "== Создаём «Готовые наборы» =="
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-sets.php --allow-root
+
+echo "== Создаём демо-рецепты =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-recipes.php --allow-root
+wp rewrite flush --allow-root
 
 echo ""
 echo "== Готово =="

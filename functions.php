@@ -603,6 +603,9 @@ if ( ! function_exists( 'besedka_get_popular_products' ) ) {
 	}
 }
 
+// Тысячи в ценах отделяются неразрывным пробелом: «1 250 ₽».
+add_filter( 'wc_get_price_thousand_separator', function () { return "\xC2\xA0"; } );
+
 // Цены без копеек по всему сайту (карточки, модалка, корзина, оформление заказа).
 add_filter( 'wc_get_price_decimals', '__return_zero' );
 
@@ -1352,3 +1355,6 @@ if ( ! function_exists( 'besedka_woocommerce_missing_notice' ) ) {
 	}
 	add_action( 'admin_notices', 'besedka_woocommerce_missing_notice' );
 }
+
+// Рецепты (тип записи, поля ACF, функции блока на главной).
+require_once BESEDKA_DIR . '/inc/recipes.php';

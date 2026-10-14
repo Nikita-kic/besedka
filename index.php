@@ -97,35 +97,6 @@ if ( ! empty( $popular_fixed ) ) {
 <?php if ( function_exists( 'wc_get_products' ) ) : ?>
 
 	<!-- ==========================================================================
-	     ПОПУЛЯРНЫЕ ТОВАРЫ
-	     ========================================================================== -->
-	<?php
-	$popular = wc_get_products(
-		array(
-			'status'  => 'publish',
-			'limit'   => 8,
-			'orderby' => 'popularity',
-		)
-	);
-	if ( ! empty( $popular ) ) :
-		?>
-		<section class="section">
-			<div class="container">
-					<div class="section__scroll">
-						<div class="section__intro">
-							<h2 class="section__title"><?php esc_html_e( 'Популярные товары', 'besedka' ); ?></h2>
-							<p class="section__subtitle"><?php esc_html_e( 'Товары, которые чаще всего заказывают наши клиенты', 'besedka' ); ?></p>
-							<a class="section__link-all" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
-						</div>
-					<?php foreach ( $popular as $product ) : ?>
-						<?php besedka_render_product_card( $product ); ?>
-					<?php endforeach; ?>
-				</div>
-			</div>
-		</section>
-	<?php endif; ?>
-
-	<!-- ==========================================================================
 	     ТОВАРЫ СО СКИДКОЙ
 	     ========================================================================== -->
 	<?php

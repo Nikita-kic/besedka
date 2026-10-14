@@ -850,7 +850,7 @@ if ( ! function_exists( 'besedka_render_set_card' ) ) {
 			$labels[] = $item['label'];
 		}
 		?>
-		<article class="product-card set-card<?php echo 1 === (int) $slot ? ' set-card--featured' : ''; ?>" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
+		<article class="product-card set-card set-card--slot-<?php echo esc_attr( $slot ); ?><?php echo in_array( (int) $slot, array( 3, 4 ), true ) ? ' set-card--wide' : ''; ?>" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
 			<a class="product-card__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
 				<?php besedka_render_set_image( $set, $items ); ?>
 				<div class="product-card__badges">
@@ -893,7 +893,73 @@ if ( ! function_exists( 'besedka_render_set_card' ) ) {
 }
 
 /**
- * Секция «Готовые наборы»: intro + 4 карточки в один ряд (первая выделена цветом).
+ * Главная карточка набора (.set-featured): 2 колонки сетки, фото слева, состав справа.
+ */
+if ( ! function_exists( 'besedka_render_set_featured' ) ) {
+	function besedka_render_set_featured( $set ) {
+		$id      = $set->get_id();
+		$items   = besedka_get_set_items( $id );
+		$regular = (float) $set->get_regular_price();
+		$price   = (float) $set->get_price();
+		$saving  = max( 0, $regular - $price );
+		$percent = $regular > 0 ? round( $saving / $regular * 100 ) : 0;
+		?>
+		<article class="set-featured" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="set-featured__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+				<?php besedka_render_set_image( $set, $items ); ?>
+				<div class="product-card__badges">
+					<?php if ( get_post_meta( $id, '_besedka_is_hit', true ) ) : ?>
+						<span class="product-card__badge product-card__badge--hit"><?php esc_html_e( 'Хит', 'besedka' ); ?></span>
+					<?php endif; ?>
+					<?php if ( $percent ) : ?>
+						<span class="product-card__badge product-card__badge--sale"><?php echo esc_html( '−' . $percent . '%' ); ?></span>
+					<?php endif; ?>
+				</div>
+			</a>
+
+			<?php besedka_render_set_favorite( $id ); ?>
+
+			<div class="set-featured__body">
+				<h3 class="set-featured__title"><?php echo esc_html( $set->get_name() ); ?></h3>
+
+				<ul class="set-featured__items">
+					<?php foreach ( $items as $item ) :
+						$thumb = $item['product']->get_image_id() ? wp_get_attachment_image_url( $item['product']->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
+						?>
+						<li>
+							<a class="set-featured__item" href="<?php echo esc_url( get_permalink( $item['product']->get_id() ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $item['product']->get_id() ); ?>">
+								<span class="set-featured__thumb"><img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy"></span>
+								<span class="set-featured__name"><?php echo esc_html( $item['product']->get_name() ); ?><?php if ( $item['qty'] > 1 ) : ?> <span class="set-featured__qty">× <?php echo esc_html( $item['qty'] ); ?></span><?php endif; ?></span>
+								<span class="set-featured__line"><?php echo wp_kses_post( wc_price( $item['line'] ) ); ?></span>
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+
+				<div class="set-featured__price-row">
+					<div class="product-card__prices set-featured__prices">
+						<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $price ) ); ?></span>
+						<?php if ( $saving ) : ?>
+							<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
+						<?php endif; ?>
+					</div>
+					<?php if ( $saving ) : ?>
+						<span class="set-card__saving"><?php echo esc_html( sprintf( __( 'Выгода %s ₽', 'besedka' ), number_format_i18n( $saving, 0 ) ) ); ?></span>
+					<?php endif; ?>
+				</div>
+
+				<div class="set-featured__actions">
+					<button type="button" class="btn btn--primary" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Набор в корзину', 'besedka' ); ?></button>
+					<button type="button" class="btn btn--outline" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Подробнее', 'besedka' ); ?></button>
+				</div>
+			</div>
+		</article>
+		<?php
+	}
+}
+
+/**
+ * Секция «Готовые наборы»: ряд 1 — intro, главный набор (2 колонки), набор; ряд 2 — два горизонтальных набора.
  */
 if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 	function besedka_render_sets_section() {
@@ -920,7 +986,11 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 
 					<?php
 					foreach ( $sets as $slot => $set ) {
-						besedka_render_set_card( $set, $slot );
+						if ( 1 === (int) $slot ) {
+							besedka_render_set_featured( $set );
+						} else {
+							besedka_render_set_card( $set, $slot );
+						}
 					}
 					?>
 

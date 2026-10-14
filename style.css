@@ -912,6 +912,12 @@ body.no-scroll {
   margin-bottom: 20px;
 }
 
+.type-selector__title {
+  margin-bottom: 16px;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+}
+
 .type-selector__list {
   display: flex;
   flex-wrap: wrap;

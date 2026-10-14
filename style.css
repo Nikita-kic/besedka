@@ -2647,6 +2647,141 @@ body.no-scroll {
 }
 
 /* ==========================================================================
+   8.y БЛОК "ПОЧЕМУ БЕСЕДКА" (.why): карточки на границе двух фонов
+   ========================================================================== */
+.why {
+  overflow: hidden;
+  padding: 56px 0 64px;
+  background: #fff;
+}
+
+.why__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.why__title {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.why__subtitle {
+  max-width: 430px;
+  font-size: var(--fs-base);
+  color: var(--color-text-muted);
+}
+
+.why__stage {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Тёплая подложка начинается ровно на середине карточек и уходит вниз за край секции. */
+.why__stage::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: -100vw;
+  width: 300vw;
+  height: 100vh;
+  background: var(--color-bg-soft);
+}
+
+.why__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.why__card {
+  position: relative;
+  padding: 38px 40px 40px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.why__card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.why__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-dark);
+}
+
+.why__icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.why__card-title {
+  margin-bottom: 12px;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.why__card-text {
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 860px) {
+  .why {
+    padding: 40px 0 48px;
+  }
+
+  .why__head {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .why__cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* На мобильном подложка начинается под первой карточкой. */
+  .why__stage::before {
+    display: none;
+  }
+
+  .why__card:first-child::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 100%;
+    left: -100vw;
+    width: 300vw;
+    height: 200vh;
+    background: var(--color-bg-soft);
+  }
+
+  .why__card {
+    padding: 28px 24px;
+  }
+}
+
+/* ==========================================================================
    10.1 ГОТОВЫЕ НАБОРЫ (.sets, .set-featured, .set-card)
    Ряд 1: intro | главный набор (2 колонки) | набор. Ряд 2: два набора по 2 колонки.
    ========================================================================== */

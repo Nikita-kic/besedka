@@ -141,6 +141,38 @@ if ( ! empty( $popular_fixed ) ) {
 
 
 <!-- ==========================================================================
+     ПОЧЕМУ БЕСЕДКА: три белые карточки на границе белого и тёплого фона
+     ========================================================================== -->
+<section class="why">
+	<div class="container">
+		<div class="why__head">
+			<h2 class="why__title"><?php esc_html_e( 'Почему Беседка', 'besedka' ); ?></h2>
+			<p class="why__subtitle"><?php esc_html_e( 'Делаем сами, доставляем по всей стране и даём выбрать, как платить.', 'besedka' ); ?></p>
+		</div>
+
+		<div class="why__stage">
+			<ul class="why__cards">
+				<li class="why__card">
+					<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V9l5 3V9l5 3V6h3l1 6h3v8z"/></svg></span>
+					<h3 class="why__card-title"><?php esc_html_e( 'Собственное производство', 'besedka' ); ?></h3>
+					<p class="why__card-text"><?php esc_html_e( 'Производим более 200 позиций: спиртовые дрожжи, эссенции, ВАД и составы. Сами отвечаем за сырьё и рецептуру, поэтому качество одинаковое от партии к партии.', 'besedka' ); ?></p>
+				</li>
+				<li class="why__card">
+					<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>
+					<h3 class="why__card-title"><?php esc_html_e( 'Доставка по всей России и СНГ', 'besedka' ); ?></h3>
+					<p class="why__card-text"><?php esc_html_e( 'Доставляем в 83 региона России и страны СНГ Почтой России. Каждую посылку отправляем с трек-номером, чтобы заказ можно было отследить.', 'besedka' ); ?></p>
+				</li>
+				<li class="why__card">
+					<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></svg></span>
+					<h3 class="why__card-title"><?php esc_html_e( 'Оплата как удобно', 'besedka' ); ?></h3>
+					<p class="why__card-text"><?php esc_html_e( 'Картой онлайн на сайте, при получении на почте или частями. Способ оплаты выбираете при оформлении заказа.', 'besedka' ); ?></p>
+				</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<!-- ==========================================================================
      SEO-ТЕКСТ
      ========================================================================== -->
 <section class="section">

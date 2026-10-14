@@ -999,9 +999,11 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 								<button type="button" class="sets__arrow" data-sets-prev aria-label="<?php esc_attr_e( 'Предыдущий набор', 'besedka' ); ?>">
 									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 								</button>
-								<div class="sets__dots">
-									<?php foreach ( array_values( $sets ) as $i => $set ) : ?>
-										<button type="button" class="sets__dot<?php echo 0 === $i ? ' is-active' : ''; ?>" data-sets-dot="<?php echo esc_attr( $i ); ?>" aria-label="<?php echo esc_attr( $set->get_name() ); ?>"></button>
+								<div class="sets__tabs" role="tablist">
+									<?php foreach ( array_values( $sets ) as $i => $set ) :
+										$tab = get_post_meta( $set->get_id(), '_besedka_set_tab', true );
+										?>
+										<button type="button" class="sets__tab<?php echo 0 === $i ? ' is-active' : ''; ?>" role="tab" data-sets-tab="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $tab ? $tab : $set->get_name() ); ?></button>
 									<?php endforeach; ?>
 								</div>
 								<button type="button" class="sets__arrow" data-sets-next aria-label="<?php esc_attr_e( 'Следующий набор', 'besedka' ); ?>">

@@ -745,7 +745,7 @@
 			return;
 		}
 		var track = qs( '[data-sets-track]', root );
-		var dots = qsa( '[data-sets-dot]', root );
+		var tabs = qsa( '[data-sets-tab]', root );
 		var prev = qs( '[data-sets-prev]', root );
 		var next = qs( '[data-sets-next]', root );
 		var count = qsa( '.sets__slide', track ).length;
@@ -761,8 +761,8 @@
 
 		function sync() {
 			var index = current();
-			dots.forEach( function ( dot, i ) {
-				dot.classList.toggle( 'is-active', i === index );
+			tabs.forEach( function ( tab, i ) {
+				tab.classList.toggle( 'is-active', i === index );
 			} );
 		}
 
@@ -778,9 +778,9 @@
 				goTo( current() + 1 );
 			} );
 		}
-		dots.forEach( function ( dot ) {
-			dot.addEventListener( 'click', function () {
-				goTo( parseInt( dot.getAttribute( 'data-sets-dot' ), 10 ) );
+		tabs.forEach( function ( tab ) {
+			tab.addEventListener( 'click', function () {
+				goTo( parseInt( tab.getAttribute( 'data-sets-tab' ), 10 ) );
 			} );
 		} );
 

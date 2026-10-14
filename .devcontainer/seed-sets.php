@@ -22,10 +22,11 @@ if ( ! $term ) {
 	$term    = is_wp_error( $created ) ? null : get_term( $created['term_id'], 'product_cat' );
 }
 
-// slot: 1 — главный набор, 2 — справа сверху, 3 — слева снизу, 4 — справа снизу.
+// slot — порядок слайдов в карусели и вкладок; tab — подпись вкладки.
 $sets = array(
 	array(
 		'name'     => 'Набор для сахарной браги',
+		'tab'      => 'Сахарная брага',
 		'slot'     => 1,
 		'discount' => 15,
 		'hit'      => 1,
@@ -39,7 +40,8 @@ $sets = array(
 	),
 	array(
 		'name'     => 'Облагораживание',
-		'slot'     => 2,
+		'tab'      => 'Облагораживание',
+		'slot'     => 4,
 		'discount' => 15,
 		'hit'      => 0,
 		'desc'     => 'Набор для облагораживания готового дистиллята: дубовые кубики, эссенция и бонификатор. К набору прилагается инструкция.',
@@ -51,6 +53,7 @@ $sets = array(
 	),
 	array(
 		'name'     => 'Фруктовый набор',
+		'tab'      => 'Фруктовый',
 		'slot'     => 3,
 		'discount' => 13,
 		'hit'      => 0,
@@ -63,7 +66,8 @@ $sets = array(
 	),
 	array(
 		'name'     => 'Зерновой дистиллят',
-		'slot'     => 4,
+		'tab'      => 'Зерновой',
+		'slot'     => 2,
 		'discount' => 12,
 		'hit'      => 0,
 		'desc'     => 'Набор для зернового дистиллята: зерновые дрожжи, турбо-дрожжи Whiskey и уголь для очистки. К набору прилагается инструкция.',
@@ -113,6 +117,7 @@ foreach ( $sets as $set ) {
 
 	update_post_meta( $id, '_besedka_set_items', $items );
 	update_post_meta( $id, '_besedka_set_slot', $set['slot'] );
+	update_post_meta( $id, '_besedka_set_tab', $set['tab'] );
 	update_post_meta( $id, '_besedka_composition', implode( '; ', $composition ) . '.' );
 	if ( $set['hit'] ) {
 		update_post_meta( $id, '_besedka_is_hit', '1' );

@@ -1264,7 +1264,6 @@ body.no-scroll {
   height: 8px;
   border-radius: 50%;
   background: #45dd3c;
-  box-shadow: 0 0 6px 2px rgba(69, 221, 60, 0.5);
 }
 
 .product-card__availability--out .product-card__availability-dot {

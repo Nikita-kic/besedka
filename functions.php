@@ -908,6 +908,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 			<a class="set-featured__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
 				<?php besedka_render_set_image( $set, $items ); ?>
 				<div class="product-card__badges">
+					<span class="product-card__badge"><?php esc_html_e( 'Набор', 'besedka' ); ?></span>
 					<?php if ( get_post_meta( $id, '_besedka_is_hit', true ) ) : ?>
 						<span class="product-card__badge product-card__badge--hit"><?php esc_html_e( 'Хит', 'besedka' ); ?></span>
 					<?php endif; ?>

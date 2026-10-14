@@ -32,6 +32,7 @@
 		initCityModal();
 		initSearch();
 		initCountdown();
+		initSetsCarousel();
 	} );
 
 	/* ==========================================================================
@@ -733,5 +734,56 @@
 			var timer = setInterval( tick, 1000 );
 			tick();
 		} );
+	}
+
+	/* ==========================================================================
+	   15. КАРУСЕЛЬ «ГОТОВЫЕ НАБОРЫ»
+	   ========================================================================== */
+	function initSetsCarousel() {
+		var root = qs( '[data-sets-carousel]' );
+		if ( ! root ) {
+			return;
+		}
+		var track = qs( '[data-sets-track]', root );
+		var dots = qsa( '[data-sets-dot]', root );
+		var prev = qs( '[data-sets-prev]', root );
+		var next = qs( '[data-sets-next]', root );
+		var count = qsa( '.sets__slide', track ).length;
+
+		function current() {
+			return Math.round( track.scrollLeft / track.clientWidth );
+		}
+
+		function goTo( index ) {
+			index = Math.max( 0, Math.min( count - 1, index ) );
+			track.scrollTo( { left: index * track.clientWidth, behavior: 'smooth' } );
+		}
+
+		function sync() {
+			var index = current();
+			dots.forEach( function ( dot, i ) {
+				dot.classList.toggle( 'is-active', i === index );
+			} );
+		}
+
+		track.addEventListener( 'scroll', sync, { passive: true } );
+
+		if ( prev ) {
+			prev.addEventListener( 'click', function () {
+				goTo( current() - 1 );
+			} );
+		}
+		if ( next ) {
+			next.addEventListener( 'click', function () {
+				goTo( current() + 1 );
+			} );
+		}
+		dots.forEach( function ( dot ) {
+			dot.addEventListener( 'click', function () {
+				goTo( parseInt( dot.getAttribute( 'data-sets-dot' ), 10 ) );
+			} );
+		} );
+
+		sync();
 	}
 })();

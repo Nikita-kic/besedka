@@ -959,7 +959,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 }
 
 /**
- * Секция «Готовые наборы»: слева intro, справа главный набор на 3 колонки.
+ * Секция «Готовые наборы»: слева intro, справа карусель из наборов (слайд — карточка набора).
  */
 if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 	function besedka_render_sets_section() {
@@ -985,12 +985,32 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 					</div>
 
 					<?php
-					// Показываем только главный набор. Остальные наборы (слоты 2–4) скрыты;
-					// besedka_render_set_card( $set, $slot ) сохранена на случай возврата.
-					if ( isset( $sets[1] ) ) {
-						besedka_render_set_featured( $sets[1] );
-					}
 					?>
+					<div class="sets__carousel" data-sets-carousel>
+						<div class="sets__track" data-sets-track>
+							<?php foreach ( $sets as $set ) : ?>
+								<div class="sets__slide">
+									<?php besedka_render_set_featured( $set ); ?>
+								</div>
+							<?php endforeach; ?>
+						</div>
+
+						<?php if ( count( $sets ) > 1 ) : ?>
+							<div class="sets__nav">
+								<button type="button" class="sets__arrow" data-sets-prev aria-label="<?php esc_attr_e( 'Предыдущий набор', 'besedka' ); ?>">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+								</button>
+								<div class="sets__dots">
+									<?php foreach ( array_values( $sets ) as $i => $set ) : ?>
+										<button type="button" class="sets__dot<?php echo 0 === $i ? ' is-active' : ''; ?>" data-sets-dot="<?php echo esc_attr( $i ); ?>" aria-label="<?php echo esc_attr( $set->get_name() ); ?>"></button>
+									<?php endforeach; ?>
+								</div>
+								<button type="button" class="sets__arrow" data-sets-next aria-label="<?php esc_attr_e( 'Следующий набор', 'besedka' ); ?>">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+								</button>
+							</div>
+						<?php endif; ?>
+					</div>
 
 				</div>
 			</div>

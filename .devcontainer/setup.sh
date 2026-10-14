@@ -234,6 +234,10 @@ for slug in "${!PRODUCT_PHOTOS[@]}"; do
   fi
 done
 
+echo "== Создаём «Готовые наборы» =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-sets.php --allow-root
+
 echo ""
 echo "== Готово =="
 echo "Сайт: $WP_URL"

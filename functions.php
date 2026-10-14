@@ -737,6 +737,268 @@ if ( ! function_exists( 'besedka_customize_register' ) ) {
 }
 
 /* ==========================================================================
+   6.3 ГОТОВЫЕ НАБОРЫ (БЛОК НА ГЛАВНОЙ)
+   ========================================================================== */
+
+/**
+ * Наборы: товары с метой _besedka_set_slot (1 — главный, 2–4 — обычные).
+ *
+ * @return WC_Product[] Массив slot => товар.
+ */
+if ( ! function_exists( 'besedka_get_sets' ) ) {
+	function besedka_get_sets() {
+		if ( ! function_exists( 'wc_get_product' ) ) {
+			return array();
+		}
+		$ids = get_posts(
+			array(
+				'post_type'   => 'product',
+				'post_status' => 'publish',
+				'numberposts' => 8,
+				'meta_key'    => '_besedka_set_slot', // phpcs:ignore WordPress.DB.SlowDBQuery
+				'orderby'     => 'meta_value_num',
+				'order'       => 'ASC',
+				'fields'      => 'ids',
+			)
+		);
+		$sets = array();
+		foreach ( $ids as $set_id ) {
+			$product = wc_get_product( $set_id );
+			if ( $product ) {
+				$sets[ (int) get_post_meta( $set_id, '_besedka_set_slot', true ) ] = $product;
+			}
+		}
+		return $sets;
+	}
+}
+
+/**
+ * Состав набора: массив [ product, qty, label, line ].
+ */
+if ( ! function_exists( 'besedka_get_set_items' ) ) {
+	function besedka_get_set_items( $set_id ) {
+		$items = array();
+		foreach ( (array) get_post_meta( $set_id, '_besedka_set_items', true ) as $row ) {
+			$item = isset( $row['id'] ) ? wc_get_product( (int) $row['id'] ) : null;
+			if ( ! $item ) {
+				continue;
+			}
+			$qty     = isset( $row['qty'] ) ? max( 1, (int) $row['qty'] ) : 1;
+			$items[] = array(
+				'product' => $item,
+				'qty'     => $qty,
+				'label'   => ! empty( $row['label'] ) ? $row['label'] : $item->get_name(),
+				'line'    => (float) $item->get_price() * $qty,
+			);
+		}
+		return $items;
+	}
+}
+
+/**
+ * Изображение набора: готовая картинка набора, а если её нет — CSS-коллаж из фото состава.
+ */
+if ( ! function_exists( 'besedka_render_set_image' ) ) {
+	function besedka_render_set_image( $set, $items ) {
+		if ( $set->get_image_id() ) {
+			echo wp_get_attachment_image( $set->get_image_id(), 'besedka-gallery', false, array( 'class' => 'product-card__image', 'loading' => 'lazy' ) );
+			return;
+		}
+		$roles = array( 'center', 'left', 'right' );
+		$n     = 0;
+		echo '<span class="set-collage">';
+		foreach ( $items as $item ) {
+			$image_id = $item['product']->get_image_id();
+			if ( ! $image_id || $n >= 3 ) {
+				continue;
+			}
+			printf(
+				'<img class="set-collage__img set-collage__img--%1$s" src="%2$s" alt="%3$s" loading="lazy">',
+				esc_attr( $roles[ $n ] ),
+				esc_url( wp_get_attachment_image_url( $image_id, 'besedka-card' ) ),
+				esc_attr( $item['product']->get_name() )
+			);
+			$n++;
+		}
+		echo '</span>';
+	}
+}
+
+if ( ! function_exists( 'besedka_render_set_favorite' ) ) {
+	function besedka_render_set_favorite( $id ) {
+		?>
+		<button type="button" class="product-card__favorite" data-favorite-btn data-product-id="<?php echo esc_attr( $id ); ?>" aria-label="<?php esc_attr_e( 'Добавить в избранное', 'besedka' ); ?>">
+			<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+		</button>
+		<?php
+	}
+}
+
+/**
+ * Обычная карточка набора (.product-card.set-card).
+ */
+if ( ! function_exists( 'besedka_render_set_card' ) ) {
+	function besedka_render_set_card( $set, $slot ) {
+		$id      = $set->get_id();
+		$items   = besedka_get_set_items( $id );
+		$regular = (float) $set->get_regular_price();
+		$price   = (float) $set->get_price();
+		$saving  = max( 0, $regular - $price );
+		$percent = $regular > 0 ? round( $saving / $regular * 100 ) : 0;
+		$labels  = array();
+		foreach ( $items as $item ) {
+			$labels[] = $item['label'];
+		}
+		?>
+		<article class="product-card set-card set-card--slot-<?php echo esc_attr( $slot ); ?>" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="product-card__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+				<?php besedka_render_set_image( $set, $items ); ?>
+				<div class="product-card__badges">
+					<span class="product-card__badge"><?php esc_html_e( 'Набор', 'besedka' ); ?></span>
+					<?php if ( $percent ) : ?>
+						<span class="product-card__badge product-card__badge--sale"><?php echo esc_html( '−' . $percent . '%' ); ?></span>
+					<?php endif; ?>
+				</div>
+			</a>
+
+			<?php besedka_render_set_favorite( $id ); ?>
+
+			<div class="product-card__body">
+				<h3 class="product-card__title"><a href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $set->get_name() ); ?></a></h3>
+				<p class="set-card__items"><?php echo esc_html( implode( ' · ', $labels ) ); ?></p>
+				<div class="product-card__meta">
+					<div class="product-card__prices">
+						<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $price ) ); ?></span>
+						<?php if ( $saving ) : ?>
+							<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
+						<?php endif; ?>
+					</div>
+					<?php if ( $saving ) : ?>
+						<span class="set-card__saving"><?php echo esc_html( sprintf( __( 'Выгода %s ₽', 'besedka' ), number_format_i18n( $saving, 0 ) ) ); ?></span>
+					<?php endif; ?>
+				</div>
+			</div>
+
+			<div class="product-card__footer">
+				<button type="button" class="btn btn--primary btn--full product-card__btn-order" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>">
+					<?php esc_html_e( 'Набор в корзину', 'besedka' ); ?>
+				</button>
+			</div>
+		</article>
+		<?php
+	}
+}
+
+/**
+ * Главная карточка набора (.set-featured): 2 колонки × 2 ряда сетки.
+ */
+if ( ! function_exists( 'besedka_render_set_featured' ) ) {
+	function besedka_render_set_featured( $set ) {
+		$id      = $set->get_id();
+		$items   = besedka_get_set_items( $id );
+		$regular = (float) $set->get_regular_price();
+		$price   = (float) $set->get_price();
+		$saving  = max( 0, $regular - $price );
+		$percent = $regular > 0 ? round( $saving / $regular * 100 ) : 0;
+		?>
+		<article class="set-featured" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="set-featured__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+				<?php besedka_render_set_image( $set, $items ); ?>
+				<div class="product-card__badges set-featured__badges">
+					<?php if ( get_post_meta( $id, '_besedka_is_hit', true ) ) : ?>
+						<span class="product-card__badge product-card__badge--hit"><?php esc_html_e( 'Хит', 'besedka' ); ?></span>
+					<?php endif; ?>
+					<?php if ( $percent ) : ?>
+						<span class="product-card__badge product-card__badge--sale"><?php echo esc_html( '−' . $percent . '%' ); ?></span>
+					<?php endif; ?>
+				</div>
+			</a>
+
+			<?php besedka_render_set_favorite( $id ); ?>
+
+			<div class="set-featured__body">
+				<h3 class="set-featured__title"><?php echo esc_html( $set->get_name() ); ?></h3>
+
+				<ul class="set-featured__items">
+					<?php foreach ( $items as $item ) :
+						$thumb = $item['product']->get_image_id() ? wp_get_attachment_image_url( $item['product']->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
+						?>
+						<li>
+							<a class="set-featured__item" href="<?php echo esc_url( get_permalink( $item['product']->get_id() ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $item['product']->get_id() ); ?>">
+								<span class="set-featured__thumb"><img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy"></span>
+								<span class="set-featured__name"><?php echo esc_html( $item['product']->get_name() ); ?><?php if ( $item['qty'] > 1 ) : ?> <span class="set-featured__qty">× <?php echo esc_html( $item['qty'] ); ?></span><?php endif; ?></span>
+								<span class="set-featured__line"><?php echo wp_kses_post( wc_price( $item['line'] ) ); ?></span>
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+
+				<div class="set-featured__price-row">
+					<div class="product-card__prices set-featured__prices">
+						<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $price ) ); ?></span>
+						<?php if ( $saving ) : ?>
+							<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
+						<?php endif; ?>
+					</div>
+					<?php if ( $saving ) : ?>
+						<span class="set-card__saving"><?php echo esc_html( sprintf( __( 'Выгода %s ₽', 'besedka' ), number_format_i18n( $saving, 0 ) ) ); ?></span>
+					<?php endif; ?>
+				</div>
+
+				<div class="set-featured__actions">
+					<button type="button" class="btn btn--primary" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Набор в корзину', 'besedka' ); ?></button>
+					<button type="button" class="btn btn--outline" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Подробнее', 'besedka' ); ?></button>
+				</div>
+			</div>
+		</article>
+		<?php
+	}
+}
+
+/**
+ * Секция «Готовые наборы»: intro + главный набор + 3 обычных.
+ */
+if ( ! function_exists( 'besedka_render_sets_section' ) ) {
+	function besedka_render_sets_section() {
+		$sets = besedka_get_sets();
+		if ( empty( $sets ) ) {
+			return;
+		}
+		$check = '<span class="sets__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
+		?>
+		<section class="section section--soft sets">
+			<div class="container">
+				<div class="sets__grid">
+
+					<div class="section__intro sets__intro">
+						<h2 class="section__title"><?php esc_html_e( 'Готовые наборы', 'besedka' ); ?></h2>
+						<p class="section__subtitle"><?php esc_html_e( 'Всё для одного рецепта — дешевле, чем по отдельности', 'besedka' ); ?></p>
+						<a class="section__link-all" href="<?php echo esc_url( home_url( '/product-category/nabory/' ) ); ?>"><?php esc_html_e( 'Все наборы', 'besedka' ); ?> &rarr;</a>
+						<ul class="sets__perks">
+							<li><?php echo $check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Подобрано под рецепт', 'besedka' ); ?></li>
+							<li><?php echo $check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Выгоднее до 15%', 'besedka' ); ?></li>
+							<li><?php echo $check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Инструкция в комплекте', 'besedka' ); ?></li>
+						</ul>
+					</div>
+
+					<?php
+					foreach ( $sets as $slot => $set ) {
+						if ( 1 === $slot ) {
+							besedka_render_set_featured( $set );
+						} else {
+							besedka_render_set_card( $set, $slot );
+						}
+					}
+					?>
+
+				</div>
+			</div>
+		</section>
+		<?php
+	}
+}
+
+/* ==========================================================================
    7. ПОДРОБНАЯ КАРТОЧКА ТОВАРА (ИСПОЛЬЗУЕТСЯ В single-product.php И В AJAX-МОДАЛКЕ)
    ========================================================================== */
 

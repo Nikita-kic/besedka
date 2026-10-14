@@ -97,34 +97,9 @@ if ( ! empty( $popular_fixed ) ) {
 <?php if ( function_exists( 'wc_get_products' ) ) : ?>
 
 	<!-- ==========================================================================
-	     ТОВАРЫ СО СКИДКОЙ
+	     ГОТОВЫЕ НАБОРЫ
 	     ========================================================================== -->
-	<?php
-	$sale_ids = function_exists( 'wc_get_product_ids_on_sale' ) ? wc_get_product_ids_on_sale() : array();
-	if ( ! empty( $sale_ids ) ) :
-		$sale_products = wc_get_products(
-			array(
-				'status'  => 'publish',
-				'limit'   => 8,
-				'include' => $sale_ids,
-			)
-		);
-		?>
-		<section class="section section--soft">
-			<div class="container">
-					<div class="section__scroll">
-						<div class="section__intro">
-							<h2 class="section__title"><?php esc_html_e( 'Товары со скидкой', 'besedka' ); ?></h2>
-							<p class="section__subtitle"><?php esc_html_e( 'Выгодные предложения ограниченное время', 'besedka' ); ?></p>
-							<a class="section__link-all" href="<?php echo esc_url( home_url( '/sale/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
-						</div>
-					<?php foreach ( $sale_products as $product ) : ?>
-						<?php besedka_render_product_card( $product ); ?>
-					<?php endforeach; ?>
-				</div>
-			</div>
-		</section>
-	<?php endif; ?>
+	<?php besedka_render_sets_section(); ?>
 
 	<!-- ==========================================================================
 	     НОВИНКИ
@@ -136,6 +111,7 @@ if ( ! empty( $popular_fixed ) ) {
 			'limit'   => 8,
 			'orderby' => 'date',
 			'order'   => 'DESC',
+			'exclude' => array_map( function ( $p ) { return $p->get_id(); }, besedka_get_sets() ),
 		)
 	);
 	if ( ! empty( $new_products ) ) :

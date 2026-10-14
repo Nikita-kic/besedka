@@ -2261,6 +2261,314 @@ body.no-scroll {
 }
 
 /* ==========================================================================
+   10.1 ГОТОВЫЕ НАБОРЫ (.sets, .set-card, .set-featured)
+   ========================================================================== */
+.sets__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+
+.sets__intro {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+}
+
+.set-featured {
+  grid-column: 2 / span 2;
+  grid-row: 1 / span 2;
+}
+
+.set-card--slot-2 {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.set-card--slot-3 {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.set-card--slot-4 {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+.sets__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sets__perks li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-base);
+}
+
+.sets__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.sets__check svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Коллаж из фото состава, если у набора нет готового изображения. */
+.set-collage {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.set-collage__img {
+  position: absolute;
+  bottom: 12%;
+  height: auto;
+  max-height: 76%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgba(48, 48, 48, 0.25));
+}
+
+.set-collage__img--center {
+  left: 50%;
+  width: 58%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.set-collage__img--left {
+  left: 22%;
+  width: 44%;
+  transform: translateX(-50%) rotate(-6deg);
+  z-index: 1;
+}
+
+.set-collage__img--right {
+  left: 78%;
+  width: 44%;
+  transform: translateX(-50%) rotate(6deg);
+  z-index: 1;
+}
+
+.set-card .product-card__badge--sale,
+.set-featured .product-card__badge--sale {
+  color: #fff;
+  background: var(--color-sale);
+}
+
+.set-card__items {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.set-card .product-card__meta {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.set-card__saving {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: var(--radius-round);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-dark);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* Главная карточка набора */
+.set-featured {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.set-featured:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.set-featured__image-wrap {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-accent-soft);
+}
+
+.set-featured__image-wrap .set-collage {
+  inset: 32px;
+}
+
+.set-featured__image-wrap .product-card__image {
+  padding: 32px;
+}
+
+.set-featured__badges {
+  top: 16px;
+  left: 16px;
+  flex-direction: row;
+}
+
+.set-featured .product-card__favorite {
+  top: 16px;
+  right: 16px;
+}
+
+.set-featured__body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 16px;
+  padding: 24px 28px 28px;
+}
+
+.set-featured__title {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.set-featured__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-featured__items li {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.set-featured__item {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  color: var(--color-text);
+}
+
+.set-featured__thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: #f6f6f6;
+}
+
+.set-featured__thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.set-featured__name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+
+.set-featured__item:hover .set-featured__name {
+  color: var(--color-accent);
+}
+
+.set-featured__qty,
+.set-featured__line {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.set-featured__price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.set-featured__prices .product-card__price-current {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+}
+
+.set-featured__prices .product-card__price-old {
+  font-size: var(--fs-md);
+}
+
+.set-featured__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.set-featured__actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 1024px) {
+  .sets__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sets__intro,
+  .set-featured {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .set-card--slot-2,
+  .set-card--slot-3,
+  .set-card--slot-4 {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .sets__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .set-featured__body {
+    padding: 18px;
+  }
+
+  .set-featured__actions {
+    flex-direction: column;
+  }
+}
+
+/* ==========================================================================
    11. АДАПТИВНОСТЬ
    ========================================================================== */
 

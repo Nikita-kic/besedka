@@ -914,7 +914,6 @@ body.no-scroll {
 
 .type-selector__title {
   margin-bottom: 16px;
-  text-align: center;
   font-size: var(--fs-xl);
   font-weight: 800;
 }

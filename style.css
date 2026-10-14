@@ -2734,7 +2734,7 @@ body.no-scroll {
 
 .why__card-title {
   margin-bottom: 12px;
-  font-size: var(--fs-lg);
+  font-size: 19px;
   font-weight: 700;
   line-height: 1.25;
 }

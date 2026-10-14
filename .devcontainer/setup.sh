@@ -95,6 +95,7 @@ echo "== Настраиваем валюту (рубли) =="
 
 wp option update woocommerce_currency RUB --allow-root
 wp option update woocommerce_currency_pos right_space --allow-root
+wp option update woocommerce_price_num_decimals 0 --allow-root
 
 echo "== Активируем тему =="
 

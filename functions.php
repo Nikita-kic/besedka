@@ -959,7 +959,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 }
 
 /**
- * Секция «Готовые наборы»: ряд 1 — intro, главный набор (2 колонки), набор; ряд 2 — два горизонтальных набора.
+ * Секция «Готовые наборы»: слева intro, справа главный набор на 3 колонки.
  */
 if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 	function besedka_render_sets_section() {
@@ -985,12 +985,10 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 					</div>
 
 					<?php
-					foreach ( $sets as $slot => $set ) {
-						if ( 1 === (int) $slot ) {
-							besedka_render_set_featured( $set );
-						} else {
-							besedka_render_set_card( $set, $slot );
-						}
+					// Показываем только главный набор. Остальные наборы (слоты 2–4) скрыты;
+					// besedka_render_set_card( $set, $slot ) сохранена на случай возврата.
+					if ( isset( $sets[1] ) ) {
+						besedka_render_set_featured( $sets[1] );
 					}
 					?>
 

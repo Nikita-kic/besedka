@@ -594,31 +594,150 @@
 		var live = qs( '[data-search-live]', form );
 		var cancel = qs( '[data-search-cancel]', form );
 		var mobile = window.matchMedia( '(max-width: 860px)' );
-		var timer = null;
-		var requestId = 0;
 		var skipFocusOpen = false;
+		var index = null;
+		var loading = false;
+		var searchUrl = ( window.besedkaData && cfg.searchUrl ) ? cfg.searchUrl : '/';
+		var MAX_ROWS = 6;
+
+		function norm( text ) {
+			return String( text ).toLowerCase().replace( /ё/g, 'е' );
+		}
+
+		function escapeHtml( text ) {
+			return String( text ).replace( /[&<>"']/g, function ( ch ) {
+				return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ ch ];
+			} );
+		}
+
+		// Название с выделением совпавших частей полужирным.
+		function highlight( name, tokens ) {
+			var lower = norm( name );
+			var marks = [];
+			tokens.forEach( function ( token ) {
+				var from = 0;
+				var pos;
+				while ( ( pos = lower.indexOf( token, from ) ) !== -1 ) {
+					marks.push( [ pos, pos + token.length ] );
+					from = pos + token.length;
+				}
+			} );
+			marks.sort( function ( a, b ) {
+				return a[ 0 ] - b[ 0 ];
+			} );
+			var merged = [];
+			marks.forEach( function ( m ) {
+				var last = merged[ merged.length - 1 ];
+				if ( last && m[ 0 ] <= last[ 1 ] ) {
+					last[ 1 ] = Math.max( last[ 1 ], m[ 1 ] );
+				} else {
+					merged.push( [ m[ 0 ], m[ 1 ] ] );
+				}
+			} );
+			var html = '';
+			var cursor = 0;
+			merged.forEach( function ( m ) {
+				html += escapeHtml( name.slice( cursor, m[ 0 ] ) ) + '<mark class="header-search__mark">' + escapeHtml( name.slice( m[ 0 ], m[ 1 ] ) ) + '</mark>';
+				cursor = m[ 1 ];
+			} );
+			return html + escapeHtml( name.slice( cursor ) );
+		}
+
+		// Та же разметка строки, что у «Популярных товаров» (besedka_render_search_item).
+		function rowHtml( item, tokens ) {
+			return '<a class="header-search__item" href="' + escapeHtml( item.url ) + '" data-quickview-trigger data-product-id="' + item.id + '">' +
+				'<img class="header-search__thumb" src="' + escapeHtml( item.img ) + '" alt="">' +
+				'<span class="header-search__name">' + highlight( item.name, tokens ) + '</span>' +
+				'<span class="header-search__price">' + item.price + '</span>' +
+				'</a>';
+		}
+
+		function loadIndex() {
+			if ( index || loading ) {
+				return;
+			}
+			loading = true;
+			fetch( cfg.ajaxUrl + '?action=besedka_search_index', { credentials: 'same-origin' } )
+				.then( function ( response ) {
+					return response.json();
+				} )
+				.then( function ( json ) {
+					index = ( json && json.success && json.data ) ? json.data : [];
+					index.forEach( function ( item ) {
+						item.hay = norm( item.name + ' ' + item.brand );
+						item.flat = item.hay.replace( /\s+/g, '' );
+					} );
+					loading = false;
+					if ( '' !== input.value.trim() && document.activeElement === input ) {
+						renderResults();
+					}
+				} )
+				.catch( function () {
+					loading = false;
+				} );
+		}
 
 		function setOpen( open ) {
 			results.hidden = ! open;
 			input.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 		}
 
+		// Режимы взаимоисключающие: подсказки (пустое поле) или результаты (есть ввод).
 		function showSuggest() {
+			live.hidden = true;
 			if ( ! suggest ) {
 				setOpen( false );
 				return;
 			}
-			live.hidden = true;
 			suggest.hidden = false;
 			setOpen( true );
 		}
 
-		function showLive() {
+		function renderResults() {
+			if ( ! index ) {
+				loadIndex();
+				setOpen( false );
+				return;
+			}
+			var term = input.value.trim();
+			var tokens = norm( term ).split( /\s+/ ).filter( Boolean );
+			var found = index.filter( function ( item ) {
+				return tokens.every( function ( token ) {
+					return -1 !== item.hay.indexOf( token ) || -1 !== item.flat.indexOf( token );
+				} );
+			} );
+			found.sort( function ( a, b ) {
+				function rank( item ) {
+					var name = norm( item.name );
+					return name.indexOf( tokens[ 0 ] ) === 0 ? 0 : ( -1 !== name.indexOf( ' ' + tokens[ 0 ] ) ? 1 : 2 );
+				}
+				return rank( a ) - rank( b );
+			} );
+
+			var html;
+			if ( ! found.length ) {
+				html = '<p class="header-search__empty">' + escapeHtml( ( cfg.i18n && cfg.i18n.nothingFound ) || 'Ничего не найдено' ) + '</p>';
+			} else {
+				html = found.slice( 0, MAX_ROWS ).map( function ( item ) {
+					return rowHtml( item, tokens );
+				} ).join( '' );
+				html += '<a class="header-search__all" href="' + escapeHtml( searchUrl + encodeURIComponent( term ) ) + '">' +
+					escapeHtml( ( cfg.i18n && cfg.i18n.allResults ) || 'Все результаты' ) + ' (' + found.length + ') &rarr;</a>';
+			}
+			live.innerHTML = html;
 			if ( suggest ) {
 				suggest.hidden = true;
 			}
 			live.hidden = false;
 			setOpen( true );
+		}
+
+		function update() {
+			if ( '' === input.value.trim() ) {
+				showSuggest();
+			} else {
+				renderResults();
+			}
 		}
 
 		function enterFullscreen() {
@@ -629,42 +748,10 @@
 		}
 
 		function close() {
-			requestId++;
 			setOpen( false );
 			if ( form.classList.contains( 'is-fullscreen' ) ) {
 				form.classList.remove( 'is-fullscreen' );
 				lockScroll( false );
-			}
-		}
-
-		function run() {
-			var term = input.value.trim();
-			var current = ++requestId;
-			fetch( cfg.ajaxUrl + '?action=besedka_search&q=' + encodeURIComponent( term ), { credentials: 'same-origin' } )
-				.then( function ( response ) {
-					return response.json();
-				} )
-				.then( function ( json ) {
-					if ( current !== requestId || ! json.success ) {
-						return;
-					}
-					live.innerHTML = json.data.html;
-					showLive();
-				} )
-				.catch( function () {} );
-		}
-
-		function update() {
-			var term = input.value.trim();
-			clearTimeout( timer );
-			if ( '' === input.value ) {
-				requestId++;
-				showSuggest();
-			} else if ( term.length >= 2 ) {
-				timer = setTimeout( run, 250 );
-			} else {
-				requestId++;
-				setOpen( false );
 			}
 		}
 
@@ -677,16 +764,13 @@
 		input.addEventListener( 'input', update );
 
 		input.addEventListener( 'focus', function () {
+			loadIndex();
 			enterFullscreen();
 			if ( skipFocusOpen ) {
 				skipFocusOpen = false;
 				return;
 			}
-			if ( '' === input.value ) {
-				showSuggest();
-			} else if ( input.value.trim().length >= 2 && live.innerHTML ) {
-				showLive();
-			}
+			update();
 		} );
 
 		input.addEventListener( 'click', function () {
@@ -747,15 +831,15 @@
 			}
 
 			var list = links();
-			var index = list.indexOf( document.activeElement );
+			var position = list.indexOf( document.activeElement );
 			event.preventDefault();
 
 			if ( 'ArrowDown' === key ) {
 				if ( list.length ) {
-					list[ Math.min( index + 1, list.length - 1 ) ].focus();
+					list[ Math.min( position + 1, list.length - 1 ) ].focus();
 				}
-			} else if ( index > 0 ) {
-				list[ index - 1 ].focus();
+			} else if ( position > 0 ) {
+				list[ position - 1 ].focus();
 			} else {
 				skipFocusOpen = true;
 				input.focus();

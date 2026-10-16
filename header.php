@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<button type="button" class="header-search__cancel" data-search-cancel><?php esc_html_e( 'Отмена', 'besedka' ); ?></button>
 					<div class="header-search__results" id="header-search-results" data-search-results hidden>
 						<?php besedka_render_search_suggest(); ?>
-						<div data-search-live hidden></div>
+						<div class="header-search__panel" data-search-live hidden></div>
 					</div>
 				</form>
 

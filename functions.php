@@ -90,8 +90,11 @@ if ( ! function_exists( 'besedka_scripts' ) ) {
 				'cartUrl'       => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' ),
 				'checkoutUrl'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/checkout/' ),
 				'favoritesUrl'  => home_url( '/favorites/' ),
+				'searchUrl'     => add_query_arg( 'search', '', home_url( '/' ) ),
 				'currency'      => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '₽',
 				'i18n'          => array(
+					'nothingFound' => __( 'Ничего не найдено', 'besedka' ),
+					'allResults'   => __( 'Все результаты', 'besedka' ),
 					'added'        => __( 'Добавлено', 'besedka' ),
 					'error'        => __( 'Ошибка, попробуйте ещё раз', 'besedka' ),
 					'outOfStock'   => __( 'Нет в наличии', 'besedka' ),
@@ -781,7 +784,7 @@ if ( ! function_exists( 'besedka_render_search_suggest' ) ) {
 			return;
 		}
 		?>
-		<div class="header-search__suggest" data-search-suggest>
+		<div class="header-search__panel header-search__suggest" data-search-suggest>
 			<?php if ( $hints ) : ?>
 				<div class="header-search__group">
 					<p class="eyebrow"><?php esc_html_e( 'Часто ищут', 'besedka' ); ?></p>
@@ -811,33 +814,71 @@ if ( ! function_exists( 'besedka_render_search_suggest' ) ) {
 }
 
 /**
- * AJAX: результаты поиска в шапке.
+ * Индекс для мгновенного поиска в шапке: товары в наличии одним JSON, кэш transient.
+ * Сбрасывается при сохранении/изменении/удалении товара.
  */
-if ( ! function_exists( 'besedka_ajax_search' ) ) {
-	function besedka_ajax_search() {
-		$term = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
-		$ids  = mb_strlen( $term ) >= 2 ? besedka_search_product_ids( $term, 50 ) : array();
-		$more = max( 0, count( $ids ) - 6 );
-
-		ob_start();
-		if ( empty( $ids ) ) {
-			echo '<p class="header-search__empty">' . esc_html__( 'Ничего не найдено', 'besedka' ) . '</p>';
-		} else {
-			foreach ( array_slice( $ids, 0, 6 ) as $pid ) {
-				$product = wc_get_product( $pid );
-				if ( $product ) {
-					besedka_render_search_item( $product );
-				}
-			}
-			if ( $more > 0 ) {
-				echo '<a class="header-search__all" href="' . esc_url( add_query_arg( 'search', rawurlencode( $term ), home_url( '/' ) ) ) . '">' . esc_html( sprintf( __( 'Показать все результаты (%d)', 'besedka' ), count( $ids ) ) ) . '</a>';
-			}
+if ( ! function_exists( 'besedka_get_search_index' ) ) {
+	function besedka_get_search_index() {
+		if ( ! function_exists( 'wc_get_products' ) ) {
+			return array();
 		}
-		wp_send_json_success( array( 'html' => ob_get_clean() ) );
+		$items = get_transient( 'besedka_search_index' );
+		if ( false === $items ) {
+			$items    = array();
+			$products = wc_get_products(
+				array(
+					'status'       => 'publish',
+					'limit'        => -1,
+					'stock_status' => 'instock',
+					'orderby'      => 'title',
+					'order'        => 'ASC',
+				)
+			);
+			foreach ( $products as $product ) {
+				$image_id = $product->get_image_id();
+				$items[]  = array(
+					'id'    => $product->get_id(),
+					'name'  => $product->get_name(),
+					'brand' => (string) get_post_meta( $product->get_id(), '_besedka_brand', true ),
+					'price' => wc_price( $product->get_price() ),
+					'img'   => $image_id ? wp_get_attachment_image_url( $image_id, 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' ),
+					'url'   => get_permalink( $product->get_id() ),
+				);
+			}
+			set_transient( 'besedka_search_index', $items, DAY_IN_SECONDS );
+			update_option( 'besedka_search_index_overflow', count( $items ) > 500 ? 1 : 0, false );
+		}
+		return $items;
 	}
-	add_action( 'wp_ajax_besedka_search', 'besedka_ajax_search' );
-	add_action( 'wp_ajax_nopriv_besedka_search', 'besedka_ajax_search' );
 }
+
+if ( ! function_exists( 'besedka_ajax_search_index' ) ) {
+	function besedka_ajax_search_index() {
+		wp_send_json_success( besedka_get_search_index() );
+	}
+	add_action( 'wp_ajax_besedka_search_index', 'besedka_ajax_search_index' );
+	add_action( 'wp_ajax_nopriv_besedka_search_index', 'besedka_ajax_search_index' );
+}
+
+if ( ! function_exists( 'besedka_flush_search_index' ) ) {
+	function besedka_flush_search_index() {
+		delete_transient( 'besedka_search_index' );
+		delete_transient( 'besedka_search_popular' );
+	}
+	foreach ( array( 'save_post_product', 'woocommerce_update_product', 'woocommerce_new_product', 'woocommerce_product_set_stock_status', 'deleted_post', 'trashed_post', 'untrashed_post' ) as $besedka_hook ) {
+		add_action( $besedka_hook, 'besedka_flush_search_index' );
+	}
+}
+
+/** Предупреждение в админке: мгновенный поиск рассчитан на каталог до 500 товаров. */
+add_action(
+	'admin_notices',
+	function () {
+		if ( get_option( 'besedka_search_index_overflow' ) && current_user_can( 'manage_woocommerce' ) ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Беседка: в каталоге больше 500 товаров — мгновенный поиск в шапке стоит переделать на серверный.', 'besedka' ) . '</p></div>';
+		}
+	}
+);
 
 /* ==========================================================================
    6.2 БАННЕРЫ НА ГЛАВНОЙ И ТАЙМЕР АКЦИИ

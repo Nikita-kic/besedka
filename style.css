@@ -1152,22 +1152,6 @@ body.no-scroll {
   stroke: var(--color-accent);
 }
 
-.product-card__quickview {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 2;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity var(--transition), transform var(--transition);
-}
-
-.product-card:hover .product-card__quickview {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .product-card__body {
   display: flex;
   flex-direction: column;
@@ -3356,10 +3340,6 @@ body.no-scroll {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* На тач-устройствах ховер недоступен — прячем оверлей и показываем компактную кнопку в футере карточки. */
-  .product-card__quickview {
-    display: none;
-  }
 
   .modal__window {
     grid-template-columns: 1fr;

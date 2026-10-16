@@ -557,8 +557,20 @@ body.no-scroll {
 
 .header-search__mark {
   background: none;
-  color: inherit;
+  color: var(--color-text);
   font-weight: 700;
+}
+
+/* Результаты поиска: название приглушено, совпадение выделено; «Популярные товары» не меняются */
+.header-search__panel--results .header-search__name {
+  color: var(--color-text-muted);
+  font-weight: 400;
+  transition: color var(--transition);
+}
+
+.header-search__panel--results .header-search__item:hover .header-search__name,
+.header-search__panel--results .header-search__item:focus-visible .header-search__name {
+  color: var(--color-text);
 }
 
 .header-search__input::placeholder {

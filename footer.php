@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<p class="footer-col__desc">
 					<?php echo esc_html( get_theme_mod( 'besedka_footer_desc', __( 'Товары для самогоноварения собственного производства с доставкой по России и СНГ.', 'besedka' ) ) ); ?>
 				</p>
-				<p class="footer-col__hours"><?php esc_html_e( 'Время работы: с 8:00 до 21:00', 'besedka' ); ?></p>
+				<p class="footer-col__hours"><?php esc_html_e( 'Время работы: с 9:00 до 19:00', 'besedka' ); ?></p>
 			</div>
 
 			<!-- Колонка 2: информационное меню -->

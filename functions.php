@@ -257,7 +257,7 @@ if ( ! function_exists( 'besedka_render_city_modal' ) ) {
 				<h2 class="city-modal__title"><?php esc_html_e( 'Выбор города', 'besedka' ); ?></h2>
 				<p class="city-modal__current"><?php esc_html_e( 'Ваш город:', 'besedka' ); ?> <span data-city-current></span></p>
 				<input class="city-modal__search" type="text" placeholder="<?php esc_attr_e( 'Введите ваш город', 'besedka' ); ?>" data-city-search>
-				<p class="city-modal__subtitle"><?php esc_html_e( 'Города с пунктами выдачи заказов:', 'besedka' ); ?></p>
+				<p class="city-modal__subtitle"><?php esc_html_e( 'Доставляем Почтой России в любой город', 'besedka' ); ?></p>
 				<div class="city-modal__list" data-city-list>
 					<?php foreach ( $groups as $letter => $group ) : ?>
 						<div class="city-modal__group">

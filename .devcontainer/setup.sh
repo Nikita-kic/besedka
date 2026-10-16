@@ -93,6 +93,11 @@ wp plugin activate woocommerce --allow-root
 
 echo "== Настраиваем валюту (рубли) =="
 
+echo "== Включаем режим Live (без заглушки «Coming soon») =="
+
+wp option update woocommerce_coming_soon no --allow-root
+wp option update woocommerce_store_pages_only no --allow-root
+
 wp option update woocommerce_currency RUB --allow-root
 wp option update woocommerce_currency_pos right_space --allow-root
 wp option update woocommerce_price_num_decimals 0 --allow-root

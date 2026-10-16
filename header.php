@@ -1,6 +1,6 @@
 <?php
 /**
- * Шапка сайта: верхний уровень (логотип, поиск, избранное, телефон)
+ * Шапка сайта: верхний уровень (логотип, поиск, избранное, корзина)
  *
  * @package Besedka
  */
@@ -64,11 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<span class="favorites-btn__label"><?php esc_html_e( 'Избранное', 'besedka' ); ?></span>
 					</a>
 
-					<div class="header-top__contact">
-						<a class="btn btn--primary header-top__call-btn" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', get_theme_mod( 'besedka_shop_phone', '+74951234567' ) ) ); ?>">
-							<span><?php esc_html_e( 'Позвонить', 'besedka' ); ?></span>
-						</a>
-					</div>
+					<?php echo besedka_get_cart_button(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 
 			</div>

@@ -519,9 +519,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 			</div>
 
 			<div class="product-card__footer">
-				<button type="button" class="btn btn--primary product-card__btn-order" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>" <?php disabled( $in_stock, false ); ?>>
-					<?php esc_html_e( 'Заказать', 'besedka' ); ?>
-				</button>
+				<?php besedka_add_to_cart_button( $product, __( 'В корзину', 'besedka' ), 'btn btn--primary product-card__btn-order' ); ?>
 			</div>
 		</article>
 		<?php
@@ -608,6 +606,77 @@ add_filter( 'wc_get_price_thousand_separator', function () { return "\xC2\xA0"; 
 
 // Цены без копеек по всему сайту (карточки, модалка, корзина, оформление заказа).
 add_filter( 'wc_get_price_decimals', '__return_zero' );
+
+/* ==========================================================================
+   6.4 КОРЗИНА: КНОПКА В ШАПКЕ, СТАНДАРТНЫЙ AJAX-add_to_cart WOOCOMMERCE
+   ========================================================================== */
+
+/** Стандартные скрипты WooCommerce для AJAX-добавления в корзину и обновления фрагментов. */
+if ( ! function_exists( 'besedka_enqueue_wc_cart_scripts' ) ) {
+	function besedka_enqueue_wc_cart_scripts() {
+		if ( ! function_exists( 'WC' ) ) {
+			return;
+		}
+		wp_enqueue_script( 'wc-add-to-cart' );
+		wp_enqueue_script( 'wc-cart-fragments' );
+	}
+	add_action( 'wp_enqueue_scripts', 'besedka_enqueue_wc_cart_scripts', 20 );
+}
+
+/** Кнопка корзины в шапке (та же разметка, что у «Избранного»). Счётчик скрыт при 0. */
+if ( ! function_exists( 'besedka_get_cart_button' ) ) {
+	function besedka_get_cart_button() {
+		$count = ( function_exists( 'WC' ) && WC()->cart ) ? (int) WC()->cart->get_cart_contents_count() : 0;
+		$url   = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' );
+
+		ob_start();
+		?>
+		<a class="favorites-btn cart-btn" href="<?php echo esc_url( $url ); ?>">
+			<span class="favorites-btn__icon">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.5l2.2 10.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.76L20 8H6.2"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>
+				<span class="favorites-btn__count" data-count="<?php echo esc_attr( $count ); ?>"><?php echo $count ? esc_html( $count ) : ''; ?></span>
+			</span>
+			<span class="favorites-btn__label"><?php esc_html_e( 'Корзина', 'besedka' ); ?></span>
+		</a>
+		<?php
+		return ob_get_clean();
+	}
+}
+
+/** Обновление счётчика без перезагрузки: WooCommerce подменяет a.cart-btn после добавления товара. */
+add_filter(
+	'woocommerce_add_to_cart_fragments',
+	function ( $fragments ) {
+		$fragments['a.cart-btn'] = besedka_get_cart_button();
+		return $fragments;
+	}
+);
+
+/**
+ * Кнопка «в корзину» со стандартным AJAX WooCommerce (ajax_add_to_cart, data-product_id, data-quantity).
+ * Без JS работает как обычная ссылка ?add-to-cart=ID.
+ *
+ * @param WC_Product $product Товар.
+ * @param string     $label   Текст кнопки.
+ * @param string     $classes Классы оформления.
+ */
+if ( ! function_exists( 'besedka_add_to_cart_button' ) ) {
+	function besedka_add_to_cart_button( $product, $label, $classes = 'btn btn--primary' ) {
+		if ( ! $product || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+			printf( '<span class="%1$s is-disabled" aria-disabled="true">%2$s</span>', esc_attr( $classes ), esc_html( $label ) );
+			return;
+		}
+		printf(
+			'<a href="%1$s" data-quantity="1" data-product_id="%2$s" data-product_sku="%3$s" class="%4$s add_to_cart_button%5$s" rel="nofollow">%6$s</a>',
+			esc_url( $product->add_to_cart_url() ),
+			esc_attr( $product->get_id() ),
+			esc_attr( $product->get_sku() ),
+			esc_attr( $classes ),
+			$product->supports( 'ajax_add_to_cart' ) ? ' ajax_add_to_cart' : '',
+			esc_html( $label )
+		);
+	}
+}
 
 /* ==========================================================================
    6.1 ПОИСК ТОВАРОВ (ПО НАЗВАНИЮ И БРЕНДУ)
@@ -889,9 +958,7 @@ if ( ! function_exists( 'besedka_render_set_card' ) ) {
 			</div>
 
 			<div class="product-card__footer">
-				<button type="button" class="btn btn--primary btn--full product-card__btn-order" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>">
-					<?php esc_html_e( 'Набор в корзину', 'besedka' ); ?>
-				</button>
+				<?php besedka_add_to_cart_button( $set, __( 'Набор в корзину', 'besedka' ), 'btn btn--primary btn--full product-card__btn-order' ); ?>
 			</div>
 		</article>
 		<?php
@@ -956,7 +1023,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 				</div>
 
 				<div class="set-featured__actions">
-					<button type="button" class="btn btn--primary" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Набор в корзину', 'besedka' ); ?></button>
+					<?php besedka_add_to_cart_button( $set, __( 'Набор в корзину', 'besedka' ), 'btn btn--primary' ); ?>
 					<button type="button" class="btn btn--outline" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Подробнее', 'besedka' ); ?></button>
 				</div>
 			</div>
@@ -1235,12 +1302,10 @@ if ( ! function_exists( 'besedka_render_product_details' ) ) {
 			</div>
 
 			<div class="modal__actions">
-				<button type="button" class="btn btn--outline" data-add-to-cart data-product-id="<?php echo esc_attr( $id ); ?>">
-					<?php esc_html_e( 'Добавить в корзину', 'besedka' ); ?>
-				</button>
-				<button type="button" class="btn btn--primary" data-buy-now data-product-id="<?php echo esc_attr( $id ); ?>">
+				<?php besedka_add_to_cart_button( $product, __( 'В корзину', 'besedka' ), 'btn btn--outline' ); ?>
+				<a class="btn btn--primary" href="<?php echo esc_url( add_query_arg( array( 'add-to-cart' => $id, 'quantity' => 1 ), wc_get_checkout_url() ) ); ?>" data-buy-now rel="nofollow">
 					<?php esc_html_e( 'Купить сейчас', 'besedka' ); ?>
-				</button>
+				</a>
 			</div>
 
 			<div class="modal__delivery">

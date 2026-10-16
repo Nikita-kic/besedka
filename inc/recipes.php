@@ -328,9 +328,7 @@ if ( ! function_exists( 'besedka_render_recipe_kit' ) ) {
 					<a class="recipe-featured__read" href="<?php echo esc_url( get_permalink( $recipe_id ) ); ?>"><?php esc_html_e( 'Читать рецепт', 'besedka' ); ?></a>
 				<?php endif; ?>
 				<?php if ( $set ) : ?>
-					<button type="button" class="btn btn--primary recipe-featured__buy" data-add-to-cart data-product-id="<?php echo esc_attr( $set->get_id() ); ?>">
-						<?php esc_html_e( 'Набор ·', 'besedka' ); ?> <?php echo wp_kses_post( wc_price( $set->get_price() ) ); ?>
-					</button>
+					<?php besedka_add_to_cart_button( $set, __( 'Набор · ', 'besedka' ) . wp_strip_all_tags( wc_price( $set->get_price() ) ), 'btn btn--primary recipe-featured__buy' ); ?>
 				<?php endif; ?>
 			</div>
 		</div>

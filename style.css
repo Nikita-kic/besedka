@@ -3454,3 +3454,67 @@ body.no-scroll {
     align-items: flex-start;
   }
 }
+
+/* ==========================================================================
+   КОРЗИНА (ТЕСТ)
+   ========================================================================== */
+/* Ссылка «Посмотреть корзину», которую WooCommerce добавляет после кнопки. */
+.added_to_cart {
+  display: none;
+}
+
+.add_to_cart_button.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.btn.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.page {
+  padding: 40px 0 64px;
+}
+
+.page__title {
+  margin-bottom: 24px;
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.page__content .shop_table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.page__content .shop_table th,
+.page__content .shop_table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.page__content .shop_table img {
+  width: 64px;
+  height: auto;
+}
+
+.page__content .button,
+.page__content button.button {
+  display: inline-block;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: var(--radius-round);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page__content .button:hover,
+.page__content button.button:hover {
+  background: var(--color-accent-dark);
+}

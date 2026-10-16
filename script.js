@@ -27,12 +27,12 @@
 		initFavorites();
 		initQuickView();
 		initModalClose();
-		initCartActions();
 		initCustomOrderForm();
 		initCityModal();
 		initSearch();
 		initCountdown();
 		initSetsCarousel();
+		initAddedFeedback();
 	} );
 
 	/* ==========================================================================
@@ -335,7 +335,21 @@
 		}
 
 		function set( n ) {
-			value.value = Math.max( 1, n );
+			var qty = Math.max( 1, n || 1 );
+			value.value = qty;
+
+			// Количество уходит в стандартную кнопку WooCommerce и в ссылку «Купить сейчас».
+			var area = value.closest( '.modal__info' ) || scope;
+			qsa( '.add_to_cart_button', area ).forEach( function ( btn ) {
+				btn.setAttribute( 'data-quantity', qty );
+			} );
+			qsa( '[data-buy-now]', area ).forEach( function ( link ) {
+				try {
+					var url = new URL( link.href, window.location.href );
+					url.searchParams.set( 'quantity', qty );
+					link.href = url.toString();
+				} catch ( e ) {}
+			} );
 		}
 
 		if ( minusBtn ) {
@@ -375,74 +389,7 @@
 
 	initTabs( document );
 
-	/* ==========================================================================
-	   10. КОРЗИНА: ДОБАВЛЕНИЕ ТОВАРА / «КУПИТЬ СЕЙЧАС»
-	   ========================================================================== */
-	function initCartActions() {
-		document.addEventListener( 'click', function ( event ) {
-			var addBtn = event.target.closest( '[data-add-to-cart]' );
-			var buyBtn = event.target.closest( '[data-buy-now]' );
-
-			if ( addBtn ) {
-				event.preventDefault();
-				handleAddToCart( addBtn, false );
-			}
-
-			if ( buyBtn ) {
-				event.preventDefault();
-				handleAddToCart( buyBtn, true );
-			}
-		} );
-	}
-
-	function handleAddToCart( button, redirectToCheckout ) {
-		var productId = button.getAttribute( 'data-product-id' );
-		if ( ! productId || ! cfg.wcAjaxAddToCartUrl ) {
-			window.location.href = cfg.cartUrl;
-			return;
-		}
-
-		var quantityField = document.querySelector( '[data-counter-value]' );
-		var quantity = quantityField ? parseInt( quantityField.value, 10 ) || 1 : 1;
-
-		var originalText = button.textContent;
-		button.disabled = true;
-		button.textContent = cfg.i18n.sending || '…';
-
-		var formData = new FormData();
-		formData.append( 'product_id', productId );
-		formData.append( 'quantity', quantity );
-
-		fetch( cfg.wcAjaxAddToCartUrl, { method: 'POST', body: formData, credentials: 'same-origin' } )
-			.then( function ( response ) {
-				return response.json();
-			} )
-			.then( function ( json ) {
-				button.disabled = false;
-				button.textContent = originalText;
-
-				if ( json && json.error ) {
-					alert( cfg.i18n.error || 'Ошибка' );
-					return;
-				}
-
-				document.dispatchEvent( new CustomEvent( 'wc_fragment_refresh' ) );
-
-				if ( redirectToCheckout ) {
-					window.location.href = cfg.checkoutUrl;
-				} else {
-					button.textContent = cfg.i18n.added || 'Добавлено';
-					setTimeout( function () {
-						button.textContent = originalText;
-					}, 1500 );
-				}
-			} )
-			.catch( function () {
-				button.disabled = false;
-				button.textContent = originalText;
-				alert( cfg.i18n.error || 'Ошибка' );
-			} );
-	}
+	/* 10. Корзина: добавление товара выполняет стандартный скрипт WooCommerce (см. раздел 16). */
 
 	/* ==========================================================================
 	   11. ФОРМА ИНДИВИДУАЛЬНОГО ЗАКАЗА «ПОДОБРАТЬ БУКЕТ»
@@ -785,5 +732,26 @@
 		} );
 
 		sync();
+	}
+
+	/* ==========================================================================
+	   16. ОБРАТНАЯ СВЯЗЬ ПОСЛЕ «В КОРЗИНУ» (событие стандартного скрипта WooCommerce)
+	   ========================================================================== */
+	function initAddedFeedback() {
+		if ( ! window.jQuery ) {
+			return;
+		}
+		window.jQuery( document.body ).on( 'added_to_cart', function ( event, fragments, hash, $button ) {
+			if ( ! $button || ! $button.length ) {
+				return;
+			}
+			var el = $button[ 0 ];
+			var original = el.getAttribute( 'data-original-text' ) || el.textContent;
+			el.setAttribute( 'data-original-text', original );
+			el.textContent = cfg.i18n.added || 'Добавлено';
+			setTimeout( function () {
+				el.textContent = original;
+			}, 1500 );
+		} );
 	}
 })();

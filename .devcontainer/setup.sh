@@ -97,6 +97,26 @@ wp option update woocommerce_currency RUB --allow-root
 wp option update woocommerce_currency_pos right_space --allow-root
 wp option update woocommerce_price_num_decimals 0 --allow-root
 
+echo "== Корзина: страницы и настройки WooCommerce =="
+
+wp option update woocommerce_enable_ajax_add_to_cart yes --allow-root
+wp option update woocommerce_cart_redirect_after_add no --allow-root
+
+# Создаёт «Корзину», «Оформление заказа» и др., если их ещё нет, и назначает в настройках.
+wp wc tool run install_pages --user="$WP_ADMIN_USER" --allow-root || true
+
+CART_ID=$(wp option get woocommerce_cart_page_id --allow-root 2>/dev/null || echo 0)
+CHECKOUT_ID=$(wp option get woocommerce_checkout_page_id --allow-root 2>/dev/null || echo 0)
+
+if [[ "$CART_ID" -gt 0 ]]; then
+  wp post update "$CART_ID" --post_content='[woocommerce_cart]' --allow-root
+  echo "Корзина: $(wp post get "$CART_ID" --field=url --allow-root)"
+fi
+if [[ "$CHECKOUT_ID" -gt 0 ]]; then
+  wp post update "$CHECKOUT_ID" --post_content='[woocommerce_checkout]' --allow-root
+  echo "Оформление заказа: $(wp post get "$CHECKOUT_ID" --field=url --allow-root)"
+fi
+
 echo "== Активируем тему =="
 
 wp theme activate besedka --allow-root

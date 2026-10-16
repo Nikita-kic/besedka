@@ -654,6 +654,12 @@ body.no-scroll {
   gap: var(--space-4);
 }
 
+/* display: flex перебивает атрибут hidden — возвращаем скрытие */
+.header-search__suggest[hidden],
+.header-search__panel[hidden] {
+  display: none;
+}
+
 .header-search__group {
   display: flex;
   flex-direction: column;

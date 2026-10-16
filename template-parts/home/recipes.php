@@ -27,7 +27,7 @@ $archive_url = get_post_type_archive_link( 'recipe' );
 
 		<div class="recipes__head">
 			<div>
-				<p class="recipes__eyebrow"><?php esc_html_e( 'Рецепты и инструкции', 'besedka' ); ?></p>
+				<p class="eyebrow"><?php esc_html_e( 'Рецепты и инструкции', 'besedka' ); ?></p>
 				<h2 class="section__title recipes__title"><?php esc_html_e( 'Как сделать — пошагово', 'besedka' ); ?></h2>
 			</div>
 			<a class="section__link-all recipes__all" href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Все рецепты', 'besedka' ); ?> &rarr;</a>

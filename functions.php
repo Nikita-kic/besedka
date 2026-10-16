@@ -1072,7 +1072,7 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 									<?php foreach ( array_values( $sets ) as $i => $set ) :
 										$tab = get_post_meta( $set->get_id(), '_besedka_set_tab', true );
 										?>
-										<button type="button" class="sets__tab<?php echo 0 === $i ? ' is-active' : ''; ?>" role="tab" data-sets-tab="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $tab ? $tab : $set->get_name() ); ?></button>
+										<button type="button" class="chip<?php echo 0 === $i ? ' is-active' : ''; ?>" role="tab" data-sets-tab="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $tab ? $tab : $set->get_name() ); ?></button>
 									<?php endforeach; ?>
 								</div>
 								<button type="button" class="sets__arrow" data-sets-next aria-label="<?php esc_attr_e( 'Следующий набор', 'besedka' ); ?>">

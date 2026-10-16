@@ -712,8 +712,106 @@ if ( ! function_exists( 'besedka_search_product_ids' ) ) {
 	}
 }
 
+/** Строка товара в выпадающем окне поиска. */
+if ( ! function_exists( 'besedka_render_search_item' ) ) {
+	function besedka_render_search_item( $product, $extra_class = '' ) {
+		$pid = $product->get_id();
+		$img = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
+		?>
+		<a class="header-search__item<?php echo $extra_class ? ' ' . esc_attr( $extra_class ) : ''; ?>" href="<?php echo esc_url( get_permalink( $pid ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $pid ); ?>">
+			<img class="header-search__thumb" src="<?php echo esc_url( $img ); ?>" alt="">
+			<span class="header-search__name"><?php echo esc_html( $product->get_name() ); ?></span>
+			<span class="header-search__price"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
+		</a>
+		<?php
+	}
+}
+
+/** Подсказки «Часто ищут»: Customizer → «Поиск» (по одной в строке). */
+if ( ! function_exists( 'besedka_get_search_hints' ) ) {
+	function besedka_get_search_hints() {
+		$raw   = (string) get_theme_mod( 'besedka_search_hints', "Bragoff\nHigh Spirits\nтурбо-дрожжи 48\nдля зерна\nдля фруктов\nдля новичка" );
+		$lines = preg_split( '/\R/u', $raw, -1, PREG_SPLIT_NO_EMPTY );
+		$hints = array_values( array_unique( array_filter( array_map( 'trim', (array) $lines ) ) ) );
+		return array_slice( $hints, 0, 12 );
+	}
+}
+
+/** Популярные товары для окна поиска: по total_sales, в наличии, кэш на 12 часов. */
+if ( ! function_exists( 'besedka_get_search_popular_ids' ) ) {
+	function besedka_get_search_popular_ids() {
+		if ( ! function_exists( 'wc_get_products' ) ) {
+			return array();
+		}
+		$ids = get_transient( 'besedka_search_popular' );
+		if ( false === $ids ) {
+			$exclude = array();
+			foreach ( besedka_get_sets() as $set ) {
+				$exclude[] = $set->get_id();
+			}
+			$ids = wc_get_products(
+				array(
+					'status'       => 'publish',
+					'limit'        => 3,
+					'orderby'      => 'popularity',
+					'order'        => 'DESC',
+					'stock_status' => 'instock',
+					'exclude'      => $exclude,
+					'return'       => 'ids',
+				)
+			);
+			set_transient( 'besedka_search_popular', $ids, 12 * HOUR_IN_SECONDS );
+		}
+		return array_map( 'intval', (array) $ids );
+	}
+}
+
+/** Окно подсказок при пустом поле: «Часто ищут» + «Популярные товары». Пусто — ничего не выводит. */
+if ( ! function_exists( 'besedka_render_search_suggest' ) ) {
+	function besedka_render_search_suggest() {
+		$hints    = besedka_get_search_hints();
+		$products = array();
+		foreach ( besedka_get_search_popular_ids() as $pid ) {
+			$product = wc_get_product( $pid );
+			if ( $product && $product->is_in_stock() ) {
+				$products[] = $product;
+			}
+		}
+		if ( empty( $hints ) && empty( $products ) ) {
+			return;
+		}
+		?>
+		<div class="header-search__suggest" data-search-suggest>
+			<?php if ( $hints ) : ?>
+				<div class="header-search__group">
+					<p class="eyebrow"><?php esc_html_e( 'Часто ищут', 'besedka' ); ?></p>
+					<div class="header-search__chips">
+						<?php foreach ( $hints as $hint ) : ?>
+							<a class="chip" href="<?php echo esc_url( add_query_arg( 'search', rawurlencode( $hint ), home_url( '/' ) ) ); ?>"><?php echo esc_html( $hint ); ?></a>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( $products ) : ?>
+				<div class="header-search__group">
+					<p class="eyebrow"><?php esc_html_e( 'Популярные товары', 'besedka' ); ?></p>
+					<div class="header-search__products">
+						<?php
+						foreach ( $products as $i => $product ) {
+							besedka_render_search_item( $product, $i >= 2 ? 'header-search__item--extra' : '' );
+						}
+						?>
+					</div>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+}
+
 /**
- * AJAX: подсказки поиска в шапке.
+ * AJAX: результаты поиска в шапке.
  */
 if ( ! function_exists( 'besedka_ajax_search' ) ) {
 	function besedka_ajax_search() {
@@ -727,17 +825,9 @@ if ( ! function_exists( 'besedka_ajax_search' ) ) {
 		} else {
 			foreach ( array_slice( $ids, 0, 6 ) as $pid ) {
 				$product = wc_get_product( $pid );
-				if ( ! $product ) {
-					continue;
+				if ( $product ) {
+					besedka_render_search_item( $product );
 				}
-				$img = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
-				?>
-				<a class="header-search__item" href="<?php echo esc_url( get_permalink( $pid ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $pid ); ?>">
-					<img class="header-search__thumb" src="<?php echo esc_url( $img ); ?>" alt="">
-					<span class="header-search__name"><?php echo esc_html( $product->get_name() ); ?></span>
-					<span class="header-search__price"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
-				</a>
-				<?php
 			}
 			if ( $more > 0 ) {
 				echo '<a class="header-search__all" href="' . esc_url( add_query_arg( 'search', rawurlencode( $term ), home_url( '/' ) ) ) . '">' . esc_html( sprintf( __( 'Показать все результаты (%d)', 'besedka' ), count( $ids ) ) ) . '</a>';
@@ -785,6 +875,29 @@ if ( ! function_exists( 'besedka_customize_register' ) ) {
 			array(
 				'title'    => __( 'Баннеры', 'besedka' ),
 				'priority' => 40,
+			)
+		);
+		$wp_customize->add_section(
+			'besedka_search',
+			array(
+				'title'    => __( 'Поиск', 'besedka' ),
+				'priority' => 41,
+			)
+		);
+		$wp_customize->add_setting(
+			'besedka_search_hints',
+			array(
+				'default'           => "Bragoff\nHigh Spirits\nтурбо-дрожжи 48\nдля зерна\nдля фруктов\nдля новичка",
+				'sanitize_callback' => 'sanitize_textarea_field',
+			)
+		);
+		$wp_customize->add_control(
+			'besedka_search_hints',
+			array(
+				'section'     => 'besedka_search',
+				'label'       => __( 'Подсказки «Часто ищут»', 'besedka' ),
+				'description' => __( 'По одной подсказке в строке (до 12). Пусто — блок не показывается.', 'besedka' ),
+				'type'        => 'textarea',
 			)
 		);
 		$wp_customize->add_setting(

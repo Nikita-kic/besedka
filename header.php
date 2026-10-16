@@ -40,12 +40,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<!-- Поиск по названию и бренду -->
 				<form class="header-search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" data-search>
-					<span class="header-search__icon" aria-hidden="true">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>
-					</span>
-					<input class="header-search__input" type="search" name="search" value="<?php echo isset( $_GET['search'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) : ''; ?>" placeholder="<?php esc_attr_e( 'Искать товары, например Bragoff', 'besedka' ); ?>" autocomplete="off" aria-label="<?php esc_attr_e( 'Поиск товаров', 'besedka' ); ?>" data-search-input>
-					<button class="header-search__btn" type="submit"><?php esc_html_e( 'Поиск', 'besedka' ); ?></button>
-					<div class="header-search__results" data-search-results hidden></div>
+					<div class="header-search__bar">
+						<span class="header-search__icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>
+						</span>
+						<input class="header-search__input" type="search" name="search" value="<?php echo isset( $_GET['search'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) : ''; ?>" placeholder="<?php esc_attr_e( 'Искать товары, например Bragoff', 'besedka' ); ?>" autocomplete="off" aria-label="<?php esc_attr_e( 'Поиск товаров', 'besedka' ); ?>" aria-expanded="false" aria-controls="header-search-results" data-search-input>
+						<button class="header-search__btn" type="submit"><?php esc_html_e( 'Поиск', 'besedka' ); ?></button>
+					</div>
+					<button type="button" class="header-search__cancel" data-search-cancel><?php esc_html_e( 'Отмена', 'besedka' ); ?></button>
+					<div class="header-search__results" id="header-search-results" data-search-results hidden>
+						<?php besedka_render_search_suggest(); ?>
+						<div data-search-live hidden></div>
+					</div>
 				</form>
 
 				<!-- Адрес и время работы -->

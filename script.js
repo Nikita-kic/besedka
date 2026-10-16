@@ -590,19 +590,55 @@
 		}
 		var input = qs( '[data-search-input]', form );
 		var results = qs( '[data-search-results]', form );
+		var suggest = qs( '[data-search-suggest]', form );
+		var live = qs( '[data-search-live]', form );
+		var cancel = qs( '[data-search-cancel]', form );
+		var mobile = window.matchMedia( '(max-width: 860px)' );
 		var timer = null;
 		var requestId = 0;
+		var skipFocusOpen = false;
 
-		function hide() {
-			results.hidden = true;
+		function setOpen( open ) {
+			results.hidden = ! open;
+			input.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		}
+
+		function showSuggest() {
+			if ( ! suggest ) {
+				setOpen( false );
+				return;
+			}
+			live.hidden = true;
+			suggest.hidden = false;
+			setOpen( true );
+		}
+
+		function showLive() {
+			if ( suggest ) {
+				suggest.hidden = true;
+			}
+			live.hidden = false;
+			setOpen( true );
+		}
+
+		function enterFullscreen() {
+			if ( mobile.matches && ! form.classList.contains( 'is-fullscreen' ) ) {
+				form.classList.add( 'is-fullscreen' );
+				lockScroll( true );
+			}
+		}
+
+		function close() {
+			requestId++;
+			setOpen( false );
+			if ( form.classList.contains( 'is-fullscreen' ) ) {
+				form.classList.remove( 'is-fullscreen' );
+				lockScroll( false );
+			}
 		}
 
 		function run() {
 			var term = input.value.trim();
-			if ( term.length < 2 ) {
-				hide();
-				return;
-			}
 			var current = ++requestId;
 			fetch( cfg.ajaxUrl + '?action=besedka_search&q=' + encodeURIComponent( term ), { credentials: 'same-origin' } )
 				.then( function ( response ) {
@@ -612,38 +648,130 @@
 					if ( current !== requestId || ! json.success ) {
 						return;
 					}
-					results.innerHTML = json.data.html;
-					results.hidden = false;
+					live.innerHTML = json.data.html;
+					showLive();
 				} )
 				.catch( function () {} );
 		}
 
-		input.addEventListener( 'input', function () {
+		function update() {
+			var term = input.value.trim();
 			clearTimeout( timer );
-			timer = setTimeout( run, 250 );
-		} );
+			if ( '' === input.value ) {
+				requestId++;
+				showSuggest();
+			} else if ( term.length >= 2 ) {
+				timer = setTimeout( run, 250 );
+			} else {
+				requestId++;
+				setOpen( false );
+			}
+		}
+
+		function links() {
+			return qsa( 'a', results ).filter( function ( link ) {
+				return null !== link.offsetParent;
+			} );
+		}
+
+		input.addEventListener( 'input', update );
 
 		input.addEventListener( 'focus', function () {
-			if ( results.innerHTML && input.value.trim().length >= 2 ) {
-				results.hidden = false;
+			enterFullscreen();
+			if ( skipFocusOpen ) {
+				skipFocusOpen = false;
+				return;
+			}
+			if ( '' === input.value ) {
+				showSuggest();
+			} else if ( input.value.trim().length >= 2 && live.innerHTML ) {
+				showLive();
+			}
+		} );
+
+		input.addEventListener( 'click', function () {
+			if ( results.hidden ) {
+				update();
+			}
+		} );
+
+		// Клик внутри окна не должен уводить фокус из поля, иначе окно закроется.
+		results.addEventListener( 'mousedown', function ( event ) {
+			if ( ! event.target.closest( 'a' ) ) {
+				event.preventDefault();
 			}
 		} );
 
 		results.addEventListener( 'click', function ( event ) {
 			if ( event.target.closest( '[data-quickview-trigger]' ) ) {
-				hide();
+				close();
+			}
+		} );
+
+		form.addEventListener( 'focusout', function ( event ) {
+			if ( ! event.relatedTarget || ! form.contains( event.relatedTarget ) ) {
+				close();
 			}
 		} );
 
 		document.addEventListener( 'click', function ( event ) {
 			if ( ! form.contains( event.target ) ) {
-				hide();
+				close();
 			}
 		} );
 
-		document.addEventListener( 'keydown', function ( event ) {
-			if ( 'Escape' === event.key ) {
-				hide();
+		form.addEventListener( 'keydown', function ( event ) {
+			var key = event.key;
+
+			if ( 'Escape' === key ) {
+				if ( ! results.hidden || form.classList.contains( 'is-fullscreen' ) ) {
+					close();
+					if ( document.activeElement !== input ) {
+						skipFocusOpen = true;
+						input.focus();
+					}
+				}
+				return;
+			}
+
+			if ( 'ArrowDown' !== key && 'ArrowUp' !== key ) {
+				return;
+			}
+
+			if ( results.hidden ) {
+				if ( 'ArrowDown' === key ) {
+					event.preventDefault();
+					update();
+				}
+				return;
+			}
+
+			var list = links();
+			var index = list.indexOf( document.activeElement );
+			event.preventDefault();
+
+			if ( 'ArrowDown' === key ) {
+				if ( list.length ) {
+					list[ Math.min( index + 1, list.length - 1 ) ].focus();
+				}
+			} else if ( index > 0 ) {
+				list[ index - 1 ].focus();
+			} else {
+				skipFocusOpen = true;
+				input.focus();
+			}
+		} );
+
+		if ( cancel ) {
+			cancel.addEventListener( 'click', function () {
+				input.blur();
+				close();
+			} );
+		}
+
+		mobile.addEventListener( 'change', function () {
+			if ( ! mobile.matches ) {
+				close();
 			}
 		} );
 	}

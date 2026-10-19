@@ -1148,13 +1148,18 @@ body.no-scroll {
   row-gap: 20px;
 }
 
+/* Размеры плитки заданы в em от размера подписи: --type-card-h — плашка,
+   --type-area — общая область картинки (чуть выше плашки, одинаковая для всех). */
 .type-selector__item {
+  --type-card-h: 5.5em;
+  --type-area: 8.2em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  width: 133px;
-  padding-top: 14px;
+  gap: var(--space-3);
+  width: 11em;
+  padding-top: calc(var(--type-area) - var(--type-card-h));
+  font-size: 0.8625rem;
   text-align: center;
 }
 
@@ -1163,30 +1168,28 @@ body.no-scroll {
   position: relative;
   display: block;
   width: 100%;
-  height: 76px;
+  height: var(--type-card-h);
   background: var(--color-accent-soft);
   border-radius: var(--radius-lg);
   transition: background var(--transition), box-shadow var(--transition);
 }
 
+/* Область картинки одинакова у всех: товар вписан целиком (contain) и прижат к низу плашки. */
 .type-selector__icon {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 101px;
-  height: 101px;
+  width: var(--type-area);
+  height: var(--type-area);
   object-fit: contain;
   object-position: center bottom;
   transform: translateX(-50%);
-  transition: transform var(--transition);
 }
 
-.type-selector__item:hover .type-selector__icon {
-  transform: translateX(-50%) translateY(-4px) scale(1.05);
-}
-
+/* Подпись: минимум две строки, выравнивание по верху, шрифт без уменьшения. */
 .type-selector__label {
-  font-size: 0.8625rem;
+  width: 100%;
+  min-height: calc(1.2em * 2);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;

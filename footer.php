@@ -108,13 +108,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</a>
 				</address>
 				<div class="footer-col__social">
-					<a class="footer-col__social-link" href="<?php echo esc_url( get_theme_mod( 'besedka_telegram_url', 'https://t.me/besedka' ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+					<a class="footer-col__social-link" href="<?php echo besedka_get_social_url( 'telegram' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
 						<svg viewBox="0 0 24 24"><path d="M9.4 15.5l-.4 5 1.8-1.8 3.6 2.6 4-19-19 7.4 5.4 2 12-7.4z"/></svg>
 					</a>
-					<a class="footer-col__social-link" href="<?php echo esc_url( get_theme_mod( 'besedka_whatsapp_url', 'https://wa.me/74951234567' ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+					<a class="footer-col__social-link" href="<?php echo besedka_get_social_url( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
 						<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2z"/></svg>
 					</a>
-					<a class="footer-col__social-link" href="<?php echo esc_url( get_theme_mod( 'besedka_vk_url', 'https://vk.com/besedka' ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="VK">
+					<a class="footer-col__social-link" href="<?php echo besedka_get_social_url( 'vk' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="VK">
 						<svg viewBox="0 0 24 24"><path d="M2 12c0-5 0-7.5 1.5-9S7 2 12 2s7.5 0 9 1.5S22 7 22 12s0 7.5-1.5 9S17 22 12 22s-7.5 0-9-1.5S2 17 2 12z"/></svg>
 					</a>
 				</div>

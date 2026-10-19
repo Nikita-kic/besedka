@@ -310,13 +310,42 @@ body.no-scroll {
   gap: 22px;
 }
 
-.topbar__link {
+.topbar__link,
+.topbar__social,
+.topbar__help-text {
   color: rgba(255, 255, 255, 0.75);
   transition: color var(--transition);
 }
 
-.topbar__link:hover {
+.topbar__link:hover,
+.topbar__social:hover {
   color: #fff;
+}
+
+/* «Нужна помощь с выбором?» + Telegram и WhatsApp; на десктопе прижато вправо, перед ссылками */
+.topbar__help {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.topbar__social {
+  display: inline-flex;
+  font-size: var(--fs-base);
+}
+
+.topbar__social svg {
+  width: 1em;
+  height: 1em;
+}
+
+.topbar__divider {
+  align-self: stretch;
+  margin-block: var(--space-2);
+  border-left: thin solid currentColor;
+  opacity: 0.4;
 }
 
 /* ==========================================================================
@@ -3511,6 +3540,23 @@ body.no-scroll {
 
   .topbar__link:not(:first-child) {
     display: none;
+  }
+
+  .topbar__inner {
+    flex-wrap: nowrap;
+  }
+
+  .topbar__help {
+    margin-left: var(--space-3);
+  }
+
+  .topbar__help-text,
+  .topbar__divider {
+    display: none;
+  }
+
+  .topbar__links {
+    margin-left: auto;
   }
 
   .city-modal__list {

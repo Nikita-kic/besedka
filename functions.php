@@ -201,6 +201,19 @@ if ( ! function_exists( 'besedka_get_cities' ) ) {
  * Верхняя тёмная полоса над хедером: текущий город (открывает модалку
  * выбора города) и ссылки "О компании", "Доставка", "Оплата".
  */
+/** Ссылки на мессенджеры и соцсети: единый источник для футера и верхней полосы (Customizer / theme_mod). */
+if ( ! function_exists( 'besedka_get_social_url' ) ) {
+	function besedka_get_social_url( $network ) {
+		$defaults = array(
+			'telegram' => 'https://t.me/besedka',
+			'whatsapp' => 'https://wa.me/74951234567',
+			'vk'       => 'https://vk.com/besedka',
+		);
+		$default = isset( $defaults[ $network ] ) ? $defaults[ $network ] : '';
+		return esc_url( get_theme_mod( 'besedka_' . $network . '_url', $default ) );
+	}
+}
+
 if ( ! function_exists( 'besedka_render_topbar' ) ) {
 	function besedka_render_topbar() {
 		$cities       = besedka_get_cities();
@@ -214,6 +227,16 @@ if ( ! function_exists( 'besedka_render_topbar' ) ) {
 						<svg class="topbar__city-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-6-5.686-6-10.5A6 6 0 0 1 18 10.5C18 15.286 12 21 12 21z"/><circle cx="12" cy="10.5" r="2"/></svg>
 						<span data-city-current><?php echo esc_html( $default_name ); ?></span>
 					</button>
+					<div class="topbar__help">
+						<span class="topbar__help-text"><?php esc_html_e( 'Нужна помощь с выбором?', 'besedka' ); ?></span>
+						<a class="topbar__social" href="<?php echo besedka_get_social_url( 'telegram' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Написать в Telegram', 'besedka' ); ?>">
+							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.4 15.5l-.4 5 1.8-1.8 3.6 2.6 4-19-19 7.4 5.4 2 12-7.4z"/></svg>
+						</a>
+						<a class="topbar__social" href="<?php echo besedka_get_social_url( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Написать в WhatsApp', 'besedka' ); ?>">
+							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2z"/></svg>
+						</a>
+					</div>
+					<span class="topbar__divider" aria-hidden="true"></span>
 					<nav class="topbar__links" aria-label="<?php esc_attr_e( 'Дополнительное меню', 'besedka' ); ?>">
 						<a class="topbar__link" href="<?php echo esc_url( home_url( '/about/' ) ); ?>"><?php esc_html_e( 'О компании', 'besedka' ); ?></a>
 						<a class="topbar__link" href="<?php echo esc_url( home_url( '/delivery/' ) ); ?>"><?php esc_html_e( 'Доставка', 'besedka' ); ?></a>

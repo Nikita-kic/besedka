@@ -378,7 +378,7 @@ if ( ! function_exists( 'besedka_render_category_selector' ) ) {
 					?>
 					<a class="type-selector__item <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url( home_url( '/product-category/' . $slug . '/' ) ); ?>">
 						<span class="type-selector__card">
-							<img class="type-selector__icon" src="<?php echo esc_url( get_template_directory_uri() . '/img/categories/' . $category['icon'] ); ?>" alt="" width="113" height="113" loading="lazy">
+							<img class="type-selector__icon" src="<?php echo esc_url( get_template_directory_uri() . '/img/categories/' . $category['icon'] ); ?>" alt="" width="101" height="101" loading="lazy">
 						</span>
 						<span class="type-selector__label"><?php echo esc_html( $category['label'] ); ?></span>
 					</a>

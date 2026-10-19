@@ -376,7 +376,7 @@ if ( ! function_exists( 'besedka_render_category_selector' ) ) {
 				<?php foreach ( $categories as $slug => $category ) :
 					$is_active = ( $selected_slug === $slug );
 					?>
-					<a class="type-selector__item <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url( home_url( '/product-category/' . $slug . '/' ) ); ?>">
+					<a class="type-selector__item <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url( besedka_category_url( $slug ) ); ?>">
 						<span class="type-selector__card">
 							<img class="type-selector__icon" src="<?php echo esc_url( get_template_directory_uri() . '/img/categories/' . $category['icon'] ); ?>" alt="" width="101" height="101" loading="lazy">
 						</span>
@@ -1228,7 +1228,7 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 					<div class="section__intro sets__intro">
 						<h2 class="section__title"><?php esc_html_e( 'Готовые наборы', 'besedka' ); ?></h2>
 						<p class="section__subtitle"><?php esc_html_e( 'Всё для одного рецепта — дешевле, чем по отдельности', 'besedka' ); ?></p>
-						<a class="section__link-all" href="<?php echo esc_url( home_url( '/product-category/nabory/' ) ); ?>"><?php esc_html_e( 'Все наборы', 'besedka' ); ?> &rarr;</a>
+						<a class="section__link-all" href="<?php echo esc_url( besedka_category_url( 'nabory' ) ); ?>"><?php esc_html_e( 'Все наборы', 'besedka' ); ?> &rarr;</a>
 						<ul class="sets__perks">
 							<li><?php echo $check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Подобрано под рецепт', 'besedka' ); ?></li>
 							<li><?php echo $check; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php esc_html_e( 'Выгоднее до 15%', 'besedka' ); ?></li>
@@ -1601,3 +1601,6 @@ if ( ! function_exists( 'besedka_woocommerce_missing_notice' ) ) {
 
 // Рецепты (тип записи, поля ACF, функции блока на главной).
 require_once BESEDKA_DIR . '/inc/recipes.php';
+
+// Адреса каталога: ссылки, canonical, 301-редиректы, хлебные крошки.
+require_once BESEDKA_DIR . '/inc/catalog-urls.php';

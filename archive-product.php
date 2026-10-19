@@ -1,6 +1,6 @@
 <?php
 /**
- * Архив категории товаров: /product-category/{категория}/ и общий архив /shop/.
+ * Архив категории товаров: /catalog/{категория}/ и общий каталог /catalog/.
  * Та же панель фильтров и сетка карточек, что и на главной, но в рамках
  * текущей категории/тега.
  *
@@ -42,11 +42,7 @@ $total_found  = ! empty( $product_list->total ) ? $product_list->total : count( 
 <section class="catalog">
 	<div class="container">
 
-		<nav class="product-page__breadcrumbs" aria-label="<?php esc_attr_e( 'Хлебные крошки', 'besedka' ); ?>">
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Главная', 'besedka' ); ?></a>
-			<span>/</span>
-			<span><?php echo esc_html( $archive_title ); ?></span>
-		</nav>
+			<?php besedka_render_breadcrumbs(); ?>
 
 		<!-- Категории: отдельный блок с иконками над фильтрами -->
 		<?php besedka_render_category_selector(); ?>

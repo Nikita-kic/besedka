@@ -32,7 +32,7 @@ if ( ! empty( $popular_fixed ) ) {
 		<div class="banners__grid">
 
 			<div class="banner banner--promo">
-				<a class="banner__link" href="<?php echo esc_url( home_url( '/product-category/drozhzhi/' ) ); ?>" aria-label="<?php esc_attr_e( 'Скидка 10% на все турбо-дрожжи', 'besedka' ); ?>">
+				<a class="banner__link" href="<?php echo esc_url( besedka_category_url( 'drozhzhi' ) ); ?>" aria-label="<?php esc_attr_e( 'Скидка 10% на все турбо-дрожжи', 'besedka' ); ?>">
 					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/opening.jpg' ); ?>" alt="<?php esc_attr_e( '−10% на все турбо-дрожжи в честь открытия интернет-магазина', 'besedka' ); ?>" width="2000" height="667">
 				</a>
 				<div class="banner__timer countdown" data-countdown="<?php echo esc_attr( besedka_get_promo_end() ); ?>">
@@ -47,7 +47,7 @@ if ( ! empty( $popular_fixed ) ) {
 			</div>
 
 			<div class="banner banner--cubes">
-				<a class="banner__link" href="<?php echo esc_url( home_url( '/product-category/kubiki/' ) ); ?>" aria-label="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>">
+				<a class="banner__link" href="<?php echo esc_url( besedka_category_url( 'kubiki' ) ); ?>" aria-label="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>">
 					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/cubes.jpg' ); ?>" alt="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>" width="1324" height="737">
 				</a>
 			</div>
@@ -128,7 +128,7 @@ if ( ! empty( $popular_fixed ) ) {
 						<div class="section__intro">
 							<h2 class="section__title"><?php esc_html_e( 'Новинки', 'besedka' ); ?></h2>
 							<p class="section__subtitle"><?php esc_html_e( 'Свежие поступления в нашем каталоге', 'besedka' ); ?></p>
-							<a class="section__link-all" href="<?php echo esc_url( home_url( '/new/' ) ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
+							<a class="section__link-all" href="<?php echo esc_url( besedka_catalog_url() ); ?>"><?php esc_html_e( 'Смотреть все', 'besedka' ); ?></a>
 						</div>
 					<?php foreach ( $new_products as $product ) : ?>
 						<?php besedka_render_product_card( $product ); ?>

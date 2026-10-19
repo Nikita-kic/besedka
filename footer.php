@@ -78,12 +78,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 						);
 					} else {
 						$catalog_links = array(
-							'ugol'        => array( __( 'Уголь', 'besedka' ), home_url( '/product-category/ugol/' ) ),
-							'kubiki'      => array( __( 'Дубовые кубики', 'besedka' ), home_url( '/product-category/kubiki/' ) ),
-							'essencii'    => array( __( 'Эссенции', 'besedka' ), home_url( '/product-category/essencii/' ) ),
-							'drozhzhi'    => array( __( 'Спиртовые дрожжи', 'besedka' ), home_url( '/product-category/drozhzhi/' ) ),
-							'komplekt'    => array( __( 'Комплектующие', 'besedka' ), home_url( '/product-category/komplekt/' ) ),
-							'bonifikator' => array( __( 'Бонификаторы', 'besedka' ), home_url( '/product-category/bonifikator/' ) ),
+							'ugol'        => array( __( 'Уголь', 'besedka' ), besedka_category_url( 'ugol' ) ),
+							'kubiki'      => array( __( 'Дубовые кубики', 'besedka' ), besedka_category_url( 'kubiki' ) ),
+							'essencii'    => array( __( 'Эссенции', 'besedka' ), besedka_category_url( 'essencii' ) ),
+							'drozhzhi'    => array( __( 'Спиртовые дрожжи', 'besedka' ), besedka_category_url( 'drozhzhi' ) ),
+							'komplekt'    => array( __( 'Комплектующие', 'besedka' ), besedka_category_url( 'komplekt' ) ),
+							'bonifikator' => array( __( 'Бонификаторы', 'besedka' ), besedka_category_url( 'bonifikator' ) ),
 						);
 						foreach ( $catalog_links as $link ) :
 							?>

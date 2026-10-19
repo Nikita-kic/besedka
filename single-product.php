@@ -28,19 +28,7 @@ while ( have_posts() ) :
 		<div class="container">
 
 			<!-- Хлебные крошки -->
-			<nav class="product-page__breadcrumbs" aria-label="<?php esc_attr_e( 'Хлебные крошки', 'besedka' ); ?>">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Главная', 'besedka' ); ?></a>
-				<span>/</span>
-				<?php
-				$terms = get_the_terms( get_the_ID(), 'product_cat' );
-				if ( $terms && ! is_wp_error( $terms ) ) :
-					$main_term = array_shift( $terms );
-					?>
-					<a href="<?php echo esc_url( get_term_link( $main_term ) ); ?>"><?php echo esc_html( $main_term->name ); ?></a>
-					<span>/</span>
-				<?php endif; ?>
-				<span><?php the_title(); ?></span>
-			</nav>
+			<?php besedka_render_breadcrumbs(); ?>
 
 			<!-- Подробная карточка: галерея слева, информация и покупка справа -->
 			<div class="product-page__grid">

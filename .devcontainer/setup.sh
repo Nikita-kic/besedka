@@ -131,6 +131,24 @@ echo "== Настраиваем ЧПУ =="
 wp rewrite structure '/%postname%/' --allow-root
 wp rewrite flush --allow-root
 
+echo "== Каталог: страница магазина «Каталог» и постоянные ссылки =="
+
+SHOP_ID=$(wp option get woocommerce_shop_page_id --allow-root 2>/dev/null || echo 0)
+if ! [[ "$SHOP_ID" =~ ^[0-9]+$ ]] || [[ "$SHOP_ID" -le 0 ]] || ! wp post get "$SHOP_ID" --field=ID --allow-root >/dev/null 2>&1; then
+  SHOP_ID=$(wp post create --post_type=page --post_status=publish --post_title='Каталог' --post_name='catalog' --porcelain --allow-root)
+fi
+# Страницу «Shop» не удаляем — переименовываем и меняем адрес с shop на catalog.
+wp post update "$SHOP_ID" --post_title='Каталог' --post_name='catalog' --allow-root
+wp option update woocommerce_shop_page_id "$SHOP_ID" --allow-root
+
+# Категории: /catalog/{категория}/, товары: /catalog/{категория}/{товар}/
+wp option update woocommerce_permalinks '{"category_base":"catalog","product_base":"/catalog/%product_cat%","tag_base":"","attribute_base":"","use_verbose_page_rules":false}' --format=json --allow-root
+
+wp rewrite structure '/%postname%/' --hard --allow-root
+wp rewrite flush --hard --allow-root
+
+echo "Страница магазина: ID $(wp option get woocommerce_shop_page_id --allow-root), адрес $(wp post get "$SHOP_ID" --field=url --allow-root)"
+
 echo "== Создаём категории =="
 
 declare -A CATEGORIES=(
@@ -275,6 +293,11 @@ echo "== Создаём демо-рецепты =="
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-recipes.php --allow-root
 wp rewrite flush --allow-root
+
+echo "== Проверка каталога: категории и ярлыки (отчёт, ничего не меняет) =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/check-catalog.php --allow-root || true
+wp rewrite flush --hard --allow-root
 
 echo ""
 echo "== Готово =="

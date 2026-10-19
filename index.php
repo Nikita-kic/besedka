@@ -71,7 +71,8 @@ if ( ! empty( $popular_fixed ) ) {
 		<!-- Сетка товаров -->
 		<div class="products__grid">
 			<div class="products__intro" style="--intro-rows: <?php echo esc_attr( max( 1, (int) ceil( count( $products ) / 3 ) ) ); ?>">
-				<h1 class="products__title<?php echo empty( $_GET['search'] ) ? ' products__title--nowrap' : ''; ?>">
+				<?php $products_title_tag = empty( $_GET['search'] ) ? 'h2' : 'h1'; // На главной H1 — заголовок SEO-блока, на странице поиска — заголовок результатов. ?>
+				<<?php echo esc_attr( $products_title_tag ); ?> class="products__title<?php echo empty( $_GET['search'] ) ? ' products__title--nowrap' : ''; ?>">
 				<?php
 				if ( ! empty( $_GET['search'] ) ) {
 					echo esc_html( sprintf( __( 'Результаты поиска: «%s»', 'besedka' ), sanitize_text_field( wp_unslash( $_GET['search'] ) ) ) );
@@ -79,7 +80,7 @@ if ( ! empty( $popular_fixed ) ) {
 					esc_html_e( 'Популярные товары', 'besedka' );
 				}
 				?>
-			</h1>
+			</<?php echo esc_attr( $products_title_tag ); ?>>
 				<span class="products__count"><?php echo esc_html( sprintf( _n( '%d товар', '%d товаров', $total_found, 'besedka' ), $total_found ) ); ?></span>
 			</div>
 			<?php if ( ! empty( $products ) ) : ?>
@@ -179,10 +180,11 @@ if ( ! empty( $popular_fixed ) ) {
 	<div class="container">
 		<div class="seo-text">
 			<?php echo wp_kses_post( wpautop( get_theme_mod( 'besedka_seo_text', sprintf(
-				'<h2>%1$s</h2><p>%2$s</p><p>%3$s</p>',
+				'<%4$s>%1$s</%4$s><p>%2$s</p><p>%3$s</p>',
 				__( 'Товары для самогоноварения с доставкой по России и СНГ', 'besedka' ),
 				__( 'Мы производим и поставляем более 700 позиций для самогоноварения: спиртовые дрожжи, дубовые кубики и чипсы, эссенции, бонификаторы, уголь для очистки и комплектующие для дистилляции. К каждому товару — подробная инструкция по применению.', 'besedka' ),
-				__( 'Собственное производство гарантирует стабильное качество сырья и рецептуры в каждой партии. Оплата картой онлайн, при получении или частями — выбирайте удобный способ, доставляем в 83 региона России и страны СНГ.', 'besedka' )
+				__( 'Собственное производство гарантирует стабильное качество сырья и рецептуры в каждой партии. Оплата картой онлайн, при получении или частями — выбирайте удобный способ, доставляем в 83 региона России и страны СНГ.', 'besedka' ),
+				empty( $_GET['search'] ) ? 'h1' : 'h2' // Один H1 на странице: на главной это заголовок SEO-блока.
 			) ) ) ); ?>
 		</div>
 	</div>

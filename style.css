@@ -2188,6 +2188,7 @@ body.no-scroll {
   line-height: 1.8;
 }
 
+.seo-text h1,
 .seo-text h2,
 .seo-text h3 {
   color: var(--color-text);

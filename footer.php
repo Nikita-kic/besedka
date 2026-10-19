@@ -135,16 +135,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="site-footer__payments">
 				<span class="visually-hidden"><?php esc_html_e( 'Способы оплаты:', 'besedka' ); ?></span>
-				<?php
-				$payment_logos = array(
-					'visa'       => 'Visa',
-					'mastercard' => 'Mastercard',
-					'mir'        => 'МИР',
-				);
-				foreach ( $payment_logos as $logo_file => $logo_alt ) :
-					?>
-					<img src="<?php echo esc_url( get_template_directory_uri() . '/img/payments/' . $logo_file . '.svg' ); ?>" alt="<?php echo esc_attr( $logo_alt ); ?>" width="40" height="22" loading="lazy">
-				<?php endforeach; ?>
+				<svg width="40" height="22" viewBox="0 0 40 22" aria-label="Visa" role="img"><rect width="40" height="22" rx="4" fill="#fff" opacity="0.9"/><text x="20" y="15" font-size="9" font-weight="700" text-anchor="middle" fill="#1a1f71">VISA</text></svg>
+				<svg width="40" height="22" viewBox="0 0 40 22" aria-label="Mastercard" role="img"><rect width="40" height="22" rx="4" fill="#fff" opacity="0.9"/><circle cx="17" cy="11" r="6" fill="#eb001b"/><circle cx="24" cy="11" r="6" fill="#f79e1b" opacity="0.85"/></svg>
+				<svg width="40" height="22" viewBox="0 0 40 22" aria-label="МИР" role="img"><rect width="40" height="22" rx="4" fill="#fff" opacity="0.9"/><text x="20" y="15" font-size="8" font-weight="700" text-anchor="middle" fill="#0f754e">МИР</text></svg>
 			</div>
 		</div>
 	</div>

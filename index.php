@@ -48,7 +48,7 @@ if ( ! empty( $popular_fixed ) ) {
 
 			<div class="banner banner--cubes">
 				<a class="banner__link" href="<?php echo esc_url( home_url( '/product-category/kubiki/' ) ); ?>" aria-label="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>">
-					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/cubes.jpg' ); ?>" alt="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>" width="1681" height="936">
+					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/cubes.jpg' ); ?>" alt="<?php esc_attr_e( 'Дубовые кубики для выдержки', 'besedka' ); ?>" width="1324" height="737">
 				</a>
 			</div>
 

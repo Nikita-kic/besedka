@@ -517,13 +517,77 @@
 			setCurrentCityLabel( saved.name );
 		}
 
-		qsa( '[data-city-trigger]' ).forEach( function ( trigger ) {
-			trigger.addEventListener( 'click', openCityModal );
-		} );
-
 		if ( ! modal ) {
 			return;
 		}
+
+		var search = qs( '[data-city-search]', modal );
+		var groups = qsa( '[data-city-list] .city-modal__group', modal );
+		var items = qsa( '[data-city-item]', modal );
+		var emptyBox = qs( '[data-city-empty]', modal );
+		var emptyName = qs( '[data-city-empty-name]', modal );
+
+		function normCity( text ) {
+			return String( text ).toLowerCase().replace( /ё/g, 'е' );
+		}
+
+		// Текущий город в списке выделяется цветом и жирным.
+		function markCurrent() {
+			var label = qs( '[data-city-current]' );
+			var current = label ? normCity( label.textContent.trim() ) : '';
+			items.forEach( function ( item ) {
+				item.classList.toggle( 'is-current', normCity( item.getAttribute( 'data-city-name' ) ) === current );
+			} );
+		}
+
+		// Фильтр на лету: без учёта регистра, ё = е, по началу названия; пустые буквы скрываются.
+		function filter() {
+			var typed = search ? search.value.trim() : '';
+			var query = normCity( typed );
+			var visibleGroups = 0;
+
+			groups.forEach( function ( group ) {
+				var visibleItems = 0;
+				qsa( '.city-modal__item', group ).forEach( function ( item ) {
+					var match = 0 === normCity( item.getAttribute( 'data-city-name' ) ).indexOf( query );
+					item.parentElement.style.display = match ? '' : 'none';
+					if ( match ) {
+						visibleItems++;
+					}
+				} );
+				group.style.display = visibleItems > 0 ? '' : 'none';
+				if ( visibleItems > 0 ) {
+					visibleGroups++;
+				}
+			} );
+
+			if ( emptyBox ) {
+				emptyBox.hidden = 0 !== visibleGroups || '' === typed;
+				if ( emptyName ) {
+					emptyName.textContent = typed;
+				}
+			}
+		}
+
+		function chooseCity( slug, name ) {
+			try {
+				localStorage.setItem( CITY_KEY, JSON.stringify( { slug: slug, name: name } ) );
+			} catch ( e ) {}
+			setCurrentCityLabel( name );
+			markCurrent();
+			closeCityModal();
+		}
+
+		qsa( '[data-city-trigger]' ).forEach( function ( trigger ) {
+			trigger.addEventListener( 'click', function () {
+				openCityModal();
+				if ( search ) {
+					search.value = '';
+				}
+				filter();
+				markCurrent();
+			} );
+		} );
 
 		qsa( '[data-city-modal-close]', modal ).forEach( function ( btn ) {
 			btn.addEventListener( 'click', closeCityModal );
@@ -536,48 +600,28 @@
 		} );
 
 		// Выбор города из списка.
-		qsa( '[data-city-item]', modal ).forEach( function ( item ) {
+		items.forEach( function ( item ) {
 			item.addEventListener( 'click', function () {
-				var slug = item.getAttribute( 'data-city-slug' );
-				var name = item.getAttribute( 'data-city-name' );
-				try {
-					localStorage.setItem( CITY_KEY, JSON.stringify( { slug: slug, name: name } ) );
-				} catch ( e ) {}
-				setCurrentCityLabel( name );
-				closeCityModal();
+				chooseCity( item.getAttribute( 'data-city-slug' ), item.getAttribute( 'data-city-name' ) );
 			} );
 		} );
 
-		// Живой поиск по городам.
-		var search = qs( '[data-city-search]', modal );
-		var groups = qsa( '[data-city-list] .city-modal__group', modal );
-		var emptyMsg = qs( '[data-city-empty]', modal );
-
-		if ( search ) {
-			search.addEventListener( 'input', function () {
-				var query = search.value.trim().toLowerCase();
-				var visibleGroups = 0;
-
-				groups.forEach( function ( group ) {
-					var visibleItems = 0;
-					qsa( '.city-modal__item', group ).forEach( function ( item ) {
-						var match = item.textContent.toLowerCase().indexOf( query ) !== -1;
-						item.parentElement.style.display = match ? '' : 'none';
-						if ( match ) {
-							visibleItems++;
-						}
-					} );
-					group.style.display = visibleItems > 0 ? '' : 'none';
-					if ( visibleItems > 0 ) {
-						visibleGroups++;
-					}
-				} );
-
-				if ( emptyMsg ) {
-					emptyMsg.hidden = visibleGroups > 0;
+		// Город не из списка: сохраняем то, что ввёл пользователь.
+		var customBtn = qs( '[data-city-custom]', modal );
+		if ( customBtn && search ) {
+			customBtn.addEventListener( 'click', function () {
+				var typed = search.value.trim();
+				if ( typed ) {
+					chooseCity( '', typed );
 				}
 			} );
 		}
+
+		if ( search ) {
+			search.addEventListener( 'input', filter );
+		}
+
+		markCurrent();
 	}
 
 	/* ==========================================================================

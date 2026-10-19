@@ -280,13 +280,13 @@ if ( ! function_exists( 'besedka_render_city_modal' ) ) {
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg>
 				</button>
 				<h2 class="city-modal__title"><?php esc_html_e( 'Выбор города', 'besedka' ); ?></h2>
-				<p class="city-modal__current"><?php esc_html_e( 'Ваш город:', 'besedka' ); ?> <span data-city-current></span></p>
+				<p class="city-modal__current"><?php esc_html_e( 'Сейчас выбран:', 'besedka' ); ?> <strong data-city-current><?php echo esc_html( isset( $cities['moskva'] ) ? $cities['moskva']['name'] : __( 'Москва', 'besedka' ) ); ?></strong></p>
 				<input class="city-modal__search" type="text" placeholder="<?php esc_attr_e( 'Введите ваш город', 'besedka' ); ?>" data-city-search>
 				<p class="city-modal__subtitle"><?php esc_html_e( 'Доставляем Почтой России в любой город', 'besedka' ); ?></p>
 				<div class="city-modal__list" data-city-list>
 					<?php foreach ( $groups as $letter => $group ) : ?>
 						<div class="city-modal__group">
-							<span class="city-modal__letter"><?php echo esc_html( $letter ); ?>:</span>
+							<span class="city-modal__letter"><?php echo esc_html( $letter ); ?></span>
 							<ul class="city-modal__cities">
 								<?php foreach ( $group as $slug => $name ) : ?>
 									<li><button type="button" class="city-modal__item" data-city-item data-city-slug="<?php echo esc_attr( $slug ); ?>" data-city-name="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( $name ); ?></button></li>
@@ -295,7 +295,10 @@ if ( ! function_exists( 'besedka_render_city_modal' ) ) {
 						</div>
 					<?php endforeach; ?>
 				</div>
-				<p class="city-modal__empty" data-city-empty hidden><?php esc_html_e( 'Город не найден.', 'besedka' ); ?></p>
+				<div class="city-modal__empty" data-city-empty hidden>
+					<span><?php esc_html_e( 'Доставим и в', 'besedka' ); ?> «<span data-city-empty-name></span>»</span>
+					<button type="button" class="btn btn--primary" data-city-custom><?php esc_html_e( 'Выбрать', 'besedka' ); ?></button>
+				</div>
 			</div>
 		</div>
 		<?php

@@ -228,7 +228,6 @@ if ( ! function_exists( 'besedka_render_topbar' ) ) {
 						<span data-city-current><?php echo esc_html( $default_name ); ?></span>
 					</button>
 					<div class="topbar__help">
-						<span class="topbar__help-text"><?php esc_html_e( 'Нужна помощь с выбором?', 'besedka' ); ?></span>
 						<a class="topbar__social" href="<?php echo besedka_get_social_url( 'telegram' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Написать в Telegram', 'besedka' ); ?>">
 							<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.4 15.5l-.4 5 1.8-1.8 3.6 2.6 4-19-19 7.4 5.4 2 12-7.4z"/></svg>
 						</a>

@@ -311,8 +311,7 @@ body.no-scroll {
 }
 
 .topbar__link,
-.topbar__social,
-.topbar__help-text {
+.topbar__social {
   color: rgba(255, 255, 255, 0.75);
   transition: color var(--transition);
 }
@@ -322,7 +321,7 @@ body.no-scroll {
   color: #fff;
 }
 
-/* «Нужна помощь с выбором?» + Telegram и WhatsApp; на десктопе прижато вправо, перед ссылками */
+/* Telegram и WhatsApp; на десктопе прижаты вправо, перед ссылками */
 .topbar__help {
   display: flex;
   align-items: center;
@@ -3550,7 +3549,6 @@ body.no-scroll {
     margin-left: var(--space-3);
   }
 
-  .topbar__help-text,
   .topbar__divider {
     display: none;
   }

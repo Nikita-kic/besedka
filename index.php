@@ -32,8 +32,8 @@ if ( ! empty( $popular_fixed ) ) {
 		<div class="banners__grid">
 
 			<div class="banner banner--promo">
-				<a class="banner__link" href="<?php echo esc_url( home_url( '/product-category/drozhzhi/' ) ); ?>" aria-label="<?php esc_attr_e( 'Скидка 10% на все спиртовые дрожжи', 'besedka' ); ?>">
-					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/opening.jpg' ); ?>" alt="<?php esc_attr_e( 'Мы открылись — дарим скидку 10% на все спиртовые дрожжи в интернет-магазине', 'besedka' ); ?>" width="2000" height="667">
+				<a class="banner__link" href="<?php echo esc_url( home_url( '/product-category/drozhzhi/' ) ); ?>" aria-label="<?php esc_attr_e( 'Скидка 10% на все турбо-дрожжи', 'besedka' ); ?>">
+					<img class="banner__image" src="<?php echo esc_url( get_template_directory_uri() . '/img/banners/opening.jpg' ); ?>" alt="<?php esc_attr_e( '−10% на все турбо-дрожжи в честь открытия интернет-магазина', 'besedka' ); ?>" width="2000" height="667">
 				</a>
 				<div class="banner__timer countdown" data-countdown="<?php echo esc_attr( besedka_get_promo_end() ); ?>">
 					<div class="countdown__row">

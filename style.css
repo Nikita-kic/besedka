@@ -1153,8 +1153,9 @@ body.no-scroll {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  width: 133px;
+  width: 11em;
   padding-top: 14px;
+  font-size: 0.8625rem;
   text-align: center;
 }
 
@@ -1186,7 +1187,8 @@ body.no-scroll {
 }
 
 .type-selector__label {
-  font-size: 0.8625rem;
+  width: 100%;
+  min-height: calc(1.2em * 2);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;

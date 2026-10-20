@@ -274,7 +274,7 @@ for slug in "${!PRODUCT_PHOTOS[@]}"; do
 
   current_thumb=$(wp post meta get "$product_id" _thumbnail_id --allow-root 2>/dev/null || true)
   if [[ -z "$current_thumb" ]]; then
-    wp media import "$img_path" --post_id="$product_id" --featured_image --allow-root
+    wp media import "$img_path" --post_id="$product_id" --featured_image --title="${slug}-photo" --allow-root
   fi
 done
 
@@ -294,6 +294,10 @@ echo "== Создаём демо-рецепты =="
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-recipes.php --allow-root
 wp rewrite flush --allow-root
 
+echo "== Вложения: ярлык не должен совпадать с ярлыком категории или страницы =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/fix-attachment-slugs.php --allow-root
+
 echo "== Ярлыки товаров: единый транслит, схема тип-бренд-модель =="
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/apply-slugs.php --allow-root
@@ -302,6 +306,12 @@ echo "== Проверка каталога: категории и ярлыки (
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/check-catalog.php --allow-root || true
 wp rewrite flush --hard --allow-root
+
+echo "== Диагностика адресов (код ответа и переадресация) =="
+
+for path in "/catalog/" "/catalog/kubiki/" "/catalog/drozhzhi/" "/catalog/drozhzhi/turbo-drozhzhi-bragoff-48-universal/" "/product-category/kubiki/" "/shop/"; do
+  curl -s -o /dev/null -w "%{http_code} ${path} -> %{redirect_url}\n" "http://localhost${path}" || true
+done
 
 echo ""
 echo "== Готово =="

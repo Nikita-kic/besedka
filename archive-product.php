@@ -85,6 +85,7 @@ $params  = besedka_catalog_current_params();
 						<?php foreach ( $products as $product ) : ?>
 							<?php besedka_render_product_card( $product ); ?>
 						<?php endforeach; ?>
+						<?php besedka_render_category_set_banner( $term ); ?>
 					</div>
 				<?php else : ?>
 					<div class="catalog-empty">
@@ -107,16 +108,16 @@ $params  = besedka_catalog_current_params();
 									'format'   => '',
 									'total'    => $query->max_num_pages,
 									'current'  => $paged,
-									'type'     => 'list',
-									'add_args' => $params,
+									'type'      => 'list',
+									'prev_text' => '&larr;',
+									'next_text' => '&rarr;',
+									'add_args'  => $params,
 								)
 							)
 						);
 						?>
 					</nav>
 				<?php endif; ?>
-
-				<?php besedka_render_category_set_banner( $term ); ?>
 
 				<?php if ( $term && term_description( $term ) ) : ?>
 					<div class="seo-text"><?php echo wp_kses_post( term_description( $term ) ); ?></div>

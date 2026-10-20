@@ -139,3 +139,16 @@ if ( $yeast_term && $yeast_set ) {
 	}
 	WP_CLI::log( 'Категория «Спиртовые дрожжи»: связанный набор — Набор для сахарной браги' );
 }
+
+// Порядок разделов в каталоге (term order): задаётся только там, где ещё не расставлен вручную.
+foreach ( array( 'drozhzhi', 'nabory', 'ugol', 'kubiki', 'essencii', 'bonifikator', 'komplekt' ) as $position => $order_slug ) {
+	$order_term = get_term_by( 'slug', $order_slug, 'product_cat' );
+	if ( $order_term && 0 === (int) get_term_meta( $order_term->term_id, 'order', true ) ) {
+		update_term_meta( $order_term->term_id, 'order', $position + 1 );
+	}
+}
+
+// Набор по умолчанию для плашки на /catalog/ и в категориях без «Связанного набора».
+if ( $yeast_set && ! get_theme_mod( 'besedka_default_set' ) ) {
+	set_theme_mod( 'besedka_default_set', $yeast_set );
+}

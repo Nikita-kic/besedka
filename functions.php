@@ -506,7 +506,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 						<span class="product-card__badge product-card__badge--new"><?php esc_html_e( 'Новинка', 'besedka' ); ?></span>
 					<?php endif; ?>
 					<?php if ( $is_on_sale ) : ?>
-						<span class="product-card__badge product-card__badge--sale"><?php echo $discount ? esc_html( '-' . $discount . '%' ) : esc_html__( 'Скидка', 'besedka' ); ?></span>
+						<span class="product-card__badge product-card__badge--sale"><?php echo $discount ? esc_html( '−' . $discount . '%' ) : esc_html__( 'Скидка', 'besedka' ); ?></span>
 					<?php endif; ?>
 					<?php if ( $today ) : ?>
 						<span class="product-card__badge product-card__badge--today"><?php esc_html_e( 'Доставка сегодня', 'besedka' ); ?></span>

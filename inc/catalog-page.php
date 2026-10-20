@@ -155,7 +155,7 @@ if ( ! function_exists( 'besedka_catalog_args' ) ) {
 		$args = array(
 			'post_type'      => 'product',
 			'post_status'    => 'publish',
-			'posts_per_page' => $ids_only ? 1 : 12,
+			'posts_per_page' => $ids_only ? 1 : 30,
 			'paged'          => max( 1, (int) $paged ),
 			'tax_query'      => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery
 		);
@@ -330,6 +330,30 @@ if ( ! function_exists( 'besedka_catalog_attribute_values' ) ) {
 	}
 }
 
+/** Минимальная и максимальная цена в текущей выборке (категория + атрибуты, без фильтра по цене). */
+if ( ! function_exists( 'besedka_catalog_price_bounds' ) ) {
+	function besedka_catalog_price_bounds( $term ) {
+		global $wpdb;
+		$src = $_GET; // phpcs:ignore WordPress.Security.NonceVerification
+		unset( $src['min_price'], $src['max_price'] );
+		$args                   = besedka_catalog_args( $term instanceof WP_Term ? $term : null, $src, 1, true );
+		$args['posts_per_page'] = -1;
+		unset( $args['paged'] );
+		$ids = get_posts( $args );
+		if ( empty( $ids ) ) {
+			return array( null, null );
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+		$row          = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT MIN(CAST(meta_value AS DECIMAL(12,2))) AS min_price, MAX(CAST(meta_value AS DECIMAL(12,2))) AS max_price FROM {$wpdb->postmeta} WHERE meta_key = '_price' AND meta_value <> '' AND post_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+				$ids
+			)
+		);
+		return $row ? array( (float) $row->min_price, (float) $row->max_price ) : array( null, null );
+	}
+}
+
 /* ==========================================================================
    БОКОВАЯ ПАНЕЛЬ
    ========================================================================== */
@@ -341,11 +365,23 @@ if ( ! function_exists( 'besedka_render_catalog_aside' ) ) {
 				'taxonomy'   => 'product_cat',
 				'hide_empty' => false,
 				'exclude'    => $default_cat ? array( $default_cat ) : array(),
-				'orderby'    => 'name',
 			)
 		);
+		// Ручной порядок (term order WooCommerce, мета «order»); без значения — в конце, по названию.
+		usort(
+			$sections,
+			function ( $a, $b ) {
+				$order_a = get_term_meta( $a->term_id, 'order', true );
+				$order_b = get_term_meta( $b->term_id, 'order', true );
+				$order_a = '' === $order_a ? 9999 : (int) $order_a;
+				$order_b = '' === $order_b ? 9999 : (int) $order_b;
+				return $order_a === $order_b ? strcmp( $a->name, $b->name ) : $order_a - $order_b;
+			}
+		);
+		$all_count = (int) wp_count_posts( 'product' )->publish;
 		list( $min, $max ) = besedka_catalog_price_range();
 		$orderby            = besedka_catalog_orderby();
+		list( $bound_min, $bound_max ) = besedka_catalog_price_bounds( $term );
 		?>
 		<aside class="catalog-aside" data-catalog-aside aria-label="<?php esc_attr_e( 'Разделы и фильтры', 'besedka' ); ?>">
 			<button type="button" class="catalog-aside__close" data-catalog-close aria-label="<?php esc_attr_e( 'Закрыть', 'besedka' ); ?>">
@@ -354,6 +390,10 @@ if ( ! function_exists( 'besedka_render_catalog_aside' ) ) {
 
 			<nav class="catalog-sections" aria-label="<?php esc_attr_e( 'Разделы каталога', 'besedka' ); ?>">
 				<p class="eyebrow"><?php esc_html_e( 'Разделы', 'besedka' ); ?></p>
+				<a class="catalog-sections__link<?php echo $term instanceof WP_Term ? '' : ' is-active'; ?>" href="<?php echo esc_url( besedka_catalog_url() ); ?>"<?php echo $term instanceof WP_Term ? '' : ' aria-current="page"'; ?>>
+					<span><?php esc_html_e( 'Все товары', 'besedka' ); ?></span>
+					<span class="catalog-sections__count"><?php echo esc_html( $all_count ); ?></span>
+				</a>
 				<?php
 				foreach ( $sections as $section ) :
 					if ( is_wp_error( $section ) ) {
@@ -383,7 +423,7 @@ if ( ! function_exists( 'besedka_render_catalog_aside' ) ) {
 					$name     = besedka_catalog_param_name( $taxonomy ) . '[]';
 					?>
 					<fieldset class="catalog-filters__group">
-						<legend class="eyebrow"><?php echo esc_html( $config[0] ); ?></legend>
+						<legend class="catalog-filters__title"><?php echo esc_html( $config[0] ); ?></legend>
 						<?php if ( 'chip' === $config[1] ) : ?>
 							<div class="catalog-filters__chips">
 								<?php foreach ( $values as $value ) : ?>
@@ -406,10 +446,10 @@ if ( ! function_exists( 'besedka_render_catalog_aside' ) ) {
 				<?php endforeach; ?>
 
 				<fieldset class="catalog-filters__group">
-					<legend class="eyebrow"><?php esc_html_e( 'Цена, ₽', 'besedka' ); ?></legend>
+					<legend class="catalog-filters__title"><?php esc_html_e( 'Цена, ₽', 'besedka' ); ?></legend>
 					<div class="catalog-filters__price">
-						<input class="catalog-filters__input" type="number" name="min_price" min="0" inputmode="numeric" placeholder="<?php esc_attr_e( 'от', 'besedka' ); ?>" value="<?php echo null === $min ? '' : esc_attr( $min ); ?>" aria-label="<?php esc_attr_e( 'Цена от', 'besedka' ); ?>">
-						<input class="catalog-filters__input" type="number" name="max_price" min="0" inputmode="numeric" placeholder="<?php esc_attr_e( 'до', 'besedka' ); ?>" value="<?php echo null === $max ? '' : esc_attr( $max ); ?>" aria-label="<?php esc_attr_e( 'Цена до', 'besedka' ); ?>">
+						<input class="catalog-filters__input" type="number" name="min_price" min="0" inputmode="numeric" placeholder="<?php echo esc_attr( null === $bound_min ? __( 'от', 'besedka' ) : sprintf( __( 'от %s', 'besedka' ), number_format_i18n( $bound_min, 0 ) ) ); ?>" value="<?php echo null === $min ? '' : esc_attr( $min ); ?>" aria-label="<?php esc_attr_e( 'Цена от', 'besedka' ); ?>">
+						<input class="catalog-filters__input" type="number" name="max_price" min="0" inputmode="numeric" placeholder="<?php echo esc_attr( null === $bound_max ? __( 'до', 'besedka' ) : sprintf( __( 'до %s', 'besedka' ), number_format_i18n( $bound_max, 0 ) ) ); ?>" value="<?php echo null === $max ? '' : esc_attr( $max ); ?>" aria-label="<?php esc_attr_e( 'Цена до', 'besedka' ); ?>">
 					</div>
 				</fieldset>
 
@@ -425,12 +465,63 @@ if ( ! function_exists( 'besedka_render_catalog_aside' ) ) {
 /* ==========================================================================
    ПЛАШКА НАБОРА ПОД СЕТКОЙ
    ========================================================================== */
+/** Набор для плашки: «Связанный набор» категории, иначе набор по умолчанию (Customizer → «Каталог»), иначе набор №1. */
+if ( ! function_exists( 'besedka_resolve_catalog_set_id' ) ) {
+	function besedka_resolve_catalog_set_id( $term ) {
+		$set_id = $term instanceof WP_Term ? besedka_category_set_id( $term->term_id ) : 0;
+		if ( ! $set_id ) {
+			$set_id = absint( get_theme_mod( 'besedka_default_set', 0 ) );
+		}
+		if ( ! $set_id ) {
+			$sets   = besedka_get_sets();
+			$set_id = isset( $sets[1] ) ? $sets[1]->get_id() : 0;
+		}
+		return $set_id;
+	}
+}
+
+add_action(
+	'customize_register',
+	function ( $wp_customize ) {
+		$choices = array( 0 => __( '— не выбран (первый набор) —', 'besedka' ) );
+		if ( function_exists( 'wc_get_products' ) ) {
+			foreach ( wc_get_products( array( 'status' => 'publish', 'limit' => -1, 'category' => array( 'nabory' ) ) ) as $set ) {
+				$choices[ $set->get_id() ] = $set->get_name();
+			}
+		}
+		$wp_customize->add_section(
+			'besedka_catalog',
+			array(
+				'title'    => __( 'Каталог', 'besedka' ),
+				'priority' => 42,
+			)
+		);
+		$wp_customize->add_setting(
+			'besedka_default_set',
+			array(
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+			)
+		);
+		$wp_customize->add_control(
+			'besedka_default_set',
+			array(
+				'section'     => 'besedka_catalog',
+				'label'       => __( 'Набор по умолчанию', 'besedka' ),
+				'description' => __( 'Плашка «Готовый набор» на /catalog/ и в категориях без «Связанного набора».', 'besedka' ),
+				'type'        => 'select',
+				'choices'     => $choices,
+			)
+		);
+	}
+);
+
 if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
 	function besedka_render_category_set_banner( $term ) {
-		if ( ! ( $term instanceof WP_Term ) || ! function_exists( 'wc_get_product' ) ) {
+		if ( ! function_exists( 'wc_get_product' ) ) {
 			return;
 		}
-		$set_id = besedka_category_set_id( $term->term_id );
+		$set_id = besedka_resolve_catalog_set_id( $term );
 		$set    = $set_id ? wc_get_product( $set_id ) : null;
 		if ( ! $set || 'publish' !== get_post_status( $set_id ) ) {
 			return;

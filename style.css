@@ -38,6 +38,12 @@ Tags: e-commerce, custom-menu, featured-images, responsive-layout, translation-r
   --color-star: #ffb43a;
   --color-overlay: rgba(48, 48, 48, 0.55);
 
+  /* Начертания шрифта */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+
   /* Типографика */
   --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --fs-xs: 0.75rem;
@@ -176,7 +182,7 @@ body.no-scroll {
   background: #fff;
   color: var(--color-text);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   white-space: nowrap;
   box-shadow: var(--shadow-sm);
   transition: background var(--transition), color var(--transition);
@@ -196,7 +202,7 @@ body.no-scroll {
 .eyebrow {
   margin-bottom: 0;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 1.3;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -214,7 +220,7 @@ body.no-scroll {
   padding: 14px 28px;
   border-radius: var(--radius-round);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   white-space: nowrap;
   transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
@@ -290,7 +296,7 @@ body.no-scroll {
   align-items: center;
   gap: 6px;
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   transition: color var(--transition);
 }
 
@@ -405,7 +411,7 @@ body.no-scroll {
 
 .city-modal__title {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   margin-bottom: 14px;
 }
 
@@ -417,7 +423,7 @@ body.no-scroll {
 
 .city-modal__current strong {
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .city-modal__search {
@@ -439,7 +445,7 @@ body.no-scroll {
   align-items: center;
   gap: var(--space-2);
   font-size: var(--fs-sm);
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--color-text-muted);
   margin-bottom: var(--space-4);
 }
@@ -464,7 +470,7 @@ body.no-scroll {
 .city-modal__letter {
   display: block;
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   color: var(--color-accent);
   margin-bottom: var(--space-2);
 }
@@ -489,7 +495,7 @@ body.no-scroll {
 }
 
 .city-modal__item.is-current {
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .city-modal__empty {
@@ -538,7 +544,7 @@ body.no-scroll {
   align-items: center;
   gap: 10px;
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   color: var(--color-text);
 }
 
@@ -616,13 +622,13 @@ body.no-scroll {
 .header-search__mark {
   background: none;
   color: var(--color-text);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 /* Результаты поиска: название приглушено, совпадение выделено; «Популярные товары» не меняются */
 .header-search__panel--results .header-search__name {
   color: var(--color-text-muted);
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   transition: color var(--transition);
 }
 
@@ -639,7 +645,7 @@ body.no-scroll {
   flex-shrink: 0;
   padding: 0 20px;
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: #fff;
   background: var(--color-text);
   border-radius: 0 6px 6px 0;
@@ -687,14 +693,14 @@ body.no-scroll {
   flex: 1 1 auto;
   min-width: 0;
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   line-height: 1.3;
 }
 
 .header-search__price {
   flex-shrink: 0;
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-accent);
 }
 
@@ -708,7 +714,7 @@ body.no-scroll {
   display: block;
   padding: var(--space-3) var(--space-2) var(--space-1);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   text-align: left;
   color: var(--color-accent);
 }
@@ -778,7 +784,7 @@ body.no-scroll {
   .header-search.is-fullscreen .header-search__cancel {
     display: block;
     font-size: var(--fs-sm);
-    font-weight: 600;
+    font-weight: var(--fw-bold);
     color: var(--color-accent);
   }
 
@@ -800,7 +806,7 @@ body.no-scroll {
 }
 
 .header-top__address-line {
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
 }
 
@@ -825,7 +831,7 @@ body.no-scroll {
   align-items: center;
   gap: var(--space-1);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
   text-align: center;
   transition: color var(--transition);
@@ -837,7 +843,7 @@ body.no-scroll {
 
 .favorites-btn__label {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
 }
 
 .favorites-btn__icon {
@@ -867,7 +873,7 @@ body.no-scroll {
   background: var(--color-accent);
   color: #fff;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 16px;
   text-align: center;
 }
@@ -885,7 +891,7 @@ body.no-scroll {
 
 .header-top__phone {
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
   white-space: nowrap;
 }
@@ -957,7 +963,7 @@ body.no-scroll {
   margin-top: 0.8cqw;
   text-align: center;
   font-size: max(11px, 1.4cqw);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 1.2;
 }
 
@@ -979,7 +985,7 @@ body.no-scroll {
 
 .countdown__value {
   font-size: max(15px, 2.7cqw);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -1075,7 +1081,7 @@ body.no-scroll {
   display: none;
   align-items: center;
   gap: var(--space-2);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-sm);
 }
 
@@ -1094,7 +1100,7 @@ body.no-scroll {
 
 .filters__label {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -1145,7 +1151,7 @@ body.no-scroll {
 
 .type-selector__title {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .type-selector__list {
@@ -1196,7 +1202,7 @@ body.no-scroll {
 .type-selector__label {
   width: 100%;
   min-height: calc(1.2em * 2);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
   line-height: 1.2;
   transition: color var(--transition);
@@ -1219,7 +1225,7 @@ body.no-scroll {
 
 .filters__reset {
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text-muted);
   text-decoration: underline;
 }
@@ -1256,7 +1262,7 @@ body.no-scroll {
 
 .products__title {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .products__count {
@@ -1328,7 +1334,7 @@ body.no-scroll {
   padding: 5px 10px;
   border-radius: var(--radius-round);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: #fff;
   background: var(--color-text);
 }
@@ -1395,7 +1401,7 @@ body.no-scroll {
 .product-card__title {
   min-height: calc(1.35em * 2);
   font-size: 1.0625rem;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   line-height: 1.35;
   overflow: hidden;
   display: -webkit-box;
@@ -1427,7 +1433,7 @@ body.no-scroll {
 }
 
 .product-card__rating-value {
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-star);
 }
 
@@ -1465,7 +1471,7 @@ body.no-scroll {
 
 .product-card__price-current {
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
   white-space: nowrap;
 }
@@ -1482,7 +1488,7 @@ body.no-scroll {
   align-items: center;
   gap: 7px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   color: var(--color-text);
 }
 
@@ -1702,7 +1708,7 @@ body.no-scroll {
 
 .modal__title {
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .modal__favorite {
@@ -1755,7 +1761,7 @@ body.no-scroll {
 
 .modal__price {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .modal__price-old {
@@ -1770,7 +1776,7 @@ body.no-scroll {
   background: var(--color-sale-soft);
   color: var(--color-sale);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .modal__installment {
@@ -1799,7 +1805,7 @@ body.no-scroll {
   align-items: center;
   justify-content: center;
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .modal__counter-btn:hover {
@@ -1809,7 +1815,7 @@ body.no-scroll {
 .modal__counter-value {
   width: 36px;
   text-align: center;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   border: none;
   background: transparent;
 }
@@ -1834,7 +1840,7 @@ body.no-scroll {
 
 .modal__delivery-title {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .modal__delivery-address {
@@ -1881,7 +1887,7 @@ body.no-scroll {
 .product-info__title {
   margin-bottom: var(--space-3);
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
 }
 
@@ -1925,7 +1931,7 @@ body.no-scroll {
   margin: var(--space-3) 0;
   padding: var(--space-3) 18px;
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   line-height: 1.4;
   color: var(--color-accent-dark);
   background: var(--color-accent-soft);
@@ -1956,7 +1962,7 @@ body.no-scroll {
 }
 
 .product-info__table th {
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
 }
 
@@ -2073,7 +2079,7 @@ body.no-scroll {
 
 .section__title {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .section__subtitle {
@@ -2084,7 +2090,7 @@ body.no-scroll {
 
 .section__link-all {
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-accent);
   white-space: nowrap;
 }
@@ -2141,7 +2147,7 @@ body.no-scroll {
   bottom: 0;
   padding: var(--space-4) var(--space-3);
   text-align: center;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: #fff;
   font-size: var(--fs-sm);
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 100%);
@@ -2183,7 +2189,7 @@ body.no-scroll {
 
 .advantages__title {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   margin-bottom: 6px;
 }
 
@@ -2217,12 +2223,12 @@ body.no-scroll {
   border-radius: var(--radius-round);
   background: var(--color-accent);
   color: #fff;
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .steps__title {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   margin-bottom: 6px;
 }
 
@@ -2266,7 +2272,7 @@ body.no-scroll {
 
 .custom-order__title {
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   margin-bottom: var(--space-3);
 }
 
@@ -2297,7 +2303,7 @@ body.no-scroll {
 
 .custom-order__label {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text-muted);
 }
 
@@ -2373,7 +2379,7 @@ body.no-scroll {
   align-items: center;
   gap: var(--space-2);
   font-size: var(--fs-md);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   color: #fff;
   margin-bottom: 14px;
 }
@@ -2401,7 +2407,7 @@ body.no-scroll {
 
 .footer-col__title {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   margin-bottom: var(--space-4);
 }
 
@@ -2602,7 +2608,7 @@ body.no-scroll {
   border-radius: var(--radius-round);
   background: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
 }
 
@@ -2622,7 +2628,7 @@ body.no-scroll {
 
 .recipe-featured__title {
   font-size: 30px;
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.2;
 }
 
@@ -2659,7 +2665,7 @@ body.no-scroll {
 
 .recipe-featured__needs-label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text-muted);
 }
 
@@ -2676,7 +2682,7 @@ body.no-scroll {
 
 .recipe-featured__read {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
   text-decoration: underline;
   white-space: nowrap;
@@ -2748,7 +2754,7 @@ body.no-scroll {
 
 .recipe-row__title {
   font-size: 19px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 1.25;
   overflow: hidden;
   display: -webkit-box;
@@ -2765,7 +2771,7 @@ body.no-scroll {
 
 .recipe-row__price {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-accent-dark);
 }
 
@@ -2779,7 +2785,7 @@ body.no-scroll {
 .recipe-single__title {
   margin-bottom: var(--space-5);
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.15;
 }
 
@@ -2892,7 +2898,7 @@ body.no-scroll {
 
 .why__title {
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.15;
 }
 
@@ -2962,7 +2968,7 @@ body.no-scroll {
 .why__card-title {
   margin-bottom: var(--space-3);
   font-size: 19px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   line-height: 1.25;
 }
 
@@ -3217,7 +3223,7 @@ body.no-scroll {
   background: var(--color-accent-soft);
   color: var(--color-accent-dark);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 /* Горизонтальная карточка набора (нижний ряд): фото слева, текст справа. */
@@ -3289,7 +3295,7 @@ body.no-scroll {
 
 .set-featured__title {
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.2;
 }
 
@@ -3332,7 +3338,7 @@ body.no-scroll {
   min-width: 0;
   overflow: hidden;
   font-size: var(--fs-sm);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color var(--transition);
@@ -3359,7 +3365,7 @@ body.no-scroll {
 
 .set-featured__prices .product-card__price-current {
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .set-featured__actions {
@@ -3711,6 +3717,7 @@ body.no-scroll {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-weight: var(--fw-medium);
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
@@ -3725,12 +3732,12 @@ body.no-scroll {
 .catalog-sections__link.is-active {
   background: var(--color-accent-soft);
   color: var(--color-accent-dark);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .catalog-sections__count {
   font-size: var(--fs-sm);
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--color-text-muted);
 }
 
@@ -3760,7 +3767,7 @@ body.no-scroll {
 .catalog-filters__title {
   padding: 0;
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   color: var(--color-text);
 }
 
@@ -3829,7 +3836,7 @@ body.no-scroll {
 
 .catalog-head__title {
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.15;
 }
 
@@ -3958,7 +3965,7 @@ body.no-scroll {
 
 .set-banner__title {
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.2;
 }
 
@@ -3982,7 +3989,7 @@ body.no-scroll {
 
 .set-banner__price {
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
 }
 
 .set-banner__old {
@@ -3996,7 +4003,7 @@ body.no-scroll {
   background: var(--color-text);
   color: var(--color-bg);
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   white-space: nowrap;
   transition: background var(--transition);
 }
@@ -4075,7 +4082,7 @@ body.no-scroll {
   .catalog-sheet__link.is-active {
     background: var(--color-accent-soft);
     color: var(--color-accent-dark);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 
   .catalog-overlay {
@@ -4128,7 +4135,7 @@ body.no-scroll {
     border-radius: var(--radius-round);
     background: var(--color-bg-soft);
     font-size: var(--fs-sm);
-    font-weight: 600;
+    font-weight: var(--fw-bold);
   }
 
   .catalog-tools__count {
@@ -4198,7 +4205,7 @@ body.no-scroll {
 .page__title {
   margin-bottom: var(--space-5);
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-extrabold);
   line-height: 1.15;
 }
 
@@ -4228,7 +4235,7 @@ body.no-scroll {
   border-radius: var(--radius-round);
   background: var(--color-accent);
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   cursor: pointer;
 }
 

@@ -127,3 +127,15 @@ foreach ( $sets as $set ) {
 
 	WP_CLI::log( ( $is_new ? 'Создан' : 'Обновлён' ) . " набор #$id: {$set['name']} — $price ₽ вместо $sum ₽" );
 }
+
+// Категория «Спиртовые дрожжи»: связанный набор для плашки под сеткой.
+$yeast_term = get_term_by( 'slug', 'drozhzhi', 'product_cat' );
+$yeast_set  = $find( 'Набор для сахарной браги' );
+if ( $yeast_term && $yeast_set ) {
+	if ( function_exists( 'update_field' ) ) {
+		update_field( 'related_set', $yeast_set, 'product_cat_' . $yeast_term->term_id );
+	} else {
+		update_term_meta( $yeast_term->term_id, 'related_set', $yeast_set );
+	}
+	WP_CLI::log( 'Категория «Спиртовые дрожжи»: связанный набор — Набор для сахарной браги' );
+}

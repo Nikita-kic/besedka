@@ -499,7 +499,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 				<img class="product-card__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" width="600" height="600">
 
 				<div class="product-card__badges">
-					<?php if ( $is_hit ) : ?>
+					<?php if ( $is_hit && ! $is_on_sale ) : ?>
 						<span class="product-card__badge product-card__badge--hit"><?php esc_html_e( 'Хит', 'besedka' ); ?></span>
 					<?php endif; ?>
 					<?php if ( $is_new ) : ?>
@@ -521,11 +521,13 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 			<div class="product-card__body">
 				<h3 class="product-card__title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a></h3>
 
+				<p class="product-card__desc"><?php echo esc_html( wp_strip_all_tags( $product->get_short_description() ) ); ?></p>
+
 				<div class="product-card__meta">
 					<div class="product-card__prices">
 						<?php if ( $is_on_sale && $sale ) : ?>
 							<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $sale ) ); ?></span>
-							<span class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
+							<del class="product-card__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></del>
 						<?php else : ?>
 							<span class="product-card__price-current"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
 						<?php endif; ?>
@@ -537,8 +539,6 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 							<span class="product-card__rating-value"><?php echo esc_html( number_format_i18n( (float) $rating, 2 ) ); ?></span>
 							<span class="product-card__rating-count"><?php echo esc_html( $review_count ); ?></span>
 						</span>
-					<?php else : ?>
-						<span class="product-card__rating product-card__rating--empty"><?php esc_html_e( 'Нет отзывов', 'besedka' ); ?></span>
 					<?php endif; ?>
 				</div>
 
@@ -1607,3 +1607,6 @@ require_once BESEDKA_DIR . '/inc/recipes.php';
 
 // Адреса каталога: ссылки, canonical, 301-редиректы, хлебные крошки.
 require_once BESEDKA_DIR . '/inc/catalog-urls.php';
+
+// Страница категории: фильтры, сортировка, плашка набора.
+require_once BESEDKA_DIR . '/inc/catalog-page.php';

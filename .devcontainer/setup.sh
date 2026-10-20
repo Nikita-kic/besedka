@@ -195,6 +195,7 @@ create_product() {
     "--type=simple"
     "--regular_price=$price"
     "--categories=[{\"slug\":\"$cat\"}]"
+    "--short_description=$composition"
     "--user=$WP_ADMIN_USER"
     --allow-root
     --porcelain

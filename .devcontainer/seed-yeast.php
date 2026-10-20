@@ -36,6 +36,10 @@ foreach ( $products as $item ) {
 	$product->set_name( $item['name'] );
 	$product->set_status( 'publish' );
 	$product->set_description( $item['description'] );
+	if ( '' === trim( (string) $product->get_short_description() ) ) {
+		$sentences = preg_split( '/(?<=[.!?])\s+/u', $item['description'] );
+		$product->set_short_description( $sentences[0] );
+	}
 	if ( $is_new ) {
 		$product->set_regular_price( (string) $item['price'] );
 	}

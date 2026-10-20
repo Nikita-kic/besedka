@@ -33,6 +33,7 @@
 		initCountdown();
 		initSetsCarousel();
 		initAddedFeedback();
+		initCatalogPage();
 	} );
 
 	/* ==========================================================================
@@ -1008,6 +1009,123 @@
 			setTimeout( function () {
 				el.textContent = original;
 			}, 1500 );
+		} );
+	}
+
+	/* ==========================================================================
+	   17. СТРАНИЦА КАТЕГОРИИ: ФИЛЬТРЫ, ШТОРКА, СОРТИРОВКА
+	   ========================================================================== */
+	function initCatalogPage() {
+		var aside = qs( '[data-catalog-aside]' );
+		if ( ! aside ) {
+			return;
+		}
+		var overlay = qs( '[data-catalog-overlay]' );
+		var sheet = qs( '[data-catalog-sort-sheet]' );
+		var form = qs( '[data-catalog-filters]' );
+		var apply = qs( '[data-catalog-apply]' );
+		var sortSelect = qs( '[data-catalog-sort]' );
+		var narrow = window.matchMedia( '(max-width: 1024px)' );
+		var countTimer = null;
+
+		function closePanels() {
+			[ aside, sheet, overlay ].forEach( function ( el ) {
+				if ( el ) {
+					el.classList.remove( 'is-open' );
+				}
+			} );
+			lockScroll( false );
+		}
+
+		function openPanel( panel ) {
+			closePanels();
+			panel.classList.add( 'is-open' );
+			overlay.classList.add( 'is-open' );
+			lockScroll( true );
+		}
+
+		qsa( '[data-catalog-open]' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				openPanel( 'sort' === btn.getAttribute( 'data-catalog-open' ) ? sheet : aside );
+			} );
+		} );
+
+		qsa( '[data-catalog-close]' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', closePanels );
+		} );
+
+		if ( overlay ) {
+			overlay.addEventListener( 'click', closePanels );
+		}
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key && aside.classList.contains( 'is-open' ) ) {
+				closePanels();
+			}
+		} );
+
+		narrow.addEventListener( 'change', function () {
+			if ( ! narrow.matches ) {
+				closePanels();
+			}
+		} );
+
+		// Сортировка: меняем orderby в адресе, фильтры сохраняются.
+		if ( sortSelect ) {
+			sortSelect.addEventListener( 'change', function () {
+				var params = new URLSearchParams( window.location.search );
+				params.set( 'orderby', sortSelect.value );
+				params.delete( 'paged' );
+				var path = window.location.pathname.replace( /page\/\d+\/?$/, '' );
+				window.location.href = path + '?' + params.toString();
+			} );
+		}
+
+		if ( ! form ) {
+			return;
+		}
+
+		function stripEmpty() {
+			qsa( 'input[type="number"]', form ).forEach( function ( input ) {
+				input.disabled = '' === input.value;
+			} );
+		}
+
+		function updateCount() {
+			if ( ! apply ) {
+				return;
+			}
+			clearTimeout( countTimer );
+			countTimer = setTimeout( function () {
+				var params = new URLSearchParams( new FormData( form ) );
+				params.set( 'action', 'besedka_catalog_count' );
+				params.set( 'category', form.getAttribute( 'data-category' ) || '' );
+				fetch( cfg.ajaxUrl + '?' + params.toString(), { credentials: 'same-origin' } )
+					.then( function ( response ) {
+						return response.json();
+					} )
+					.then( function ( json ) {
+						if ( json && json.success ) {
+							apply.textContent = json.data.label;
+						}
+					} )
+					.catch( function () {} );
+			}, 200 );
+		}
+
+		form.addEventListener( 'submit', stripEmpty );
+
+		form.addEventListener( 'change', function ( event ) {
+			var chip = event.target.closest( '.chip' );
+			if ( chip ) {
+				chip.classList.toggle( 'is-active', event.target.checked );
+			}
+			if ( narrow.matches ) {
+				updateCount();
+			} else {
+				stripEmpty();
+				form.submit();
+			}
 		} );
 	}
 })();

@@ -1135,8 +1135,15 @@ body.no-scroll {
   margin-bottom: 44px;
 }
 
-.type-selector__title {
+.type-selector__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
   margin-bottom: 28px;
+}
+
+.type-selector__title {
   font-size: var(--fs-xl);
   font-weight: 800;
 }
@@ -2385,6 +2392,15 @@ body.no-scroll {
   font-size: var(--fs-sm);
   font-weight: 700;
   margin-bottom: var(--space-4);
+}
+
+.footer-col__title a {
+  color: inherit;
+  transition: color var(--transition);
+}
+
+.footer-col__title a:hover {
+  color: var(--color-accent);
 }
 
 .footer-col__list {

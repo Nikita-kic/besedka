@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<!-- Колонка 3: каталог -->
 			<div class="footer-col">
-				<h3 class="footer-col__title"><?php esc_html_e( 'Каталог', 'besedka' ); ?></h3>
+				<h3 class="footer-col__title"><a href="<?php echo esc_url( besedka_catalog_url() ); ?>"><?php esc_html_e( 'Каталог', 'besedka' ); ?></a></h3>
 				<ul class="footer-col__list">
 					<?php
 					if ( has_nav_menu( 'footer-catalog' ) ) {

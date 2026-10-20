@@ -371,7 +371,10 @@ if ( ! function_exists( 'besedka_render_category_selector' ) ) {
 		$selected_slug     = ( $current_category instanceof WP_Term ) ? $current_category->slug : '';
 		?>
 		<div class="type-selector">
-			<h2 class="type-selector__title"><?php esc_html_e( 'Категории', 'besedka' ); ?></h2>
+			<div class="type-selector__head">
+				<h2 class="type-selector__title"><?php esc_html_e( 'Категории', 'besedka' ); ?></h2>
+				<a class="section__link-all" href="<?php echo esc_url( besedka_catalog_url() ); ?>"><?php esc_html_e( 'Весь каталог', 'besedka' ); ?> &rarr;</a>
+			</div>
 			<div class="type-selector__list">
 				<?php foreach ( $categories as $slug => $category ) :
 					$is_active = ( $selected_slug === $slug );

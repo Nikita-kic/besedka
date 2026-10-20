@@ -68,6 +68,32 @@ if ( ! function_exists( 'besedka_output_canonical' ) ) {
 add_filter( 'pre_redirect_guess_404_permalink', '__return_false' );
 
 /* ==========================================================================
+   ЯВНЫЕ ПРАВИЛА ДЛЯ /catalog/{категория}/ (поверх правил WooCommerce)
+   Страница «Каталог» (/catalog/) и категории делят один префикс; если правило категории
+   не выстроилось — адрес попадает в правило страницы и отдаёт 404 (рисуется как главная).
+   ========================================================================== */
+add_action(
+	'init',
+	function () {
+		add_rewrite_rule( '^catalog/([^/]+)/page/([0-9]+)/?$', 'index.php?product_cat=$matches[1]&paged=$matches[2]', 'top' );
+		add_rewrite_rule( '^catalog/([^/]+)/?$', 'index.php?product_cat=$matches[1]', 'top' );
+	},
+	20
+);
+
+// Один раз сбрасываем правила после обновления темы (без ручного wp rewrite flush).
+add_action(
+	'init',
+	function () {
+		if ( '1' !== get_option( 'besedka_rewrite_rules_version' ) ) {
+			flush_rewrite_rules( false );
+			update_option( 'besedka_rewrite_rules_version', '1' );
+		}
+	},
+	99
+);
+
+/* ==========================================================================
    301-РЕДИРЕКТЫ
    ========================================================================== */
 /** Товар по ярлыку: текущему или прежнему (_wp_old_slug после смены ярлыка). */

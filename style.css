@@ -1137,7 +1137,7 @@ body.no-scroll {
 
 .type-selector__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: flex-start;
   gap: var(--space-5);
   margin-bottom: 28px;

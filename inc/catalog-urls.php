@@ -64,6 +64,25 @@ if ( ! function_exists( 'besedka_output_canonical' ) ) {
 /* ==========================================================================
    301-РЕДИРЕКТЫ
    ========================================================================== */
+/** Товар по ярлыку: текущему или прежнему (_wp_old_slug после смены ярлыка). */
+if ( ! function_exists( 'besedka_find_product_by_slug' ) ) {
+	function besedka_find_product_by_slug( $slug ) {
+		global $wpdb;
+		$post = get_page_by_path( rawurldecode( $slug ), OBJECT, 'product' );
+		if ( $post ) {
+			return $post;
+		}
+		$old = strtolower( rawurlencode( rawurldecode( $slug ) ) );
+		$id  = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_wp_old_slug' WHERE p.post_type = 'product' AND p.post_status = 'publish' AND m.meta_value = %s LIMIT 1",
+				$old
+			)
+		);
+		return $id ? get_post( $id ) : null;
+	}
+}
+
 if ( ! function_exists( 'besedka_legacy_redirects' ) ) {
 	function besedka_legacy_redirects() {
 		if ( is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
@@ -92,8 +111,14 @@ if ( ! function_exists( 'besedka_legacy_redirects' ) ) {
 			$target    = home_url( '/' . $cat_base . '/' . $m[1] . '/' );
 		} elseif ( preg_match( '#^product/([^/]+)$#', $rel, $m ) ) {
 			// /product/{slug}/ → /catalog/{категория}/{slug}/
-			$post = get_page_by_path( rawurldecode( $m[1] ), OBJECT, 'product' );
+			$post = besedka_find_product_by_slug( $m[1] );
 			if ( $post ) {
+				$target = get_permalink( $post );
+			}
+		} elseif ( is_404() && preg_match( '#^[^/]+/[^/]+/([^/]+)$#', $rel, $m ) ) {
+			// /catalog/{категория}/{старый-ярлык}/ → актуальный адрес товара.
+			$post = besedka_find_product_by_slug( $m[1] );
+			if ( $post && trailingslashit( get_permalink( $post ) ) !== trailingslashit( home_url( '/' . $rel ) ) ) {
 				$target = get_permalink( $post );
 			}
 		} elseif ( '' !== $path && '/' !== substr( $path, -1 ) && get_option( 'permalink_structure' ) ) {

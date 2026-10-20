@@ -294,6 +294,10 @@ echo "== Создаём демо-рецепты =="
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-recipes.php --allow-root
 wp rewrite flush --allow-root
 
+echo "== Ярлыки товаров: единый транслит, схема тип-бренд-модель =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/apply-slugs.php --allow-root
+
 echo "== Проверка каталога: категории и ярлыки (отчёт, ничего не меняет) =="
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/check-catalog.php --allow-root || true

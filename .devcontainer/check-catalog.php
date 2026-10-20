@@ -9,17 +9,13 @@
 $translit = array(
 	'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd', 'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'i',
 	'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', 'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't',
-	'у' => 'u', 'ф' => 'f', 'х' => 'kh', 'ц' => 'ts', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shch', 'ъ' => '', 'ы' => 'y', 'ь' => '',
+	'у' => 'u', 'ф' => 'f', 'х' => 'h', 'ц' => 'ts', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch', 'ъ' => '', 'ы' => 'y', 'ь' => '',
 	'э' => 'e', 'ю' => 'yu', 'я' => 'ya',
 );
 $stop_words = array( 'product', 'tovar', 'copy', 'kopiya', 'draft', 'test' );
 
-// Предпочтительные ярлыки товаров-дрожжей — из данных темы.
-$preferred = array();
-$yeast     = include get_theme_root() . '/besedka/inc/products-yeast.php';
-foreach ( $yeast as $row ) {
-	$preferred[ $row['name'] ] = $row['slug'];
-}
+// Утверждённые ярлыки: inc/slugs.php (название => slug).
+$preferred = include get_theme_root() . '/besedka/inc/slugs.php';
 
 $propose = function ( $title ) use ( $translit, $stop_words, $preferred ) {
 	if ( isset( $preferred[ $title ] ) ) {

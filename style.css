@@ -1307,7 +1307,10 @@ body.no-scroll {
   background: #f6f6f6;
 }
 
+/* Картинка заполняет квадратную область обёртки и не зависит от процентной высоты. */
 .product-card__image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   padding: 22px;

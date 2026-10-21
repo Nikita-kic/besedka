@@ -73,11 +73,15 @@ if ( ! function_exists( 'besedka_setup' ) ) {
    ========================================================================== */
 if ( ! function_exists( 'besedka_scripts' ) ) {
 	function besedka_scripts() {
+		// Версия по дате изменения файла: после каждого git pull браузер получает свежие стили и скрипт.
+		$style_version  = file_exists( BESEDKA_DIR . '/style.css' ) ? filemtime( BESEDKA_DIR . '/style.css' ) : BESEDKA_VERSION;
+		$script_version = file_exists( BESEDKA_DIR . '/script.js' ) ? filemtime( BESEDKA_DIR . '/script.js' ) : BESEDKA_VERSION;
+
 		// Основной файл стилей темы.
-		wp_enqueue_style( 'besedka-style', get_stylesheet_uri(), array(), BESEDKA_VERSION );
+		wp_enqueue_style( 'besedka-style', get_stylesheet_uri(), array(), $style_version );
 
 		// Основной файл скриптов темы.
-		wp_enqueue_script( 'besedka-script', BESEDKA_URI . '/script.js', array(), BESEDKA_VERSION, true );
+		wp_enqueue_script( 'besedka-script', BESEDKA_URI . '/script.js', array(), $script_version, true );
 
 		// Данные для script.js: адреса AJAX, nonce, ссылки.
 		wp_localize_script(

@@ -32,6 +32,7 @@
 		initSetsCarousel();
 		initAddedFeedback();
 		initCatalogPage();
+		initProductPage();
 	} );
 
 	/* ==========================================================================
@@ -193,119 +194,6 @@
 			syncFavoriteButtons( id );
 		} );
 	}
-
-	/* ==========================================================================
-	   7. ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ТОВАРА (СТРАНИЦА ТОВАРА)
-	   ========================================================================== */
-	function initGallery( scope ) {
-		var images = qsa( '[data-gallery-image]', scope );
-		var thumbs = qsa( '[data-gallery-thumb]', scope );
-		var prevBtn = qs( '[data-gallery-prev]', scope );
-		var nextBtn = qs( '[data-gallery-next]', scope );
-		if ( images.length < 2 ) {
-			return;
-		}
-
-		var current = 0;
-
-		function show( index ) {
-			current = ( index + images.length ) % images.length;
-			images.forEach( function ( img, i ) {
-				img.style.display = i === current ? '' : 'none';
-			} );
-			thumbs.forEach( function ( thumb, i ) {
-				thumb.classList.toggle( 'is-active', i === current );
-			} );
-		}
-
-		thumbs.forEach( function ( thumb, i ) {
-			thumb.addEventListener( 'click', function () {
-				show( i );
-			} );
-		} );
-
-		if ( prevBtn ) {
-			prevBtn.addEventListener( 'click', function () {
-				show( current - 1 );
-			} );
-		}
-		if ( nextBtn ) {
-			nextBtn.addEventListener( 'click', function () {
-				show( current + 1 );
-			} );
-		}
-	}
-
-	// Инициализация галереи для страницы товара (single-product.php), если она есть при загрузке.
-	initGallery( document );
-
-	/* ==========================================================================
-	   8. СЧЁТЧИК КОЛИЧЕСТВА (+ / −)
-	   ========================================================================== */
-	function initCounter( scope ) {
-		var minusBtn = qs( '[data-counter-minus]', scope );
-		var plusBtn = qs( '[data-counter-plus]', scope );
-		var value = qs( '[data-counter-value]', scope );
-		if ( ! value ) {
-			return;
-		}
-
-		function set( n ) {
-			var qty = Math.max( 1, n || 1 );
-			value.value = qty;
-
-			// Количество уходит в стандартную кнопку WooCommerce и в ссылку «Купить сейчас».
-			var area = value.closest( '.modal__info' ) || scope;
-			qsa( '.add_to_cart_button', area ).forEach( function ( btn ) {
-				btn.setAttribute( 'data-quantity', qty );
-			} );
-			qsa( '[data-buy-now]', area ).forEach( function ( link ) {
-				try {
-					var url = new URL( link.href, window.location.href );
-					url.searchParams.set( 'quantity', qty );
-					link.href = url.toString();
-				} catch ( e ) {}
-			} );
-		}
-
-		if ( minusBtn ) {
-			minusBtn.addEventListener( 'click', function () {
-				set( parseInt( value.value, 10 ) - 1 );
-			} );
-		}
-		if ( plusBtn ) {
-			plusBtn.addEventListener( 'click', function () {
-				set( parseInt( value.value, 10 ) + 1 );
-			} );
-		}
-	}
-
-	initCounter( document );
-
-	/* ==========================================================================
-	   9. ВКЛАДКИ ОПИСАНИЯ ТОВАРА (ОПИСАНИЕ / СОСТАВ / УХОД)
-	   ========================================================================== */
-	function initTabs( scope ) {
-		var tabs = qsa( '[data-tab]', scope );
-		tabs.forEach( function ( tab ) {
-			tab.addEventListener( 'click', function () {
-				var target = tab.getAttribute( 'data-tab' );
-
-				qsa( '[data-tab]', scope ).forEach( function ( t ) {
-					t.classList.remove( 'is-active' );
-				} );
-				tab.classList.add( 'is-active' );
-
-				qsa( '[data-tab-panel]', scope ).forEach( function ( panel ) {
-					panel.classList.toggle( 'is-active', panel.getAttribute( 'data-tab-panel' ) === target );
-				} );
-			} );
-		} );
-	}
-
-	initTabs( document );
-
-	/* 10. Корзина: добавление товара выполняет стандартный скрипт WooCommerce (см. раздел 16). */
 
 	/* ==========================================================================
 	   11. ФОРМА ИНДИВИДУАЛЬНОГО ЗАКАЗА «ПОДОБРАТЬ БУКЕТ»
@@ -1035,6 +923,275 @@
 				stripEmpty();
 				form.submit();
 			}
+		} );
+	}
+
+	/* ==========================================================================
+	   18. СТРАНИЦА ТОВАРА: ГАЛЕРЕЯ, КОЛИЧЕСТВО, ВКЛАДКИ, ОТЗЫВЫ, ОКНО «НАПИСАТЬ ОТЗЫВ»
+	   ========================================================================== */
+	function initProductPage() {
+		var root = qs( '[data-pp]' );
+		if ( ! root ) {
+			return;
+		}
+
+		/* --- Галерея: клик по миниатюре подменяет главное фото --- */
+		var mainImage = qs( '[data-pp-main]', root );
+		var thumbs = qsa( '[data-pp-thumb]', root );
+		thumbs.forEach( function ( thumb ) {
+			thumb.addEventListener( 'click', function () {
+				if ( mainImage ) {
+					mainImage.src = thumb.getAttribute( 'data-src' );
+				}
+				thumbs.forEach( function ( t ) {
+					t.classList.toggle( 'is-active', t === thumb );
+				} );
+			} );
+		} );
+
+		/* --- Количество: все счётчики на странице синхронны, значение уходит в data-quantity кнопок --- */
+		var qty = 1;
+		function applyQty() {
+			qsa( '[data-pp-qty]', root ).forEach( function ( input ) {
+				input.value = qty;
+			} );
+			qsa( '.add_to_cart_button', root ).forEach( function ( btn ) {
+				btn.setAttribute( 'data-quantity', qty );
+			} );
+		}
+		root.addEventListener( 'click', function ( event ) {
+			if ( event.target.closest( '[data-pp-minus]' ) ) {
+				qty = Math.max( 1, qty - 1 );
+				applyQty();
+			} else if ( event.target.closest( '[data-pp-plus]' ) ) {
+				qty += 1;
+				applyQty();
+			}
+		} );
+
+		/* --- Вкладки с якорями #description / #specs / #reviews --- */
+		var tabs = qsa( '[data-pp-tab]', root );
+		var panels = qsa( '[data-pp-panel]', root );
+		function showTab( key, updateHash ) {
+			var found = panels.some( function ( p ) {
+				return p.getAttribute( 'data-pp-panel' ) === key;
+			} );
+			if ( ! found ) {
+				key = 'description';
+			}
+			panels.forEach( function ( panel ) {
+				panel.hidden = panel.getAttribute( 'data-pp-panel' ) !== key;
+			} );
+			tabs.forEach( function ( tab ) {
+				tab.classList.toggle( 'is-active', tab.getAttribute( 'data-pp-tab' ) === key );
+			} );
+			if ( updateHash && window.history && window.history.replaceState ) {
+				window.history.replaceState( null, '', '#' + key );
+			}
+		}
+		tabs.forEach( function ( tab ) {
+			tab.addEventListener( 'click', function ( event ) {
+				event.preventDefault();
+				showTab( tab.getAttribute( 'data-pp-tab' ), true );
+			} );
+		} );
+		function fromHash() {
+			var key = window.location.hash.replace( '#', '' );
+			showTab( key, false );
+			if ( key && qs( '#' + key ) && panels.length ) {
+				qs( '[data-pp-tabs]', root ).scrollIntoView( { behavior: 'smooth', block: 'start' } );
+			}
+		}
+		window.addEventListener( 'hashchange', fromHash );
+		showTab( window.location.hash.replace( '#', '' ), false );
+		if ( window.location.hash ) {
+			setTimeout( fromHash, 0 );
+		}
+
+		/* --- Отзывы: показываем 3, «Показать все»; фильтр «Новые» / «Негативные» --- */
+		var list = qs( '[data-pp-review-list]', root );
+		var reviews = list ? qsa( '.pp-review', list ) : [];
+		var expanded = false;
+		var filter = 'new';
+		function renderReviews() {
+			var shown = 0;
+			reviews.forEach( function ( review ) {
+				var rating = parseInt( review.getAttribute( 'data-rating' ), 10 ) || 0;
+				var match = 'negative' === filter ? rating <= 3 : true;
+				var visible = match && ( expanded || shown < 3 );
+				review.hidden = ! visible;
+				if ( match ) {
+					shown++;
+				}
+			} );
+			var more = qs( '[data-pp-review-more]', root );
+			if ( more ) {
+				more.hidden = expanded || shown <= 3;
+			}
+		}
+		if ( reviews.length ) {
+			renderReviews();
+			var more = qs( '[data-pp-review-more]', root );
+			if ( more ) {
+				more.addEventListener( 'click', function () {
+					expanded = true;
+					renderReviews();
+				} );
+			}
+			qsa( '[data-pp-filter]', root ).forEach( function ( btn ) {
+				btn.addEventListener( 'click', function () {
+					filter = btn.getAttribute( 'data-pp-filter' );
+					qsa( '[data-pp-filter]', root ).forEach( function ( b ) {
+						b.classList.toggle( 'is-active', b === btn );
+					} );
+					renderReviews();
+				} );
+			} );
+		}
+
+		/* --- «С этим покупают»: стрелки листают ленту --- */
+		var track = qs( '[data-pp-cross-track]', root );
+		if ( track ) {
+			var step = function ( dir ) {
+				var card = qs( '.cross-card', track );
+				var width = card ? card.getBoundingClientRect().width : track.clientWidth;
+				track.scrollBy( { left: dir * ( width + 16 ), behavior: 'smooth' } );
+			};
+			var prev = qs( '[data-pp-cross-prev]', root );
+			var next = qs( '[data-pp-cross-next]', root );
+			if ( prev ) {
+				prev.addEventListener( 'click', function () {
+					step( -1 );
+				} );
+			}
+			if ( next ) {
+				next.addEventListener( 'click', function () {
+					step( 1 );
+				} );
+			}
+		}
+
+		/* --- Окно «Написать отзыв» --- */
+		var modal = qs( '[data-review-modal]', root );
+		var form = qs( '[data-review-form]', root );
+		var thanks = qs( '[data-review-thanks]', root );
+		if ( ! modal || ! form ) {
+			return;
+		}
+		var captions = [ '', 'Плохо', 'Так себе', 'Нормально', 'Хорошо', 'Отлично' ];
+		var starButtons = qsa( '[data-star]', form );
+		var ratingInput = qs( '[data-review-rating]', form );
+		var caption = qs( '[data-review-caption]', form );
+
+		function setRating( value ) {
+			ratingInput.value = value;
+			starButtons.forEach( function ( star ) {
+				var n = parseInt( star.getAttribute( 'data-star' ), 10 );
+				star.classList.toggle( 'is-on', n <= value );
+				star.setAttribute( 'aria-checked', n === value ? 'true' : 'false' );
+			} );
+			caption.textContent = captions[ value ] || '';
+		}
+
+		function clearErrors() {
+			qsa( '[data-error-for]', form ).forEach( function ( el ) {
+				el.hidden = true;
+				el.textContent = '';
+			} );
+		}
+
+		function showErrors( errors ) {
+			Object.keys( errors ).forEach( function ( field ) {
+				var el = qs( '[data-error-for="' + field + '"]', form );
+				if ( el ) {
+					el.textContent = errors[ field ];
+					el.hidden = false;
+				}
+			} );
+		}
+
+		function openReview() {
+			form.hidden = false;
+			thanks.hidden = true;
+			clearErrors();
+			modal.classList.add( 'is-open' );
+			modal.setAttribute( 'aria-hidden', 'false' );
+			lockScroll( true );
+		}
+
+		function closeReview() {
+			modal.classList.remove( 'is-open' );
+			modal.setAttribute( 'aria-hidden', 'true' );
+			lockScroll( false );
+		}
+
+		qsa( '[data-review-open]', root ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', openReview );
+		} );
+		qsa( '[data-review-close]', modal ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', closeReview );
+		} );
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key && modal.classList.contains( 'is-open' ) ) {
+				closeReview();
+			}
+		} );
+		starButtons.forEach( function ( star ) {
+			star.addEventListener( 'click', function () {
+				setRating( parseInt( star.getAttribute( 'data-star' ), 10 ) );
+			} );
+		} );
+
+		form.addEventListener( 'submit', function ( event ) {
+			event.preventDefault();
+			clearErrors();
+
+			var errors = {};
+			if ( ! ratingInput.value ) {
+				errors.rating = 'Поставьте оценку';
+			}
+			if ( ! form.elements.content.value.trim() ) {
+				errors.content = 'Расскажите, как всё прошло';
+			}
+			if ( ! form.elements.name.value.trim() ) {
+				errors.name = 'Укажите имя';
+			}
+			if ( ! form.elements.consent.checked ) {
+				errors.consent = 'Нужно ваше согласие';
+			}
+			if ( Object.keys( errors ).length ) {
+				showErrors( errors );
+				return;
+			}
+
+			var data = new FormData( form );
+			data.append( 'action', 'besedka_submit_review' );
+			data.append( 'nonce', form.getAttribute( 'data-nonce' ) );
+			data.append( 'product_id', form.getAttribute( 'data-product-id' ) );
+
+			var submit = qs( '[type="submit"]', form );
+			submit.disabled = true;
+			fetch( cfg.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' } )
+				.then( function ( response ) {
+					return response.json();
+				} )
+				.then( function ( json ) {
+					submit.disabled = false;
+					if ( json && json.success ) {
+						form.hidden = true;
+						thanks.hidden = false;
+						form.reset();
+						setRating( 0 );
+					} else if ( json && json.data && json.data.errors ) {
+						showErrors( json.data.errors );
+					} else {
+						showErrors( { form: ( json && json.data && json.data.message ) || 'Не удалось отправить отзыв, попробуйте ещё раз' } );
+					}
+				} )
+				.catch( function () {
+					submit.disabled = false;
+					showErrors( { form: 'Не удалось отправить отзыв, попробуйте ещё раз' } );
+				} );
 		} );
 	}
 })();

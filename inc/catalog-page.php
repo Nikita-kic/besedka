@@ -516,13 +516,15 @@ add_action(
 	}
 );
 
-if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
-	function besedka_render_category_set_banner( $term ) {
+/**
+ * Плашка набора. $compact — вариант для страницы товара: без состава и кнопки.
+ */
+if ( ! function_exists( 'besedka_render_set_banner' ) ) {
+	function besedka_render_set_banner( $set_id, $compact = false ) {
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return;
 		}
-		$set_id = besedka_resolve_catalog_set_id( $term );
-		$set    = $set_id ? wc_get_product( $set_id ) : null;
+		$set = $set_id ? wc_get_product( $set_id ) : null;
 		if ( ! $set || 'publish' !== get_post_status( $set_id ) ) {
 			return;
 		}
@@ -534,8 +536,13 @@ if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
 		foreach ( $items as $item ) {
 			$labels[] = $item['label'];
 		}
+		if ( $compact ) {
+			$eyebrow = $percent ? sprintf( __( 'Выгоднее в наборе · −%d%%', 'besedka' ), $percent ) : __( 'Набор', 'besedka' );
+		} else {
+			$eyebrow = $percent ? sprintf( __( 'Готовый набор · −%d%%', 'besedka' ), $percent ) : __( 'Готовый набор', 'besedka' );
+		}
 		?>
-		<a class="set-banner" href="<?php echo esc_url( get_permalink( $set_id ) ); ?>">
+		<a class="set-banner<?php echo $compact ? ' set-banner--compact' : ''; ?>" href="<?php echo esc_url( get_permalink( $set_id ) ); ?>">
 			<span class="set-banner__packs" aria-hidden="true">
 				<?php
 				$shown = 0;
@@ -550,9 +557,11 @@ if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
 				?>
 			</span>
 			<span class="set-banner__body">
-				<span class="eyebrow"><?php echo esc_html( $percent ? sprintf( __( 'Готовый набор · −%d%%', 'besedka' ), $percent ) : __( 'Готовый набор', 'besedka' ) ); ?></span>
+				<span class="eyebrow"><?php echo esc_html( $eyebrow ); ?></span>
 				<span class="set-banner__title"><?php echo esc_html( $set->get_name() ); ?></span>
-				<span class="set-banner__items"><?php echo esc_html( implode( ' · ', $labels ) ); ?></span>
+				<?php if ( ! $compact ) : ?>
+					<span class="set-banner__items"><?php echo esc_html( implode( ' · ', $labels ) ); ?></span>
+				<?php endif; ?>
 			</span>
 			<span class="set-banner__buy">
 				<span class="set-banner__prices">
@@ -561,9 +570,17 @@ if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
 						<del class="set-banner__old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></del>
 					<?php endif; ?>
 				</span>
-				<span class="set-banner__button"><?php esc_html_e( 'Смотреть набор', 'besedka' ); ?></span>
+				<?php if ( ! $compact ) : ?>
+					<span class="set-banner__button"><?php esc_html_e( 'Смотреть набор', 'besedka' ); ?></span>
+				<?php endif; ?>
 			</span>
 		</a>
 		<?php
+	}
+}
+
+if ( ! function_exists( 'besedka_render_category_set_banner' ) ) {
+	function besedka_render_category_set_banner( $term ) {
+		besedka_render_set_banner( besedka_resolve_catalog_set_id( $term ) );
 	}
 }

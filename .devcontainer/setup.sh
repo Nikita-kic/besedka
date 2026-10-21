@@ -303,6 +303,20 @@ echo "== Ярлыки товаров: единый транслит, схема 
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/apply-slugs.php --allow-root
 
+echo "== Страница товара: атрибуты, шаги применения, таблица брожения, «С этим покупают» =="
+
+wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/seed-product-page.php --allow-root
+
+echo "== Отзывы: включены, публикуются после модерации =="
+
+wp option update woocommerce_enable_reviews yes --allow-root
+wp option update woocommerce_enable_review_rating yes --allow-root
+wp option update woocommerce_review_rating_required yes --allow-root
+wp option update woocommerce_review_rating_verification_required no --allow-root
+wp option update comment_moderation 1 --allow-root
+wp option update comment_previously_approved 0 --allow-root
+wp option update require_name_email 0 --allow-root
+
 echo "== Проверка каталога: категории и ярлыки (отчёт, ничего не меняет) =="
 
 wp eval-file /var/www/html/wp-content/themes/besedka/.devcontainer/check-catalog.php --allow-root || true

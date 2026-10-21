@@ -712,6 +712,55 @@ if ( ! function_exists( 'besedka_add_to_cart_button' ) ) {
 	}
 }
 
+/**
+ * Блок «Почему Беседка» (главная и страница товара). Текст третьей карточки можно переопределить.
+ *
+ * @param array $args pay_title, pay_text.
+ */
+if ( ! function_exists( 'besedka_render_why_section' ) ) {
+	function besedka_render_why_section( $args = array() ) {
+		$args      = wp_parse_args(
+			$args,
+			array(
+				'pay_title' => __( 'Оплата как удобно', 'besedka' ),
+				'pay_text'  => __( 'Картой онлайн на сайте, при получении на почте или частями. Способ оплаты выбираете при оформлении заказа.', 'besedka' ),
+			)
+		);
+		$pay_title = $args['pay_title'];
+		$pay_text  = $args['pay_text'];
+		?>
+		<section class="why">
+			<div class="container">
+				<div class="why__head">
+					<h2 class="why__title"><?php esc_html_e( 'Почему Беседка', 'besedka' ); ?></h2>
+					<p class="why__subtitle"><?php esc_html_e( 'Делаем сами, доставляем по всей стране и даём выбрать, как платить.', 'besedka' ); ?></p>
+				</div>
+		
+				<div class="why__stage">
+					<ul class="why__cards">
+						<li class="why__card">
+							<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V9l5 3V9l5 3V6h3l1 6h3v8z"/></svg></span>
+							<h3 class="why__card-title"><?php esc_html_e( 'Собственное производство', 'besedka' ); ?></h3>
+							<p class="why__card-text"><?php esc_html_e( 'Производим более 200 позиций: спиртовые дрожжи, эссенции, ВАД и составы. Сами отвечаем за сырьё и рецептуру, поэтому качество одинаковое от партии к партии.', 'besedka' ); ?></p>
+						</li>
+						<li class="why__card">
+							<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>
+							<h3 class="why__card-title"><?php esc_html_e( 'Доставка по всей России и СНГ', 'besedka' ); ?></h3>
+							<p class="why__card-text"><?php esc_html_e( 'Доставляем в 83 региона России и страны СНГ Почтой России. Каждую посылку отправляем с трек-номером, чтобы заказ можно было отследить.', 'besedka' ); ?></p>
+						</li>
+						<li class="why__card">
+							<span class="why__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></svg></span>
+							<h3 class="why__card-title"><?php echo esc_html( $pay_title ); ?></h3>
+							<p class="why__card-text"><?php echo esc_html( $pay_text ); ?></p>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<?php
+	}
+}
+
 /* ==========================================================================
    6.1 ПОИСК ТОВАРОВ (ПО НАЗВАНИЮ И БРЕНДУ)
    ========================================================================== */
@@ -1279,257 +1328,6 @@ if ( ! function_exists( 'besedka_render_sets_section' ) ) {
 }
 
 /* ==========================================================================
-   7. ПОДРОБНАЯ КАРТОЧКА ТОВАРА (ИСПОЛЬЗУЕТСЯ В single-product.php И В AJAX-МОДАЛКЕ)
-   ========================================================================== */
-
-/**
- * Блоки описания товара: описание, способ применения, состав, таблица брожения.
- * Каждый блок выводится только если для него есть данные.
- *
- * @param int    $id          ID товара.
- * @param string $description Описание.
- * @param string $composition Состав.
- * @param string $size        Фасовка.
- */
-if ( ! function_exists( 'besedka_render_product_sections' ) ) {
-	function besedka_render_product_sections( $id, $description, $composition, $size ) {
-		$usage   = get_post_meta( $id, '_besedka_usage', true );
-		$ferment = get_post_meta( $id, '_besedka_ferment', true );
-		$usage   = is_array( $usage ) ? $usage : array();
-		$ferment = is_array( $ferment ) ? $ferment : array();
-		?>
-		<div class="product-info">
-
-			<?php if ( $description ) : ?>
-				<section class="product-info__block">
-					<h3 class="product-info__title"><?php esc_html_e( 'Описание:', 'besedka' ); ?></h3>
-					<div class="product-info__text"><?php echo wp_kses_post( wpautop( $description ) ); ?></div>
-				</section>
-			<?php endif; ?>
-
-			<?php if ( $usage ) : ?>
-				<section class="product-info__block">
-					<h3 class="product-info__title"><?php esc_html_e( 'Способ применения:', 'besedka' ); ?></h3>
-					<?php
-					$in_list = false;
-					foreach ( $usage as $item ) {
-						$type = isset( $item[0] ) ? $item[0] : 'text';
-						$text = isset( $item[1] ) ? $item[1] : '';
-						if ( 'step' === $type && ! $in_list ) {
-							echo '<ul class="product-info__list">';
-							$in_list = true;
-						} elseif ( 'step' !== $type && $in_list ) {
-							echo '</ul>';
-							$in_list = false;
-						}
-						if ( 'step' === $type ) {
-							echo '<li class="product-info__item">' . esc_html( $text ) . '</li>';
-						} elseif ( 'note' === $type ) {
-							echo '<p class="product-info__note">' . esc_html( $text ) . '</p>';
-						} else {
-							echo '<p class="product-info__text">' . esc_html( $text ) . '</p>';
-						}
-					}
-					if ( $in_list ) {
-						echo '</ul>';
-					}
-					?>
-				</section>
-			<?php endif; ?>
-
-			<?php if ( $composition || $size ) : ?>
-				<section class="product-info__block">
-					<h3 class="product-info__title"><?php esc_html_e( 'Состав:', 'besedka' ); ?></h3>
-					<?php if ( $composition ) : ?>
-						<p class="product-info__text"><?php echo esc_html( $composition ); ?></p>
-					<?php endif; ?>
-					<?php if ( $size ) : ?>
-						<p class="product-info__text"><?php esc_html_e( 'Фасовка:', 'besedka' ); ?> <?php echo esc_html( $size ); ?></p>
-					<?php endif; ?>
-				</section>
-			<?php endif; ?>
-
-			<?php if ( $ferment ) : ?>
-				<section class="product-info__block">
-					<h3 class="product-info__title"><?php esc_html_e( 'Таблица брожения', 'besedka' ); ?></h3>
-					<div class="product-info__table-wrap">
-						<table class="product-info__table">
-							<tbody>
-								<?php foreach ( $ferment as $row ) : ?>
-									<tr>
-										<th scope="row"><?php echo esc_html( $row[0] ); ?></th>
-										<?php foreach ( (array) $row[1] as $cell ) : ?>
-											<td><?php echo esc_html( $cell ); ?></td>
-										<?php endforeach; ?>
-									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			<?php endif; ?>
-
-		</div>
-		<?php
-	}
-}
-
-/**
- * Выводит содержимое подробной карточки товара: галерея слева, информация
- * и покупка справа. Общий рендер для страницы товара (single-product.php)
- * и для модального/полноэкранного окна быстрого просмотра (script.js + AJAX).
- *
- * @param WC_Product $product Товар WooCommerce.
- */
-if ( ! function_exists( 'besedka_render_product_details' ) ) {
-	function besedka_render_product_details( $product ) {
-		if ( ! $product ) {
-			return;
-		}
-
-		$id           = $product->get_id();
-		$title        = $product->get_name();
-		$sku          = $product->get_sku();
-		$rating       = $product->get_average_rating();
-		$review_count = $product->get_review_count();
-		$regular      = $product->get_regular_price();
-		$sale         = $product->get_sale_price();
-		$is_on_sale   = $product->is_on_sale();
-		$price        = $product->get_price();
-		$discount     = ( $is_on_sale && $regular > 0 ) ? round( ( ( $regular - $sale ) / $regular ) * 100 ) : 0;
-		$description  = $product->get_description();
-		$composition  = get_post_meta( $id, '_besedka_composition', true );
-		$size         = get_post_meta( $id, '_besedka_size', true );
-		$width        = get_post_meta( $id, '_besedka_width', true );
-		$height       = get_post_meta( $id, '_besedka_height', true );
-
-		// Галерея: главное изображение + миниатюры товара.
-		$image_ids = array_filter( array_merge( array( $product->get_image_id() ), $product->get_gallery_image_ids() ) );
-		if ( empty( $image_ids ) ) {
-			$image_ids = array( 0 );
-		}
-		?>
-		<div class="modal__gallery">
-			<div class="modal__main-image-wrap">
-				<?php foreach ( $image_ids as $index => $img_id ) :
-					$url = $img_id ? wp_get_attachment_image_url( $img_id, 'besedka-gallery' ) : wc_placeholder_img_src( 'besedka-gallery' );
-					?>
-					<img class="modal__main-image" data-gallery-image="<?php echo esc_attr( $index ); ?>" src="<?php echo esc_url( $url ); ?>" alt="<?php echo esc_attr( $title ); ?>" <?php echo 0 === $index ? '' : 'style="display:none"'; ?>>
-				<?php endforeach; ?>
-
-				<?php if ( count( $image_ids ) > 1 ) : ?>
-					<button type="button" class="modal__arrow modal__arrow--prev" data-gallery-prev aria-label="<?php esc_attr_e( 'Предыдущее фото', 'besedka' ); ?>">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
-					</button>
-					<button type="button" class="modal__arrow modal__arrow--next" data-gallery-next aria-label="<?php esc_attr_e( 'Следующее фото', 'besedka' ); ?>">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
-					</button>
-				<?php endif; ?>
-			</div>
-
-			<?php if ( count( $image_ids ) > 1 ) : ?>
-				<div class="modal__thumbs">
-					<?php foreach ( $image_ids as $index => $img_id ) :
-						$thumb = $img_id ? wp_get_attachment_image_url( $img_id, 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
-						?>
-						<button type="button" class="modal__thumb <?php echo 0 === $index ? 'is-active' : ''; ?>" data-gallery-thumb="<?php echo esc_attr( $index ); ?>">
-							<img src="<?php echo esc_url( $thumb ); ?>" alt="">
-						</button>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( $width || $height ) : ?>
-				<div class="modal__dimensions">
-					<?php if ( $width ) : ?><span><?php esc_html_e( 'Ширина:', 'besedka' ); ?> <?php echo esc_html( $width ); ?> см</span><?php endif; ?>
-					<?php if ( $height ) : ?><span><?php esc_html_e( 'Высота:', 'besedka' ); ?> <?php echo esc_html( $height ); ?> см</span><?php endif; ?>
-				</div>
-			<?php endif; ?>
-		</div>
-
-		<div class="modal__info">
-			<div class="modal__head">
-				<h2 class="modal__title"><?php echo esc_html( $title ); ?></h2>
-				<button type="button" class="modal__favorite" data-favorite-btn data-product-id="<?php echo esc_attr( $id ); ?>" aria-label="<?php esc_attr_e( 'Добавить в избранное', 'besedka' ); ?>">
-					<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-				</button>
-			</div>
-
-			<?php if ( $sku ) : ?>
-				<p class="modal__sku"><?php esc_html_e( 'Артикул:', 'besedka' ); ?> <?php echo esc_html( $sku ); ?></p>
-			<?php endif; ?>
-
-			<div class="modal__rating">
-				<span class="modal__rating-stars"><?php echo besedka_render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-				<span><?php echo esc_html( $review_count ); ?> <?php esc_html_e( 'отзывов', 'besedka' ); ?></span>
-			</div>
-
-			<div class="modal__price-row">
-				<?php if ( $is_on_sale && $sale ) : ?>
-					<span class="modal__price"><?php echo wp_kses_post( wc_price( $sale ) ); ?></span>
-					<span class="modal__price-old"><?php echo wp_kses_post( wc_price( $regular ) ); ?></span>
-					<span class="modal__discount">-<?php echo esc_html( $discount ); ?>%</span>
-				<?php else : ?>
-					<span class="modal__price"><?php echo wp_kses_post( wc_price( $price ) ); ?></span>
-				<?php endif; ?>
-			</div>
-			<p class="modal__installment"><?php esc_html_e( 'Можно оплатить частями при оформлении заказа', 'besedka' ); ?></p>
-
-			<div class="modal__counter-row">
-				<div class="modal__counter">
-					<button type="button" class="modal__counter-btn" data-counter-minus aria-label="<?php esc_attr_e( 'Уменьшить количество', 'besedka' ); ?>">−</button>
-					<input type="number" class="modal__counter-value" data-counter-value value="1" min="1" readonly>
-					<button type="button" class="modal__counter-btn" data-counter-plus aria-label="<?php esc_attr_e( 'Увеличить количество', 'besedka' ); ?>">+</button>
-				</div>
-				<span class="product-card__availability <?php echo $product->is_in_stock() ? '' : 'product-card__availability--out'; ?>">
-					<?php echo $product->is_in_stock() ? esc_html__( 'В наличии', 'besedka' ) : esc_html__( 'Нет в наличии', 'besedka' ); ?>
-				</span>
-			</div>
-
-			<div class="modal__actions">
-				<?php besedka_add_to_cart_button( $product, __( 'В корзину', 'besedka' ), 'btn btn--outline' ); ?>
-				<a class="btn btn--primary" href="<?php echo esc_url( add_query_arg( array( 'add-to-cart' => $id, 'quantity' => 1 ), wc_get_checkout_url() ) ); ?>" data-buy-now rel="nofollow">
-					<?php esc_html_e( 'Купить сейчас', 'besedka' ); ?>
-				</a>
-			</div>
-
-			<div class="modal__delivery">
-				<p class="modal__delivery-title"><?php esc_html_e( 'Доставка', 'besedka' ); ?></p>
-				<input type="text" class="modal__delivery-address" data-delivery-address placeholder="<?php esc_attr_e( 'Укажите адрес доставки', 'besedka' ); ?>">
-				<div class="modal__delivery-row">
-					<input type="date" class="modal__delivery-date" data-delivery-date>
-					<select class="modal__delivery-time" data-delivery-time>
-						<option value="10-13"><?php esc_html_e( '10:00–13:00', 'besedka' ); ?></option>
-						<option value="13-16"><?php esc_html_e( '13:00–16:00', 'besedka' ); ?></option>
-						<option value="16-19"><?php esc_html_e( '16:00–19:00', 'besedka' ); ?></option>
-						<option value="19-21"><?php esc_html_e( '19:00–21:00', 'besedka' ); ?></option>
-					</select>
-				</div>
-				<p class="modal__delivery-cost" data-delivery-cost><?php esc_html_e( 'Стоимость доставки рассчитывается по адресу: от 300 ₽', 'besedka' ); ?></p>
-			</div>
-
-			<?php besedka_render_product_sections( $id, $description, $composition, $size ); ?>
-
-			<p class="modal__disclaimer"><?php esc_html_e( 'Внешний вид упаковки может немного отличаться от изображения.', 'besedka' ); ?></p>
-
-			<div class="modal__socials">
-				<span class="modal__socials-label"><?php esc_html_e( 'Поделиться:', 'besedka' ); ?></span>
-				<a class="modal__social-link" href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink( $id ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-					<svg viewBox="0 0 24 24"><path d="M9.4 15.5l-.4 5 1.8-1.8 3.6 2.6 4-19-19 7.4 5.4 2 12-7.4z"/></svg>
-				</a>
-				<a class="modal__social-link" href="https://wa.me/?text=<?php echo rawurlencode( get_permalink( $id ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-					<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2z"/></svg>
-				</a>
-				<a class="modal__social-link" href="https://vk.com/share.php?url=<?php echo rawurlencode( get_permalink( $id ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="VK">
-					<svg viewBox="0 0 24 24"><path d="M2 12c0-5 0-7.5 1.5-9S7 2 12 2s7.5 0 9 1.5S22 7 22 12s0 7.5-1.5 9S17 22 12 22s-7.5 0-9-1.5S2 17 2 12z"/></svg>
-				</a>
-			</div>
-		</div>
-		<?php
-	}
-}
-
-/* ==========================================================================
    9. AJAX: ФОРМА ИНДИВИДУАЛЬНОГО ЗАКАЗА «ПОДОБРАТЬ БУКЕТ»
    ========================================================================== */
 if ( ! function_exists( 'besedka_ajax_custom_order' ) ) {
@@ -1587,3 +1385,6 @@ require_once BESEDKA_DIR . '/inc/catalog-urls.php';
 
 // Страница категории: фильтры, сортировка, плашка набора.
 require_once BESEDKA_DIR . '/inc/catalog-page.php';
+
+// Страница товара: данные, отзывы, микроразметка.
+require_once BESEDKA_DIR . '/inc/product-page.php';

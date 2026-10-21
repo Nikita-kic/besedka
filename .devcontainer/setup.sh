@@ -311,7 +311,7 @@ wp rewrite flush --hard --allow-root
 echo "== Диагностика адресов (код ответа и переадресация) =="
 
 for path in "/catalog/" "/catalog/kubiki/" "/catalog/drozhzhi/" "/catalog/drozhzhi/turbo-drozhzhi-bragoff-48-universal/" "/product-category/kubiki/" "/shop/"; do
-  curl -s -o /dev/null -w "%{http_code} ${path} -> %{redirect_url}\n" "http://localhost${path}" || true
+  curl -s -o /dev/null -w "%{http_code} ${path} -> %{redirect_url}\n" "http://localhost:8080${path}" || true
 done
 
 echo ""

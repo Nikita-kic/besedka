@@ -1307,8 +1307,10 @@ body.no-scroll {
   background: #f6f6f6;
 }
 
-/* Картинка заполняет квадратную область обёртки и не зависит от процентной высоты. */
-.product-card__image {
+/* Картинка заполняет квадратную область обёртки и не зависит от процентной высоты.
+   Селектор с .product-card нужен, чтобы на страницах WooCommerce (.woocommerce-page img { height: auto })
+   правило не перебивалось. */
+.product-card .product-card__image {
   position: absolute;
   inset: 0;
   width: 100%;

@@ -499,7 +499,7 @@ if ( ! function_exists( 'besedka_render_product_card' ) ) {
 
 		?>
 		<article class="product-card" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
-			<a class="product-card__image-wrap" href="<?php echo esc_url( $permalink ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="product-card__image-wrap" href="<?php echo esc_url( $permalink ); ?>">
 				<img class="product-card__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" width="600" height="600">
 
 				<div class="product-card__badges">
@@ -756,7 +756,7 @@ if ( ! function_exists( 'besedka_render_search_item' ) ) {
 		$pid = $product->get_id();
 		$img = $product->get_image_id() ? wp_get_attachment_image_url( $product->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
 		?>
-		<a class="header-search__item<?php echo $extra_class ? ' ' . esc_attr( $extra_class ) : ''; ?>" href="<?php echo esc_url( get_permalink( $pid ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $pid ); ?>">
+		<a class="header-search__item<?php echo $extra_class ? ' ' . esc_attr( $extra_class ) : ''; ?>" href="<?php echo esc_url( get_permalink( $pid ) ); ?>">
 			<img class="header-search__thumb" src="<?php echo esc_url( $img ); ?>" alt="">
 			<span class="header-search__name"><?php echo esc_html( $product->get_name() ); ?></span>
 			<span class="header-search__price"><?php echo wp_kses_post( wc_price( $product->get_price() ) ); ?></span>
@@ -1111,7 +1111,7 @@ if ( ! function_exists( 'besedka_render_set_card' ) ) {
 		}
 		?>
 		<article class="product-card set-card set-card--slot-<?php echo esc_attr( $slot ); ?><?php echo in_array( (int) $slot, array( 3, 4 ), true ) ? ' set-card--wide' : ''; ?>" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
-			<a class="product-card__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="product-card__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>">
 				<?php besedka_render_set_image( $set, $items ); ?>
 				<div class="product-card__badges">
 					<span class="product-card__badge"><?php esc_html_e( 'Набор', 'besedka' ); ?></span>
@@ -1127,7 +1127,7 @@ if ( ! function_exists( 'besedka_render_set_card' ) ) {
 			<?php besedka_render_set_favorite( $id ); ?>
 
 			<div class="product-card__body">
-				<h3 class="product-card__title"><a href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $set->get_name() ); ?></a></h3>
+				<h3 class="product-card__title"><a href="<?php echo esc_url( get_permalink( $id ) ); ?>"><?php echo esc_html( $set->get_name() ); ?></a></h3>
 				<p class="set-card__items"><?php echo esc_html( implode( ' · ', $labels ) ); ?></p>
 				<div class="product-card__meta">
 					<div class="product-card__prices">
@@ -1163,7 +1163,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 		$percent = $regular > 0 ? round( $saving / $regular * 100 ) : 0;
 		?>
 		<article class="set-featured" data-product-card data-product-id="<?php echo esc_attr( $id ); ?>">
-			<a class="set-featured__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>">
+			<a class="set-featured__image-wrap" href="<?php echo esc_url( get_permalink( $id ) ); ?>">
 				<?php besedka_render_set_image( $set, $items ); ?>
 				<div class="product-card__badges">
 					<span class="product-card__badge"><?php esc_html_e( 'Набор', 'besedka' ); ?></span>
@@ -1186,7 +1186,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 						$thumb = $item['product']->get_image_id() ? wp_get_attachment_image_url( $item['product']->get_image_id(), 'besedka-thumb' ) : wc_placeholder_img_src( 'besedka-thumb' );
 						?>
 						<li>
-							<a class="set-featured__item" href="<?php echo esc_url( get_permalink( $item['product']->get_id() ) ); ?>" data-quickview-trigger data-product-id="<?php echo esc_attr( $item['product']->get_id() ); ?>">
+							<a class="set-featured__item" href="<?php echo esc_url( get_permalink( $item['product']->get_id() ) ); ?>">
 								<span class="set-featured__thumb"><img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy"></span>
 								<span class="set-featured__name"><?php echo esc_html( $item['product']->get_name() ); ?><?php if ( $item['qty'] > 1 ) : ?> <span class="set-featured__qty">× <?php echo esc_html( $item['qty'] ); ?></span><?php endif; ?></span>
 								<span class="set-featured__line"><?php echo wp_kses_post( wc_price( $item['line'] ) ); ?></span>
@@ -1209,7 +1209,7 @@ if ( ! function_exists( 'besedka_render_set_featured' ) ) {
 
 				<div class="set-featured__actions">
 					<?php besedka_add_to_cart_button( $set, __( 'Набор в корзину', 'besedka' ), 'btn btn--primary' ); ?>
-					<button type="button" class="btn btn--outline" data-quickview-trigger data-product-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Подробнее', 'besedka' ); ?></button>
+					<a class="btn btn--outline" href="<?php echo esc_url( get_permalink( $id ) ); ?>"><?php esc_html_e( 'Подробнее', 'besedka' ); ?></a>
 				</div>
 			</div>
 		</article>
@@ -1527,33 +1527,6 @@ if ( ! function_exists( 'besedka_render_product_details' ) ) {
 		</div>
 		<?php
 	}
-}
-
-/* ==========================================================================
-   8. AJAX: БЫСТРЫЙ ПРОСМОТР ТОВАРА (МОДАЛЬНОЕ ОКНО)
-   ========================================================================== */
-if ( ! function_exists( 'besedka_ajax_quick_view' ) ) {
-	function besedka_ajax_quick_view() {
-		check_ajax_referer( 'besedka_nonce', 'nonce' );
-
-		$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-		if ( ! $product_id || ! function_exists( 'wc_get_product' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Товар не найден', 'besedka' ) ) );
-		}
-
-		$product = wc_get_product( $product_id );
-		if ( ! $product ) {
-			wp_send_json_error( array( 'message' => __( 'Товар не найден', 'besedka' ) ) );
-		}
-
-		ob_start();
-		besedka_render_product_details( $product );
-		$html = ob_get_clean();
-
-		wp_send_json_success( array( 'html' => $html ) );
-	}
-	add_action( 'wp_ajax_besedka_quick_view', 'besedka_ajax_quick_view' );
-	add_action( 'wp_ajax_nopriv_besedka_quick_view', 'besedka_ajax_quick_view' );
 }
 
 /* ==========================================================================

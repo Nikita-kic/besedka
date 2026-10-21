@@ -190,16 +190,6 @@ if ( ! empty( $popular_fixed ) ) {
 	</div>
 </section>
 
-<!-- Контейнер модального окна карточки товара (заполняется через script.js) -->
-<div class="modal" data-product-modal aria-hidden="true">
-	<div class="modal__overlay" data-modal-close></div>
-	<div class="modal__window" role="dialog" aria-modal="true">
-		<button type="button" class="modal__close" data-modal-close aria-label="<?php esc_attr_e( 'Закрыть', 'besedka' ); ?>">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg>
-		</button>
-		<div class="modal__loading" data-modal-content><?php esc_html_e( 'Загрузка…', 'besedka' ); ?></div>
-	</div>
-</div>
 
 <?php
 get_footer();

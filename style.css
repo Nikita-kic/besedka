@@ -1552,64 +1552,8 @@ body.no-scroll {
 }
 
 /* ==========================================================================
-   7. МОДАЛЬНОЕ ОКНО ТОВАРА (.modal)
+   7. ДЕТАЛИ ТОВАРА (классы .modal__* используются на странице товара)
    ========================================================================== */
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-5);
-}
-
-.modal.is-open {
-  display: flex;
-}
-
-.modal__overlay {
-  position: absolute;
-  inset: 0;
-  background: var(--color-overlay);
-}
-
-.modal__window {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-  max-width: 980px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  z-index: 1;
-}
-
-.modal__close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 3;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: var(--radius-round);
-  box-shadow: var(--shadow-sm);
-}
-
-.modal__close svg {
-  width: 16px;
-  height: 16px;
-  stroke: var(--color-text);
-  stroke-width: 2;
-}
-
 .modal__gallery {
   position: relative;
   padding: var(--space-5);
@@ -2011,13 +1955,6 @@ body.no-scroll {
   width: 16px;
   height: 16px;
   fill: var(--color-text);
-}
-
-.modal__loading {
-  padding: 80px 0;
-  text-align: center;
-  color: var(--color-text-muted);
-  grid-column: 1 / -1;
 }
 
 /* ==========================================================================
@@ -3476,9 +3413,6 @@ body.no-scroll {
     gap: var(--space-5);
   }
 
-  .modal__window {
-    max-width: 720px;
-  }
 }
 
 /* --- Планшет узкий / крупный смартфон (≤860px) --- */
@@ -3572,11 +3506,6 @@ body.no-scroll {
   }
 
 
-  .modal__window {
-    grid-template-columns: 1fr;
-    max-width: 560px;
-  }
-
   .modal__info {
     padding: var(--space-5);
   }
@@ -3657,16 +3586,6 @@ body.no-scroll {
     padding: 0 var(--space-3) var(--space-3);
   }
 
-  .modal {
-    padding: 0;
-  }
-
-  .modal__window {
-    max-width: 100%;
-    max-height: 100vh;
-    height: 100vh;
-    border-radius: 0;
-  }
 
   .occasions__grid {
     grid-template-columns: repeat(2, 1fr);

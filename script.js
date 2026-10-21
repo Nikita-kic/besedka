@@ -25,8 +25,6 @@
 		initFiltersDrawer();
 		initFiltersReset();
 		initFavorites();
-		initQuickView();
-		initModalClose();
 		initCustomOrderForm();
 		initCityModal();
 		initSearch();
@@ -197,90 +195,7 @@
 	}
 
 	/* ==========================================================================
-	   6. БЫСТРЫЙ ПРОСМОТР ТОВАРА (МОДАЛЬНОЕ ОКНО)
-	   ========================================================================== */
-	function initQuickView() {
-		document.addEventListener( 'click', function ( event ) {
-			var trigger = event.target.closest( '[data-quickview-trigger]' );
-			if ( ! trigger ) {
-				return;
-			}
-			event.preventDefault();
-			openQuickView( trigger.getAttribute( 'data-product-id' ) );
-		} );
-	}
-
-	function openQuickView( productId ) {
-		var modal = qs( '[data-product-modal]' );
-		var content = qs( '[data-modal-content]' );
-		if ( ! modal || ! content ) {
-			return;
-		}
-
-		content.innerHTML = '<div class="modal__loading">' + ( cfg.i18n.sending || 'Загрузка…' ) + '</div>';
-		openModal();
-
-		var formData = new FormData();
-		formData.append( 'action', 'besedka_quick_view' );
-		formData.append( 'nonce', cfg.nonce );
-		formData.append( 'product_id', productId );
-
-		fetch( cfg.ajaxUrl, { method: 'POST', body: formData, credentials: 'same-origin' } )
-			.then( function ( response ) {
-				return response.json();
-			} )
-			.then( function ( json ) {
-				if ( json.success ) {
-					content.innerHTML = json.data.html;
-					initGallery( content );
-					initCounter( content );
-					initTabs( content );
-					syncFavoriteButtons( productId );
-				} else {
-					content.innerHTML = '<p class="modal__loading">' + ( cfg.i18n.error || 'Ошибка' ) + '</p>';
-				}
-			} )
-			.catch( function () {
-				content.innerHTML = '<p class="modal__loading">' + ( cfg.i18n.error || 'Ошибка' ) + '</p>';
-			} );
-	}
-
-	function openModal() {
-		var modal = qs( '[data-product-modal]' );
-		if ( ! modal ) {
-			return;
-		}
-		modal.classList.add( 'is-open' );
-		modal.setAttribute( 'aria-hidden', 'false' );
-		lockScroll( true );
-	}
-
-	function closeModal() {
-		var modal = qs( '[data-product-modal]' );
-		if ( ! modal ) {
-			return;
-		}
-		modal.classList.remove( 'is-open' );
-		modal.setAttribute( 'aria-hidden', 'true' );
-		lockScroll( false );
-	}
-
-	function initModalClose() {
-		document.addEventListener( 'click', function ( event ) {
-			if ( event.target.closest( '[data-modal-close]' ) ) {
-				closeModal();
-			}
-		} );
-
-		document.addEventListener( 'keydown', function ( event ) {
-			if ( event.key === 'Escape' ) {
-				closeModal();
-			}
-		} );
-	}
-
-	/* ==========================================================================
-	   7. ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ТОВАРА (МОДАЛЬНОЕ ОКНО / СТРАНИЦА ТОВАРА)
+	   7. ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ТОВАРА (СТРАНИЦА ТОВАРА)
 	   ========================================================================== */
 	function initGallery( scope ) {
 		var images = qsa( '[data-gallery-image]', scope );
@@ -690,7 +605,7 @@
 
 		// Та же разметка строки, что у «Популярных товаров» (besedka_render_search_item).
 		function rowHtml( item, tokens ) {
-			return '<a class="header-search__item" href="' + escapeHtml( item.url ) + '" data-quickview-trigger data-product-id="' + item.id + '">' +
+			return '<a class="header-search__item" href="' + escapeHtml( item.url ) + '" data-product-id="' + item.id + '">' +
 				'<img class="header-search__thumb" src="' + escapeHtml( item.img ) + '" alt="">' +
 				'<span class="header-search__name">' + highlight( item.name, tokens ) + '</span>' +
 				'<span class="header-search__price">' + item.price + '</span>' +
@@ -828,12 +743,6 @@
 		results.addEventListener( 'mousedown', function ( event ) {
 			if ( ! event.target.closest( 'a' ) ) {
 				event.preventDefault();
-			}
-		} );
-
-		results.addEventListener( 'click', function ( event ) {
-			if ( event.target.closest( '[data-quickview-trigger]' ) ) {
-				close();
 			}
 		} );
 

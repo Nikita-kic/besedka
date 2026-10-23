@@ -4150,6 +4150,8 @@ body.no-scroll {
   align-items: center;
   gap: var(--space-2);
   background: var(--color-bg-soft);
+  color: var(--color-text);
+  font-weight: var(--fw-regular);
   box-shadow: none;
 }
 
@@ -4157,6 +4159,22 @@ body.no-scroll {
 .pp-tabs__item.is-active:hover {
   background: var(--color-text);
   color: var(--color-bg);
+  font-weight: var(--fw-bold);
+}
+
+/* Ширина под жирное начертание зарезервирована скрытой копией подписи: вкладки не прыгают при переключении */
+.pp-tabs__label {
+  display: inline-block;
+  text-align: center;
+}
+
+.pp-tabs__label::after {
+  content: attr(data-text);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  font-weight: var(--fw-bold);
+  visibility: hidden;
 }
 
 .pp-tabs__count {
@@ -4169,6 +4187,7 @@ body.no-scroll {
   background: var(--color-bg);
   color: var(--color-text);
   font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
 }
 
 .pp-tabs__item.is-active .pp-tabs__count {

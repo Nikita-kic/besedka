@@ -196,7 +196,7 @@ while ( have_posts() ) :
 			<nav class="pp-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Разделы товара', 'besedka' ); ?>" data-pp-tabs>
 				<?php foreach ( $tabs as $key => $label ) : ?>
 					<a class="chip pp-tabs__item<?php echo 'description' === $key ? ' is-active' : ''; ?>" href="#<?php echo esc_attr( $key ); ?>" role="tab" data-pp-tab="<?php echo esc_attr( $key ); ?>">
-						<?php echo esc_html( $label ); ?>
+						<span class="pp-tabs__label" data-text="<?php echo esc_attr( $label ); ?>"><?php echo esc_html( $label ); ?></span>
 						<?php if ( 'reviews' === $key ) : ?>
 							<span class="pp-tabs__count"><?php echo esc_html( $review_count ); ?></span>
 						<?php endif; ?>

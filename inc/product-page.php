@@ -241,7 +241,7 @@ if ( ! function_exists( 'besedka_brand_siblings' ) ) {
 				'post_status'    => 'publish',
 				'numberposts'    => -1,
 				'fields'         => 'ids',
-				'orderby'        => 'title',
+				'orderby'        => 'menu_order title', // Порядок задаётся полем «Порядок» товара, при равенстве — по названию.
 				'order'          => 'ASC',
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery
 					'relation' => 'AND',

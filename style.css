@@ -3961,18 +3961,20 @@ body.no-scroll {
   color: var(--color-text);
   font-weight: var(--fw-regular);
   box-shadow: none;
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), color var(--transition);
 }
 
 .pp-brand__item:hover {
-  border-color: var(--color-text-muted);
-  color: var(--color-text);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
+/* Активная: рамка только из inset-тени, обычная рамка прозрачна, чтобы размер не менялся */
 .pp-brand__item.is-current,
 .pp-brand__item.is-current:hover {
-  border-color: var(--color-text);
+  border-color: transparent;
   box-shadow: inset 0 0 0 1px var(--color-text);
+  color: var(--color-text);
 }
 
 .pp-price {

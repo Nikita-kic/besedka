@@ -3768,6 +3768,7 @@ body.no-scroll {
   box-sizing: border-box;
   object-fit: contain;
   filter: drop-shadow(var(--shadow-media));
+  transform: scale(0.95);
 }
 
 .pp-gallery__main .product-card__favorite {

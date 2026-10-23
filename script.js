@@ -30,7 +30,7 @@
 		initSearch();
 		initCountdown();
 		initSetsCarousel();
-		initAddedFeedback();
+		initCart();
 		initCatalogPage();
 		initProductPage();
 	} );
@@ -789,23 +789,193 @@
 	}
 
 	/* ==========================================================================
-	   16. ОБРАТНАЯ СВЯЗЬ ПОСЛЕ «В КОРЗИНУ» (событие стандартного скрипта WooCommerce)
+	   16. КНОПКА «В КОРЗИНУ»: ОДИН КОМПОНЕНТ ДЛЯ ВСЕГО САЙТА
+	   Кнопки — a[data-cart-btn]. Состояния: «В корзину» → загрузка → «В корзине» (ссылка на корзину).
+	   Состав корзины приходит от сервера: скрытый .besedka-cart-state (при загрузке и во фрагментах WooCommerce).
 	   ========================================================================== */
-	function initAddedFeedback() {
-		if ( ! window.jQuery ) {
-			return;
+	function initCart() {
+		var cartState = {};
+		var toast = null;
+		var toastTimer = null;
+
+		function parseState( el ) {
+			try {
+				return JSON.parse( el.getAttribute( 'data-cart' ) ) || {};
+			} catch ( e ) {
+				return {};
+			}
 		}
-		window.jQuery( document.body ).on( 'added_to_cart', function ( event, fragments, hash, $button ) {
-			if ( ! $button || ! $button.length ) {
+
+		function stateFromFragments( fragments ) {
+			var html = fragments && fragments[ 'div.besedka-cart-state' ];
+			if ( ! html ) {
+				return null;
+			}
+			var holder = document.createElement( 'div' );
+			holder.innerHTML = html;
+			return holder.firstElementChild ? parseState( holder.firstElementChild ) : null;
+		}
+
+		function showMessage( text ) {
+			if ( ! toast ) {
+				toast = document.createElement( 'div' );
+				toast.className = 'cart-toast';
+				toast.setAttribute( 'role', 'alert' );
+				document.body.appendChild( toast );
+			}
+			toast.textContent = text;
+			toast.classList.add( 'is-visible' );
+			clearTimeout( toastTimer );
+			toastTimer = setTimeout( function () {
+				toast.classList.remove( 'is-visible' );
+			}, 4000 );
+		}
+
+		function renderButton( btn ) {
+			if ( btn.classList.contains( 'is-loading' ) ) {
 				return;
 			}
-			var el = $button[ 0 ];
-			var original = el.getAttribute( 'data-original-text' ) || el.textContent;
-			el.setAttribute( 'data-original-text', original );
-			el.textContent = cfg.i18n.added || 'Добавлено';
+			var inCart = ( cartState[ btn.getAttribute( 'data-product_id' ) ] || 0 ) > 0;
+			btn.classList.toggle( 'is-in-cart', inCart );
+			btn.textContent = btn.getAttribute( inCart ? 'data-label-in' : 'data-label' );
+			btn.setAttribute( 'href', inCart ? cfg.cartUrl : btn.getAttribute( 'data-add-url' ) );
+		}
+
+		function setState( map ) {
+			cartState = map || {};
+			qsa( '[data-cart-btn]' ).forEach( renderButton );
+			document.dispatchEvent( new CustomEvent( 'besedka:cart', { detail: cartState } ) );
+		}
+
+		// Подставляет фрагменты ответа WooCommerce (счётчик в шапке, состав корзины) и сообщает остальным скриптам WooCommerce.
+		function applyFragments( response, added ) {
+			Object.keys( response.fragments || {} ).forEach( function ( selector ) {
+				var holder = document.createElement( 'div' );
+				holder.innerHTML = response.fragments[ selector ];
+				qsa( selector ).forEach( function ( old ) {
+					if ( holder.firstElementChild ) {
+						old.replaceWith( holder.firstElementChild.cloneNode( true ) );
+					}
+				} );
+			} );
+			if ( added && window.jQuery ) {
+				try {
+					// Пустой jQuery вместо кнопки: стандартный скрипт WooCommerce не будет дописывать ссылку «View cart».
+					window.jQuery( document.body ).trigger( 'added_to_cart', [ response.fragments, response.cart_hash, window.jQuery() ] );
+				} catch ( e ) {}
+			}
+			removeViewCart();
+		}
+
+		function removeViewCart() {
 			setTimeout( function () {
-				el.textContent = original;
-			}, 1500 );
+				qsa( '.added_to_cart' ).forEach( function ( link ) {
+					link.remove();
+				} );
+			}, 0 );
+		}
+
+		function post( url, params ) {
+			return fetch( url, {
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams( params ).toString()
+			} ).then( function ( r ) {
+				return r.json();
+			} );
+		}
+
+		function setLoading( btn, on ) {
+			btn.classList.toggle( 'is-loading', on );
+			btn.setAttribute( 'aria-busy', on ? 'true' : 'false' );
+			if ( on ) {
+				btn.setAttribute( 'aria-disabled', 'true' );
+			} else {
+				btn.removeAttribute( 'aria-disabled' );
+			}
+		}
+
+		function addToCart( btn ) {
+			var id = btn.getAttribute( 'data-product_id' );
+			var quantity = parseInt( btn.getAttribute( 'data-quantity' ), 10 ) || 1;
+			setLoading( btn, true );
+			post( cfg.wcAjaxAddToCartUrl, { product_id: id, quantity: quantity } )
+				.then( function ( response ) {
+					setLoading( btn, false );
+					if ( ! response || response.error ) {
+						showMessage( cfg.i18n.cartError );
+						renderButton( btn );
+						return;
+					}
+					applyFragments( response, true );
+					var next = stateFromFragments( response.fragments );
+					if ( ! next ) {
+						next = Object.assign( {}, cartState );
+						next[ id ] = ( next[ id ] || 0 ) + quantity;
+					}
+					setState( next );
+				} )
+				.catch( function () {
+					setLoading( btn, false );
+					showMessage( cfg.i18n.cartError );
+					renderButton( btn );
+				} );
+		}
+
+		// Меняет количество товара, который уже лежит в корзине. Возвращает Promise<boolean>.
+		function setQty( id, quantity ) {
+			return post( cfg.wcAjaxCartQtyUrl, { product_id: id, quantity: quantity } )
+				.then( function ( response ) {
+					if ( ! response || response.error || ! response.fragments ) {
+						showMessage( ( response && response.error ) || cfg.i18n.cartError );
+						return false;
+					}
+					applyFragments( response, false );
+					var next = stateFromFragments( response.fragments ) || Object.assign( {}, cartState );
+					setState( next );
+					return true;
+				} )
+				.catch( function () {
+					showMessage( cfg.i18n.cartError );
+					return false;
+				} );
+		}
+
+		window.besedkaCart = {
+			qty: function ( id ) {
+				return cartState[ id ] || 0;
+			},
+			setQty: setQty
+		};
+
+		document.addEventListener( 'click', function ( event ) {
+			var btn = event.target.closest( '[data-cart-btn]' );
+			if ( ! btn || btn.classList.contains( 'is-in-cart' ) || ! cfg.wcAjaxAddToCartUrl || ! window.fetch ) {
+				return; // «В корзине» — обычная ссылка на корзину.
+			}
+			event.preventDefault();
+			if ( ! btn.classList.contains( 'is-loading' ) ) {
+				addToCart( btn );
+			}
+		} );
+
+		// Состав корзины приходит при загрузке страницы и при обновлении фрагментов WooCommerce (в том числе из sessionStorage).
+		function readStateElement() {
+			var el = qs( '.besedka-cart-state' );
+			if ( el ) {
+				setState( parseState( el ) );
+			}
+		}
+		readStateElement();
+		if ( window.jQuery ) {
+			window.jQuery( document.body ).on( 'wc_fragments_loaded wc_fragments_refreshed removed_from_cart', readStateElement );
+		}
+		// Возврат по кнопке «Назад» подтягивает страницу из кэша браузера со старым состоянием.
+		window.addEventListener( 'pageshow', function ( event ) {
+			if ( event.persisted ) {
+				readStateElement();
+			}
 		} );
 	}
 
@@ -1027,25 +1197,52 @@
 			window.addEventListener( 'load', updateArrows );
 		}
 
-		/* --- Количество: все счётчики на странице синхронны, значение уходит в data-quantity кнопок --- */
+		/* --- Количество: все счётчики синхронны. Пока товара нет в корзине, значение уходит в data-quantity кнопок;
+		   если товар уже в корзине, счётчик показывает и меняет количество в самой корзине --- */
+		var productId = root.getAttribute( 'data-product-id' );
 		var qty = 1;
+		function cartQty() {
+			return window.besedkaCart ? window.besedkaCart.qty( productId ) : 0;
+		}
 		function applyQty() {
+			var shown = cartQty() || qty;
 			qsa( '[data-pp-qty]', root ).forEach( function ( input ) {
-				input.value = qty;
+				input.value = shown;
 			} );
-			qsa( '.add_to_cart_button', root ).forEach( function ( btn ) {
+			qsa( '[data-cart-btn]', root ).forEach( function ( btn ) {
 				btn.setAttribute( 'data-quantity', qty );
 			} );
 		}
+		function setBusy( busy ) {
+			qsa( '.pp-qty', root ).forEach( function ( box ) {
+				box.classList.toggle( 'is-loading', busy );
+			} );
+		}
 		root.addEventListener( 'click', function ( event ) {
-			if ( event.target.closest( '[data-pp-minus]' ) ) {
-				qty = Math.max( 1, qty - 1 );
-				applyQty();
-			} else if ( event.target.closest( '[data-pp-plus]' ) ) {
-				qty += 1;
-				applyQty();
+			var minus = event.target.closest( '[data-pp-minus]' );
+			var plus = event.target.closest( '[data-pp-plus]' );
+			if ( ! minus && ! plus ) {
+				return;
 			}
+			var step = plus ? 1 : -1;
+			var inCart = cartQty();
+			if ( inCart ) {
+				var target = Math.max( 1, inCart + step );
+				if ( target === inCart ) {
+					return;
+				}
+				setBusy( true );
+				window.besedkaCart.setQty( productId, target ).then( function () {
+					setBusy( false );
+					applyQty();
+				} );
+				return;
+			}
+			qty = Math.max( 1, qty + step );
+			applyQty();
 		} );
+		document.addEventListener( 'besedka:cart', applyQty );
+		applyQty();
 
 		/* --- Вкладки с якорями #description / #specs / #reviews --- */
 		var tabs = qsa( '[data-pp-tab]', root );

@@ -90,6 +90,7 @@ if ( ! function_exists( 'besedka_scripts' ) ) {
 			array(
 				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
 				'wcAjaxAddToCartUrl' => class_exists( 'WC_AJAX' ) ? WC_AJAX::get_endpoint( 'add_to_cart' ) : '',
+				'wcAjaxCartQtyUrl'   => class_exists( 'WC_AJAX' ) ? WC_AJAX::get_endpoint( 'besedka_cart_qty' ) : '',
 				'nonce'         => wp_create_nonce( 'besedka_nonce' ),
 				'cartUrl'       => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' ),
 				'checkoutUrl'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/checkout/' ),
@@ -103,6 +104,7 @@ if ( ! function_exists( 'besedka_scripts' ) ) {
 					'error'        => __( 'Ошибка, попробуйте ещё раз', 'besedka' ),
 					'outOfStock'   => __( 'Нет в наличии', 'besedka' ),
 					'sending'      => __( 'Отправляем…', 'besedka' ),
+					'cartError'    => __( 'Не удалось обновить корзину, попробуйте ещё раз', 'besedka' ),
 				),
 			)
 		);
@@ -677,17 +679,75 @@ if ( ! function_exists( 'besedka_get_cart_button' ) ) {
 	}
 }
 
-/** Обновление счётчика без перезагрузки: WooCommerce подменяет a.cart-btn после добавления товара. */
+/** Что лежит в корзине: [ ID товара => количество ]. */
+if ( ! function_exists( 'besedka_cart_quantities' ) ) {
+	function besedka_cart_quantities() {
+		$result = array();
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			return $result;
+		}
+		foreach ( WC()->cart->get_cart() as $item ) {
+			$id            = (int) $item['product_id'];
+			$result[ $id ] = ( isset( $result[ $id ] ) ? $result[ $id ] : 0 ) + (int) $item['quantity'];
+		}
+		return $result;
+	}
+}
+
+/** Скрытый элемент с составом корзины: по нему кнопки «В корзину» узнают, что товар уже добавлен. */
+if ( ! function_exists( 'besedka_get_cart_state' ) ) {
+	function besedka_get_cart_state() {
+		return sprintf( '<div class="besedka-cart-state" data-cart="%s" hidden></div>', esc_attr( wp_json_encode( (object) besedka_cart_quantities() ) ) );
+	}
+}
+add_action(
+	'wp_footer',
+	function () {
+		echo besedka_get_cart_state(); // phpcs:ignore WordPress.Security.EscapeOutput
+	},
+	5
+);
+
+/** Обновление без перезагрузки: WooCommerce подменяет счётчик в шапке и состав корзины после добавления товара. */
 add_filter(
 	'woocommerce_add_to_cart_fragments',
 	function ( $fragments ) {
-		$fragments['a.cart-btn'] = besedka_get_cart_button();
+		$fragments['a.cart-btn']              = besedka_get_cart_button();
+		$fragments['div.besedka-cart-state'] = besedka_get_cart_state();
 		return $fragments;
 	}
 );
 
+/** Изменение количества товара, который уже в корзине (счётчик на странице товара). Отвечает так же, как get_refreshed_fragments. */
+add_action(
+	'wc_ajax_besedka_cart_qty',
+	function () {
+		$id       = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+		$qty      = isset( $_POST['quantity'] ) ? absint( wp_unslash( $_POST['quantity'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+		$product  = $id ? wc_get_product( $id ) : false;
+		$item_key = '';
+		if ( $product && WC()->cart ) {
+			foreach ( WC()->cart->get_cart() as $key => $item ) {
+				if ( (int) $item['product_id'] === $id && empty( $item['variation_id'] ) ) {
+					$item_key = $key;
+					break;
+				}
+			}
+		}
+		if ( ! $item_key || $qty < 1 ) {
+			wp_send_json( array( 'error' => __( 'Товара нет в корзине', 'besedka' ) ) );
+		}
+		if ( ! $product->has_enough_stock( $qty ) ) {
+			wp_send_json( array( 'error' => __( 'Больше нет в наличии', 'besedka' ) ) );
+		}
+		WC()->cart->set_quantity( $item_key, $qty, true );
+		WC_AJAX::get_refreshed_fragments();
+	}
+);
+
 /**
- * Кнопка «в корзину» со стандартным AJAX WooCommerce (ajax_add_to_cart, data-product_id, data-quantity).
+ * Кнопка «в корзину»: один компонент для всей темы. Состояния («В корзину» / «В корзине» / загрузка)
+ * переключает script.js по data-cart-btn; если товар уже в корзине, кнопка сразу рисуется «В корзине».
  * Без JS работает как обычная ссылка ?add-to-cart=ID.
  *
  * @param WC_Product $product Товар.
@@ -700,14 +760,20 @@ if ( ! function_exists( 'besedka_add_to_cart_button' ) ) {
 			printf( '<span class="%1$s is-disabled" aria-disabled="true">%2$s</span>', esc_attr( $classes ), esc_html( $label ) );
 			return;
 		}
+		$in_cart   = ! empty( besedka_cart_quantities()[ $product->get_id() ] );
+		$label_in  = __( 'В корзине', 'besedka' );
+		$cart_url  = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/cart/' );
 		printf(
-			'<a href="%1$s" data-quantity="1" data-product_id="%2$s" data-product_sku="%3$s" class="%4$s add_to_cart_button%5$s" rel="nofollow">%6$s</a>',
+			'<a href="%1$s" data-cart-btn data-add-url="%2$s" data-quantity="1" data-product_id="%3$s" data-product_sku="%4$s" data-label="%5$s" data-label-in="%6$s" class="%7$s%8$s" rel="nofollow">%9$s</a>',
+			esc_url( $in_cart ? $cart_url : $product->add_to_cart_url() ),
 			esc_url( $product->add_to_cart_url() ),
 			esc_attr( $product->get_id() ),
 			esc_attr( $product->get_sku() ),
+			esc_attr( $label ),
+			esc_attr( $label_in ),
 			esc_attr( $classes ),
-			$product->supports( 'ajax_add_to_cart' ) ? ' ajax_add_to_cart' : '',
-			esc_html( $label )
+			$in_cart ? ' is-in-cart' : '',
+			esc_html( $in_cart ? $label_in : $label )
 		);
 	}
 }

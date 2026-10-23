@@ -4999,9 +4999,78 @@ body.no-scroll {
   display: none;
 }
 
-.add_to_cart_button.loading {
+/* Кнопка «В корзину» (a[data-cart-btn]): состояния переключает script.js, стили общие для всех кнопок сайта */
+.btn.is-in-cart,
+.btn.is-in-cart:hover {
+  background: var(--color-bg);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn.is-in-cart:hover {
+  background: var(--color-accent-soft);
+}
+
+/* Загрузка: текст скрыт (ширина кнопки сохраняется), по центру крутится индикатор */
+.btn.is-loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.25em;
+  height: 1.25em;
+  margin: -0.625em 0 0 -0.625em;
+  border: 0.15em solid var(--color-bg);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pp-qty.is-loading {
   opacity: 0.6;
   pointer-events: none;
+}
+
+/* Сообщение об ошибке корзины */
+.cart-toast {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  z-index: 200;
+  max-width: calc(100% - var(--space-5) * 2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-text);
+  box-shadow: var(--shadow-md);
+  color: var(--color-bg);
+  font-size: var(--fs-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, var(--space-3));
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.cart-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 860px) {
+  .cart-toast {
+    bottom: var(--space-8);
+  }
 }
 
 .btn.is-disabled {

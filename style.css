@@ -3956,7 +3956,7 @@ body.no-scroll {
 /* Контурные плашки линейки; размер задаёт .chip, вес не меняется, чтобы активная не становилась шире */
 .pp-brand__item {
   border: thin solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--color-bg);
   color: var(--color-text);
   font-weight: var(--fw-regular);

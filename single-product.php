@@ -149,9 +149,9 @@ while ( have_posts() ) :
 								<div class="pp-brand__list">
 									<?php foreach ( $siblings as $sibling ) : ?>
 										<?php if ( $sibling[2] ) : ?>
-											<span class="chip pp-brand__item is-current" aria-current="true"><?php echo esc_html( $sibling[1] ); ?></span>
+											<span class="chip chip--outline pp-brand__item is-current" aria-current="true"><?php echo esc_html( $sibling[1] ); ?></span>
 										<?php else : ?>
-											<a class="chip pp-brand__item" href="<?php echo esc_url( get_permalink( $sibling[0]->get_id() ) ); ?>"><?php echo esc_html( $sibling[1] ); ?></a>
+											<a class="chip chip--outline pp-brand__item" href="<?php echo esc_url( get_permalink( $sibling[0]->get_id() ) ); ?>"><?php echo esc_html( $sibling[1] ); ?></a>
 										<?php endif; ?>
 									<?php endforeach; ?>
 								</div>

@@ -950,8 +950,9 @@
 			var overflow = thumbList.scrollHeight - thumbList.clientHeight > 1;
 			arrows.forEach( function ( arrow ) {
 				var dir = parseInt( arrow.getAttribute( 'data-pp-arrow' ), 10 );
-				arrow.hidden = ! overflow;
-				arrow.disabled = dir < 0 ? thumbList.scrollTop <= 1 : thumbList.scrollTop + thumbList.clientHeight >= thumbList.scrollHeight - 1;
+				// Стрелка видна, только если в её сторону есть что прокручивать: так первая миниатюра стоит вровень с верхом фото.
+				var atEdge = dir < 0 ? thumbList.scrollTop <= 1 : thumbList.scrollTop + thumbList.clientHeight >= thumbList.scrollHeight - 1;
+				arrow.hidden = ! overflow || atEdge;
 			} );
 		}
 

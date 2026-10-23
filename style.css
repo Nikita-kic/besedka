@@ -3705,7 +3705,7 @@ body.no-scroll {
 
 .pp-hero {
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-columns: minmax(0, 6.25fr) minmax(0, 5.75fr);
   gap: var(--space-5);
   align-items: start;
   margin-bottom: var(--space-7);
@@ -3720,7 +3720,7 @@ body.no-scroll {
 }
 
 .pp-gallery--thumbs {
-  grid-template-columns: 3.7em minmax(0, 1fr);
+  grid-template-columns: 4.1em minmax(0, 1fr);
 }
 
 .pp-gallery__main {
@@ -3803,10 +3803,13 @@ body.no-scroll {
   display: none;
 }
 
+/* Скругления концентрические: радиус фото = радиус миниатюры − рамка (0.15em) − внутренний отступ */
 .pp-gallery__thumb {
   flex: 0 0 auto;
   width: 100%;
   aspect-ratio: 1 / 1;
+  padding: calc(0.15em + var(--space-1));
+  box-sizing: border-box;
   overflow: hidden;
   border-radius: var(--radius-md);
   background: #f6f6f6;
@@ -3818,6 +3821,7 @@ body.no-scroll {
   height: 100%;
   padding: var(--space-1);
   box-sizing: border-box;
+  border-radius: calc(var(--radius-md) - 0.15em - var(--space-1));
   object-fit: contain;
   filter: drop-shadow(var(--shadow-sm));
 }
@@ -3827,7 +3831,9 @@ body.no-scroll {
 }
 
 .pp-gallery__arrow {
-  flex: 0 0 auto;
+  position: absolute;
+  left: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3838,8 +3844,17 @@ body.no-scroll {
   color: var(--color-text);
   font-size: var(--fs-base);
   line-height: 1;
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
+}
+
+.pp-gallery__arrow[data-pp-arrow="-1"] {
+  top: 0;
+}
+
+.pp-gallery__arrow[data-pp-arrow="1"] {
+  bottom: 0;
 }
 
 .pp-gallery__arrow[hidden] {
@@ -3849,11 +3864,6 @@ body.no-scroll {
 .pp-gallery__arrow:hover:not(:disabled) {
   background: var(--color-text);
   color: var(--color-bg);
-}
-
-.pp-gallery__arrow:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 /* Точки — только на мобильном */
@@ -4077,8 +4087,23 @@ body.no-scroll {
 }
 
 .set-banner--compact {
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
   padding: var(--space-3) var(--space-4);
+}
+
+.set-banner--compact .set-banner__body {
+  flex: 1 1 0;
+}
+
+.set-banner--compact .set-banner__buy {
+  flex-basis: 100%;
+}
+
+.set-banner--compact .eyebrow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .set-banner--compact .set-banner__packs img {
@@ -4086,6 +4111,10 @@ body.no-scroll {
 }
 
 .set-banner--compact .set-banner__title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: var(--fs-md);
 }
 

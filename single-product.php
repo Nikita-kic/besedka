@@ -82,19 +82,39 @@ while ( have_posts() ) :
 
 			<div class="pp-hero">
 
-				<div class="pp-gallery">
+				<?php $has_thumbs = count( $image_ids ) > 1; ?>
+				<div class="pp-gallery<?php echo $has_thumbs ? ' pp-gallery--thumbs' : ''; ?>" data-pp-gallery>
+					<?php if ( $has_thumbs ) : ?>
+						<div class="pp-gallery__rail">
+							<div class="pp-gallery__rail-inner">
+								<button type="button" class="pp-gallery__arrow" data-pp-arrow="-1" aria-label="<?php esc_attr_e( 'Предыдущие фото', 'besedka' ); ?>" hidden>&uarr;</button>
+								<div class="pp-gallery__thumbs" data-pp-thumbs>
+									<?php foreach ( $image_ids as $index => $image_id ) : ?>
+										<button type="button" class="pp-gallery__thumb<?php echo 0 === $index ? ' is-active' : ''; ?>" data-pp-thumb aria-label="<?php echo esc_attr( sprintf( __( 'Фото %d', 'besedka' ), $index + 1 ) ); ?>">
+											<img src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'besedka-thumb' ) ); ?>" alt="" loading="lazy">
+										</button>
+									<?php endforeach; ?>
+								</div>
+								<button type="button" class="pp-gallery__arrow" data-pp-arrow="1" aria-label="<?php esc_attr_e( 'Следующие фото', 'besedka' ); ?>" hidden>&darr;</button>
+							</div>
+						</div>
+					<?php endif; ?>
 					<div class="pp-gallery__main">
-						<img class="pp-gallery__image" src="<?php echo esc_url( $main_src ); ?>" alt="<?php echo esc_attr( $title ); ?>" data-pp-main>
+						<div class="pp-gallery__track" data-pp-track>
+							<?php foreach ( $image_ids ? $image_ids : array( 0 ) as $index => $image_id ) : // Без фото — один слайд с заглушкой. ?>
+								<div class="pp-gallery__slide">
+									<img class="pp-gallery__image" src="<?php echo esc_url( 0 === $index ? $main_src : wp_get_attachment_image_url( $image_id, 'besedka-gallery' ) ); ?>" alt="<?php echo esc_attr( $title ); ?>"<?php echo 0 === $index ? '' : ' loading="lazy"'; ?>>
+								</div>
+							<?php endforeach; ?>
+						</div>
 						<button type="button" class="product-card__favorite" data-favorite-btn data-product-id="<?php echo esc_attr( $id ); ?>" aria-label="<?php esc_attr_e( 'Добавить в избранное', 'besedka' ); ?>">
 							<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
 						</button>
 					</div>
-					<?php if ( count( $image_ids ) > 1 ) : ?>
-						<div class="pp-gallery__thumbs">
+					<?php if ( $has_thumbs ) : ?>
+						<div class="pp-gallery__dots" data-pp-dots>
 							<?php foreach ( $image_ids as $index => $image_id ) : ?>
-								<button type="button" class="pp-gallery__thumb<?php echo 0 === $index ? ' is-active' : ''; ?>" data-pp-thumb data-src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'besedka-gallery' ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Фото %d', 'besedka' ), $index + 1 ) ); ?>">
-									<img src="<?php echo esc_url( wp_get_attachment_image_url( $image_id, 'besedka-thumb' ) ); ?>" alt="" loading="lazy">
-								</button>
+								<button type="button" class="pp-gallery__dot<?php echo 0 === $index ? ' is-active' : ''; ?>" data-pp-dot aria-label="<?php echo esc_attr( sprintf( __( 'Фото %d', 'besedka' ), $index + 1 ) ); ?>"></button>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>

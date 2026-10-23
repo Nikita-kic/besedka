@@ -935,19 +935,96 @@
 			return;
 		}
 
-		/* --- Галерея: клик по миниатюре подменяет главное фото --- */
-		var mainImage = qs( '[data-pp-main]', root );
+		/* --- Галерея: лента слайдов со scroll-snap. Миниатюры, точки и свайп управляют одной лентой --- */
+		var track = qs( '[data-pp-track]', root );
 		var thumbs = qsa( '[data-pp-thumb]', root );
-		thumbs.forEach( function ( thumb ) {
-			thumb.addEventListener( 'click', function () {
-				if ( mainImage ) {
-					mainImage.src = thumb.getAttribute( 'data-src' );
+		var dots = qsa( '[data-pp-dot]', root );
+		var thumbList = qs( '[data-pp-thumbs]', root );
+		var arrows = qsa( '[data-pp-arrow]', root );
+		var slideIndex = 0;
+
+		function updateArrows() {
+			if ( ! thumbList ) {
+				return;
+			}
+			var overflow = thumbList.scrollHeight - thumbList.clientHeight > 1;
+			arrows.forEach( function ( arrow ) {
+				var dir = parseInt( arrow.getAttribute( 'data-pp-arrow' ), 10 );
+				arrow.hidden = ! overflow;
+				arrow.disabled = dir < 0 ? thumbList.scrollTop <= 1 : thumbList.scrollTop + thumbList.clientHeight >= thumbList.scrollHeight - 1;
+			} );
+		}
+
+		function setSlide( index ) {
+			slideIndex = index;
+			thumbs.forEach( function ( t, i ) {
+				t.classList.toggle( 'is-active', i === index );
+			} );
+			dots.forEach( function ( d, i ) {
+				d.classList.toggle( 'is-active', i === index );
+			} );
+			var active = thumbs[ index ];
+			if ( active && thumbList ) {
+				var top = active.offsetTop - thumbList.offsetTop;
+				if ( top < thumbList.scrollTop ) {
+					thumbList.scrollTo( { top: top, behavior: 'smooth' } );
+				} else if ( top + active.offsetHeight > thumbList.scrollTop + thumbList.clientHeight ) {
+					thumbList.scrollTo( { top: top + active.offsetHeight - thumbList.clientHeight, behavior: 'smooth' } );
 				}
-				thumbs.forEach( function ( t ) {
-					t.classList.toggle( 'is-active', t === thumb );
-				} );
+			}
+		}
+
+		function goToSlide( index ) {
+			if ( track ) {
+				track.scrollTo( { left: index * track.clientWidth, behavior: 'smooth' } );
+			}
+			setSlide( index );
+		}
+
+		thumbs.forEach( function ( thumb, i ) {
+			thumb.addEventListener( 'click', function () {
+				goToSlide( i );
 			} );
 		} );
+		dots.forEach( function ( dot, i ) {
+			dot.addEventListener( 'click', function () {
+				goToSlide( i );
+			} );
+		} );
+
+		if ( track ) {
+			var ticking = false;
+			track.addEventListener( 'scroll', function () {
+				if ( ticking ) {
+					return;
+				}
+				ticking = true;
+				window.requestAnimationFrame( function () {
+					ticking = false;
+					var index = Math.round( track.scrollLeft / ( track.clientWidth || 1 ) );
+					if ( index !== slideIndex ) {
+						setSlide( index );
+					}
+				} );
+			}, { passive: true } );
+			// При смене ширины (поворот экрана, ресайз) остаёмся на текущем слайде.
+			window.addEventListener( 'resize', function () {
+				track.scrollLeft = slideIndex * track.clientWidth;
+				updateArrows();
+			} );
+		}
+
+		if ( thumbList ) {
+			arrows.forEach( function ( arrow ) {
+				arrow.addEventListener( 'click', function () {
+					var step = ( thumbs[ 0 ] ? thumbs[ 0 ].offsetHeight : 0 ) * 2;
+					thumbList.scrollBy( { top: step * parseInt( arrow.getAttribute( 'data-pp-arrow' ), 10 ), behavior: 'smooth' } );
+				} );
+			} );
+			thumbList.addEventListener( 'scroll', updateArrows, { passive: true } );
+			updateArrows();
+			window.addEventListener( 'load', updateArrows );
+		}
 
 		/* --- Количество: все счётчики на странице синхронны, значение уходит в data-quantity кнопок --- */
 		var qty = 1;

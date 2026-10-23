@@ -2637,6 +2637,14 @@ body.no-scroll {
   justify-content: center;
   gap: var(--space-2);
 }
+
+.sets__tabs .chip {
+  font-weight: var(--fw-regular);
+}
+
+.sets__tabs .chip.is-active {
+  font-weight: var(--fw-bold);
+}
 .set-card--slot-2 {
   grid-column: 4;
   grid-row: 1;
@@ -4187,12 +4195,14 @@ body.no-scroll {
 }
 
 /* Ширина под жирное начертание зарезервирована скрытой копией подписи: вкладки не прыгают при переключении */
-.pp-tabs__label {
+.pp-tabs__label,
+.sets__tab-label {
   display: inline-block;
   text-align: center;
 }
 
-.pp-tabs__label::after {
+.pp-tabs__label::after,
+.sets__tab-label::after {
   content: attr(data-text);
   display: block;
   height: 0;

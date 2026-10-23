@@ -179,7 +179,7 @@ while ( have_posts() ) :
 						<ul class="pp-lines">
 							<li class="pp-lines__item">
 								<span class="pp-lines__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>
-								<span><?php esc_html_e( 'Почтой России в', 'besedka' ); ?> <button type="button" class="pp-lines__city" data-city-trigger><span data-city-current><?php esc_html_e( 'Москва', 'besedka' ); ?></span></button> · <?php esc_html_e( 'с трек-номером', 'besedka' ); ?></span>
+								<span><?php esc_html_e( 'Доставка Почтой России', 'besedka' ); ?> &middot; <button type="button" class="pp-lines__city" data-city-trigger><span data-city-current><?php esc_html_e( 'Москва', 'besedka' ); ?></span></button> &middot; <?php esc_html_e( 'с трек-номером', 'besedka' ); ?></span>
 							</li>
 							<li class="pp-lines__item">
 								<span class="pp-lines__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></svg></span>

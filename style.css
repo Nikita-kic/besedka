@@ -4094,9 +4094,28 @@ body.no-scroll {
 }
 
 .pp-lines__city {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--color-accent);
+  font: inherit;
+  line-height: inherit;
   text-decoration: underline dotted;
   cursor: pointer;
+  transition: color var(--transition);
+}
+
+.pp-lines__city:hover,
+.pp-lines__city:focus-visible {
+  color: var(--color-accent-dark);
+  text-decoration-style: solid;
+}
+
+.pp-lines__city:focus-visible {
+  outline: 0.125em solid var(--color-accent-dark);
+  outline-offset: 0.125em;
 }
 
 .set-banner--compact {

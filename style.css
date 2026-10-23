@@ -3741,6 +3741,11 @@ body.no-scroll {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Одно фото: свайпа нет */
+.pp-gallery--single .pp-gallery__track {
+  overflow-x: hidden;
+}
+
 .pp-gallery__track::-webkit-scrollbar {
   display: none;
 }
